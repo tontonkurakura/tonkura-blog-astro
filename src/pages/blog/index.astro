@@ -1,0 +1,88 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat("ja-JP", { dateStyle: "long" }).format(d);
+---
+
+<Base title="ブログ | TonKurA" wide>
+  <PageHeader title="ブログ" meta={`全 ${posts.length} 本`} />
+
+  <ul class="list">
+    {
+      posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}`} class="title">
+            {post.data.title}
+          </a>
+          {post.data.description && (
+            <p class="desc">{post.data.description}</p>
+          )}
+          <div class="meta">
+            <time datetime={post.data.date.toISOString()}>
+              {fmt(post.data.date)}
+            </time>
+            {post.data.tags.map((t) => (
+              <a class="tag" href={`/blog/tags/${encodeURIComponent(t)}`}>
+                {t}
+              </a>
+            ))}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <style>
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .list li {
+      padding: 1.3rem 1rem;
+      margin-inline: -1rem;
+      border-top: 1px solid var(--border);
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+    .list li:hover {
+      background: var(--bg-subtle);
+    }
+    .title {
+      display: inline-block;
+      font-size: var(--step-1);
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .desc {
+      color: var(--fg-muted);
+      margin: 0.4rem 0 0.6rem;
+    }
+    .meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    .tag {
+      background: var(--bg-subtle);
+      color: var(--fg-muted);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+    }
+    .tag:hover {
+      color: var(--fg);
+    }
+  </style>
+</Base>

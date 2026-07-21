@@ -1,0 +1,68 @@
+---
+// 一覧の統一カード。本文（slot）は任意。
+interface Props {
+  href: string;
+  title: string;
+  count?: string;
+}
+const { href, title, count } = Astro.props;
+const hasBody = Astro.slots.has("default");
+---
+
+<a class="card" href={href}>
+  <div class="card-head">
+    <h3>{title}</h3>
+    {count && <span class="count">{count}</span>}
+  </div>
+  {hasBody && (
+    <p class="card-body"><slot /></p>
+  )}
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem 1.5rem;
+    min-height: 6.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+  .card:hover {
+    border-color: color-mix(in srgb, var(--fg) 22%, var(--border));
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  h3 {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .count {
+    flex-shrink: 0;
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .card-body {
+    margin: 0.5rem 0 0;
+    color: var(--fg-muted);
+    font-size: var(--step--1);
+    line-height: 1.65;
+  }
+</style>

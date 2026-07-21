@@ -1,0 +1,85 @@
+---
+import type { TreeNode } from "../lib/neurology";
+import NeuroTree from "./NeuroTree.astro";
+
+interface Props {
+  nodes: TreeNode[];
+  open?: boolean; // 最上段だけ開いた状態にする
+}
+const { nodes, open = false } = Astro.props;
+---
+
+<ul class="tree">
+  {
+    nodes.map((node) =>
+      node.slug ? (
+        <li class="leaf">
+          <a href={`/neurology/${node.slug}`}>{node.name}</a>
+        </li>
+      ) : (
+        <li class="branch">
+          <details open={open}>
+            <summary>{node.name}</summary>
+            <NeuroTree nodes={node.children} />
+          </details>
+        </li>
+      ),
+    )
+  }
+</ul>
+
+<style>
+  .tree {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+  .tree .tree {
+    padding-left: 1rem;
+    border-left: 1px solid var(--border);
+    margin-left: 0.35rem;
+  }
+  li {
+    margin: 0.15rem 0;
+  }
+  .leaf a {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    margin-inline: -0.5rem;
+    border-radius: 7px;
+    text-decoration: none;
+    color: var(--fg);
+    font-size: var(--step-0);
+    transition: background 0.15s ease;
+  }
+  .leaf a:hover {
+    background: var(--bg-subtle);
+  }
+  summary {
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    margin-inline: -0.5rem;
+    border-radius: 7px;
+    font-weight: 600;
+    color: var(--fg);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::before {
+    content: "›";
+    color: var(--fg-muted);
+    transition: transform 0.15s ease;
+    display: inline-block;
+  }
+  details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  summary:hover {
+    background: var(--bg-subtle);
+  }
+</style>

@@ -1,0 +1,128 @@
+# 写真の説明を設定するファイル
+# 各写真に対して以下の情報を設定できます：
+# - description: 写真の詳細な説明
+
+DSC00072.jpg:
+  description: Zojo-ji, Tokyo
+DSC00100.jpg:
+  description: Tokyo Tower
+DSC00103.jpg:
+  description: Ushiku, Ibaraki
+DSC00197.jpg:
+  description: Furano, Hokkaido
+DSC00329.jpg:
+  description: Biei, Hokkaido
+DSC00351.jpg:
+  description: Biei, Hokkaido
+DSC00363.jpg:
+  description: Shakotan, Hokkaido
+DSC00498 (3).jpg:
+  description: Shakotan, Hokkaido
+DSC00670.jpg:
+  description: Inokashira-park, Tokyo
+DSC00675.jpg:
+  description: Syowa-memorial-park, Tokyo
+DSC01080.jpg:
+  description: Okuno-jima, Hiroshima
+DSC01137.jpg:
+  description: Okuno-jima, Hiroshima
+DSC01197.jpg:
+  description: Onioshidashi-en, Gunma
+DSC01203.jpg:
+  description: Onioshidashi-en, Gunma
+DSC01265.jpg:
+  description: Nabega-taki, Gunma
+DSC01376-Enhanced-NR.jpg:
+  description: Goshiki-zakura ohashi, Tokyo
+DSC01388-Enhanced-NR.jpg:
+  description: Goshiki-zakura ohashi, Tokyo
+DSC01465.jpg:
+  description: Roppongi, Tokyo
+DSC01576.jpg:
+  description: Tour de Eiffel, Paris
+DSC01597.jpg:
+  description: Tour de Eiffel, Paris
+DSC01655.jpg:
+  description: Champs-Elysees, Paris
+DSC02114-Enhanced-NR-Edit.jpg:
+  description: Hennasaki lighthouse, Miyako, Okinawa
+DSC02191-Enhanced-NR.jpg:
+  description: Ndukviav(ヌドクビアブ), Miyako, Okinawa
+DSC02207.jpg:
+  description: Crystalbrook Balley, Cairns, Australia
+DSC02229-Enhanced-NR.jpg:
+  description: Paronella-park, Cairns, Australia
+DSC02351-Enhanced-NR-Edit.jpg:
+  description: Chillagoe, Australia
+DSC03551.jpg:
+  description: Westend, London, UK
+DSC03624.jpg:
+  description: Liverpool Cathedral, Liverpool, UK
+DSC04738.jpg:
+  description: Leeds, UK
+DSC05024.jpg:
+  description: citizensM hotel, Glasgow, UK
+DSC05051.jpg:
+  description: Glasgow Cathedral, Glasgow, UK
+DSC05210.jpg:
+  description: Design Museum, London, UK
+DSC05218.jpg:
+  description: Design Museum, London, UK
+DSC05237.jpg:
+  description: White Cube, London, UK
+DSC05397.jpg:
+  description: Courtauld Gallery, London, UK
+DSC05805.jpg:
+  description: Tosayamada, Kochi
+DSC06034.jpg:
+  description: Matsushima, Miyagi
+DSC06231.jpg:
+  description: Omoide-yokocho, Tokyo
+DSC06919.jpg:
+  description: Hachijo-jima, Tokyo
+DSC07199.jpg:
+  description: MAOUDC, Tokyo
+DSC07204.jpg:
+  description: MAOUDC, Tokyo
+DSC07563.jpg:
+  description: Nachi, Wakayama
+DSC07646.jpg:
+  description: Shirahama, Wakayama
+DSC07695.jpg:
+  description: Shirahama, Wakayama
+DSC07746.jpg:
+  description: Sai-jinja, Nara
+DSC07817.jpg:
+  description: Meguro-gawa, Tokyo
+DSC07887.jpg:
+  description: Shinjuku-Golden Gai, Tokyo
+DSC08142.jpg:
+  description: Harbour Bridge, Sidney, Australia
+DSC08150.jpg:
+  description: Hyde Park Barracks, Sydney, Australia
+DSC08179.jpg:
+  description: Royal Botanic Garden, Sydney, Australia
+DSC08250.jpg:
+  description: Mrs Macquarie's Chair, Sydney, Australia
+DSC08282.jpg:
+  description: Sydney, Australia
+DSC09251.jpg:
+  description: Canberra, Australia
+DSC09372.jpg:
+  description: Sydney, Australia
+DSC09427.jpg:
+  description: Vivid Sydney, Sydney, Australia
+DSC09654.jpg:
+  description: Sydney, Australia
+DSC09931.jpg:
+  description: Tasmania, Australia
+DSC02359-Enhanced-NR-Pano-Edit.jpg:
+  description: Chillagoe, Australia
+DSC02808.jpg:
+  description: Institute of Science Tokyo
+DSC03082.jpg:
+  description: Musashi-kokubunji ato, Tokyo
+DSC03093.jpg:
+  description: Musashi-kokubunji ato, Tokyo
+DSC03097.jpg:
+  description: Musashi-kokubunji park, Tokyo

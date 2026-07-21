@@ -1,0 +1,55 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import { tools } from "../../data/tools";
+---
+
+<Base title="Tools | TonKurA" wide>
+  <PageHeader title="Tools" meta={`${tools.length} 種`} />
+
+  <ul class="list">
+    {
+      tools.map((t) => (
+        <li>
+          <a href={`/tools/${t.slug}`}>
+            <span class="name">{t.name}</span>
+            <span class="desc">{t.description}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <style>
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .list li {
+      border-top: 1px solid var(--border);
+    }
+    .list a {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 1.2rem 1rem;
+      margin-inline: -1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .list a:hover {
+      background: var(--bg-subtle);
+    }
+    .name {
+      font-size: var(--step-1);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .desc {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+    }
+  </style>
+</Base>

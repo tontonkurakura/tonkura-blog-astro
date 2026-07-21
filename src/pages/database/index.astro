@@ -1,0 +1,80 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import { categories } from "../../data/higherBrainFunction";
+
+const total = categories.reduce((n, c) => n + c.items.length, 0);
+---
+
+<Base title="高次脳機能データベース | TonKurA" wide>
+  <PageHeader
+    title="高次脳機能データベース"
+    meta={`${categories.length} カテゴリ / ${total} 症候`}
+  >
+    <p slot="lead" class="lead">
+      失語・失行・失認から社会的認知まで、症候ごとの事典。分類の骨格は DSM-5
+      の6神経認知領域＋半球離断です。
+    </p>
+  </PageHeader>
+
+  {
+    categories.map((cat) => (
+      <section class="cat">
+        <h2>{cat.title}</h2>
+        {cat.note && <p class="note">{cat.note}</p>}
+        <ul>
+          {cat.items.map((item) => (
+            <li>
+              <a href={`/database/${cat.id}/${item.id}`}>{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <style>
+    .lead {
+      color: var(--fg-muted);
+      font-size: var(--step-1);
+      line-height: 1.6;
+      margin: 0.5rem 0 0;
+      max-width: var(--measure);
+    }
+    .cat {
+      margin: 2.5rem 0;
+    }
+    .cat h2 {
+      font-size: var(--step-1);
+      letter-spacing: -0.01em;
+      margin: 0 0 0.35rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .note {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0 0 0.75rem;
+    }
+    .cat ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+      gap: 0.15rem 0.75rem;
+    }
+    .cat li a {
+      text-decoration: none;
+      display: block;
+      padding: 0.35rem 0.6rem;
+      margin-inline: -0.6rem;
+      border-radius: 8px;
+      color: var(--fg);
+      transition: background 0.15s ease;
+    }
+    .cat li a:hover {
+      background: var(--bg-subtle);
+    }
+  </style>
+</Base>

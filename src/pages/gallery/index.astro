@@ -1,0 +1,66 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import yaml from "js-yaml";
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+
+// photos.yaml（ファイル名 → 説明）を読む。yaml の並び順を尊重する。
+const raw = fs.readFileSync(
+  path.resolve("src/data/photos.yaml"),
+  "utf-8",
+);
+const meta = (yaml.load(raw) ?? {}) as Record<
+  string,
+  { description?: string } | null
+>;
+
+// 実在する画像だけを、yaml の順で拾う
+const imagesDir = path.resolve("public/images");
+const existing = new Set(fs.readdirSync(imagesDir));
+const photos = Object.keys(meta)
+  .filter((name) => existing.has(name))
+  .map((name) => ({
+    name,
+    src: `/images/${encodeURIComponent(name)}`,
+    description: meta[name]?.description ?? "",
+  }));
+---
+
+<Base title="Gallery | TonKurA" wide>
+  <PageHeader title="Gallery" meta={`${photos.length} 枚`} />
+
+  <div class="masonry">
+    {
+      photos.map((p) => (
+        <figure>
+          <img src={p.src} alt={p.description} loading="lazy" decoding="async" />
+          {p.description && <figcaption>{p.description}</figcaption>}
+        </figure>
+      ))
+    }
+  </div>
+
+  <style>
+    .masonry {
+      column-width: 20rem;
+      column-gap: 1rem;
+    }
+    figure {
+      break-inside: avoid;
+      margin: 0 0 1rem;
+    }
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: var(--radius);
+      background: var(--bg-subtle);
+    }
+    figcaption {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin-top: 0.4rem;
+    }
+  </style>
+</Base>

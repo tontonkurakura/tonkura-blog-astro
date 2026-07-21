@@ -1,0 +1,90 @@
+/* デザイントークン。色は data-theme（light/dark）で切り替える。
+   バラバラだったカード/リスト意匠を、この1セットに統一する。 */
+
+:root {
+  /* タイポグラフィ */
+  --font-sans:
+    "Inter Variable", system-ui, -apple-system, "Segoe UI",
+    "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP",
+    "Yu Gothic", Meiryo, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas,
+    monospace;
+
+  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 1.9rem);
+  --step-3: clamp(1.9rem, 1.6rem + 1.5vw, 2.5rem);
+
+  /* レイアウト */
+  --measure: 44rem; /* 読み幅 */
+  --measure-wide: 70rem; /* 一覧・グリッド */
+  --pad-x: clamp(1.5rem, 6vw, 4rem); /* ページ左右の余白 */
+  --radius: 12px;
+  --gap: 1.25rem;
+
+  /* 色（ライト）— 青を使わないモノクロ基調 */
+  --bg: #fbfbfa;
+  --bg-subtle: #f1f1ef;
+  --surface: #ffffff;
+  --fg: #1b1b19;
+  --fg-muted: #74736e;
+  --border: #e7e6e2;
+  --link: var(--fg);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] {
+  --bg: #111110;
+  --bg-subtle: #1a1a18;
+  --surface: #191917;
+  --fg: #eceae4;
+  --fg-muted: #9b9a93;
+  --border: #2a2a27;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111110;
+    --bg-subtle: #1a1a18;
+    --surface: #191917;
+    --fg: #eceae4;
+    --fg-muted: #9b9a93;
+    --border: #2a2a27;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* リンクは既定で文字色・下線なし。青は使わない。
+   本文中のリンクだけ prose 側で控えめな下線を付ける。 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+}

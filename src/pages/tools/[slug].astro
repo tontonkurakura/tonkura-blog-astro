@@ -1,0 +1,47 @@
+---
+import Base from "../../layouts/Base.astro";
+import { tools } from "../../data/tools";
+import NIHSSCalculator from "@/components/tools/NIHSSCalculator.tsx";
+import HDSRCalculator from "@/components/tools/HDSRCalculator.tsx";
+import MMSECalculator from "@/components/tools/MMSECalculator.tsx";
+import IgGIndexCalculator from "@/components/tools/IgGIndexCalculator.tsx";
+
+export function getStaticPaths() {
+  return tools.map((t) => ({ params: { slug: t.slug }, props: { tool: t } }));
+}
+
+const { tool } = Astro.props;
+const { slug } = tool;
+---
+
+<Base title={`${tool.name} | Tools`}>
+  <a class="back" href="/tools">← Tools</a>
+  <h1>{tool.name}</h1>
+  <p class="desc">{tool.description}</p>
+
+  <div class="tool">
+    {slug === "nihss" && <NIHSSCalculator client:load />}
+    {slug === "hds-r" && <HDSRCalculator client:load />}
+    {slug === "mmse" && <MMSECalculator client:load />}
+    {slug === "igg-index" && <IgGIndexCalculator client:load />}
+  </div>
+
+  <style>
+    .back {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    h1 {
+      font-size: var(--step-2);
+      letter-spacing: -0.01em;
+      margin: 1rem 0 0.4rem;
+    }
+    .desc {
+      color: var(--fg-muted);
+      margin: 0 0 2rem;
+    }
+    .tool {
+      margin-top: 1rem;
+    }
+  </style>
+</Base>

@@ -1,0 +1,70 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import { getRealQuestions } from "../../lib/wiki";
+
+const questions = await getRealQuestions();
+---
+
+<Base title="高次脳機能部 wiki | TonKurA" wide>
+  <PageHeader
+    title="高次脳機能部 wiki"
+    meta={`全 ${questions.length} 問`}
+  >
+    <p slot="lead" class="lead">
+      月1回の勉強会で立った問いを、問い単位で蓄積しています。<strong
+        >未解決は欠陥ではなく第一級の状態</strong
+      >として扱います。
+    </p>
+  </PageHeader>
+
+  <ul class="q-list">
+    {
+      questions.map((q) => (
+        <li>
+          <a href={`/wiki/${q.data.id}`}>{q.data.title}</a>
+          {q.data.domain.length > 0 && (
+            <p class="domain">{q.data.domain.join(" / ")}</p>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  <style>
+    .lead {
+      color: var(--fg-muted);
+      font-size: var(--step-1);
+      line-height: 1.6;
+      margin: 0.5rem 0 0;
+      max-width: var(--measure);
+    }
+    .q-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .q-list li {
+      padding: 1.15rem 1rem;
+      margin-inline: -1rem;
+      border-top: 1px solid var(--border);
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+    .q-list li:hover {
+      background: var(--bg-subtle);
+    }
+    .q-list a {
+      display: inline-block;
+      font-size: var(--step-1);
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .domain {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0.3rem 0 0;
+    }
+  </style>
+</Base>

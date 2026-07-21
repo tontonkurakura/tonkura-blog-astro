@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import "../../styles/prose.css";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat("ja-JP", { dateStyle: "long" }).format(d);
+---
+
+<Base title={`${post.data.title} | TonKurA`} description={post.data.description}>
+  <a class="back" href="/blog">← ブログ一覧</a>
+  <article>
+    <h1>{post.data.title}</h1>
+    <div class="meta">
+      <time datetime={post.data.date.toISOString()}>
+        {fmt(post.data.date)}
+      </time>
+      {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+    </div>
+    <div class="prose blog-body">
+      <Content />
+    </div>
+  </article>
+
+  <style>
+    .back {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    article h1 {
+      font-size: var(--step-3);
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin: 1rem 0 0.6rem;
+    }
+    .meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+      margin-bottom: 2.5rem;
+    }
+    .tag {
+      background: var(--bg-subtle);
+      color: var(--fg-muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+    }
+    /* frontmatter の title を見出しに使うため、本文冒頭の重複 H1（一部の記事に
+       ある）は隠す。ブログの節は ## 以下を使う慣習なので H1 は表示しない。 */
+    .blog-body :global(h1) {
+      display: none;
+    }
+  </style>
+</Base>

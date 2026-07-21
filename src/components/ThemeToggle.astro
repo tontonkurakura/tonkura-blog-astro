@@ -1,0 +1,52 @@
+---
+// ライト/ダークの手動トグル。localStorage に保存し、Base の inline script が
+// 描画前に反映する（FOUC 防止）。
+---
+
+<button id="theme-toggle" type="button" aria-label="テーマ切り替え">
+  <span class="sun" aria-hidden="true">☀</span>
+  <span class="moon" aria-hidden="true">☾</span>
+</button>
+
+<style>
+  #theme-toggle {
+    margin-left: auto;
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  #theme-toggle:hover {
+    color: var(--fg);
+  }
+  .moon {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .sun {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .moon {
+    display: inline;
+  }
+</style>
+
+<script is:inline>
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    const root = document.documentElement;
+    const current =
+      root.getAttribute("data-theme") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+    const next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+  });
+</script>

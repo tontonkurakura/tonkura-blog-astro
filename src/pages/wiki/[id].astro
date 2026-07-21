@@ -1,0 +1,143 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { backlinksFor } from "../../lib/wiki";
+import "../../styles/prose.css";
+
+export async function getStaticPaths() {
+  const all = await getCollection("wiki");
+  return all.map((entry) => ({
+    params: { id: entry.data.id },
+    props: { entry, all },
+  }));
+}
+
+const { entry, all } = Astro.props;
+const { Content } = await render(entry);
+
+const byId = new Map(all.map((e) => [e.data.id, e]));
+const titleOf = (id: string) => byId.get(id)?.data.title ?? id;
+const backlinks = backlinksFor(entry.data.id, all);
+
+const linkGroups = [
+  { label: "前提となる問い", ids: entry.data.depends_on },
+  { label: "関連する問い", ids: entry.data.related },
+  { label: "この問いを参照している問い", ids: backlinks.map((b) => b.data.id) },
+];
+---
+
+<Base title={`${entry.data.title} | TonKurA`}>
+  <a class="back" href="/wiki">← 高次脳機能部 wiki</a>
+  <article>
+    <h1>{entry.data.title}</h1>
+    {
+      entry.data.domain.length > 0 && (
+        <div class="domains">
+          {entry.data.domain.map((d) => (
+            <span class="domain">{d}</span>
+          ))}
+        </div>
+      )
+    }
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <footer class="links">
+    {
+      linkGroups.map((g) => (
+        <section>
+          <h2>{g.label}</h2>
+          {g.ids.length ? (
+            <ul>
+              {g.ids.map((id) => (
+                <li>
+                  <a href={`/wiki/${id}`}>
+                    <span class="qid">{id}</span> {titleOf(id)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="none">なし</p>
+          )}
+        </section>
+      ))
+    }
+    {
+      entry.data.refs.length > 0 && (
+        <section>
+          <h2>関連する症候（事典）</h2>
+          <ul class="refs">
+            {entry.data.refs.map((r) => (
+              <li>{r}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </footer>
+
+  <style>
+    .back {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    article h1 {
+      font-size: var(--step-2);
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      margin: 1rem 0 0.75rem;
+    }
+    .domains {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .domain {
+      background: var(--bg-subtle);
+      color: var(--fg-muted);
+      border-radius: 999px;
+      padding: 0.15rem 0.7rem;
+      font-size: var(--step--1);
+    }
+    .links {
+      margin-top: 3.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      display: grid;
+      gap: 1.25rem;
+    }
+    .links h2 {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+      text-transform: none;
+      margin: 0 0 0.4rem;
+      font-weight: 600;
+    }
+    .links ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+    .links li {
+      margin: 0.2rem 0;
+    }
+    .qid {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--fg-muted);
+    }
+    .links .none {
+      color: var(--fg-muted);
+      opacity: 0.7;
+      font-size: var(--step--1);
+      margin: 0;
+    }
+    .refs {
+      font-family: var(--font-mono);
+      font-size: var(--step--1);
+    }
+  </style>
+</Base>
