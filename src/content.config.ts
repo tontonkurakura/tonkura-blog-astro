@@ -1,4 +1,4 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection, reference, z } from "astro:content";
 import { glob } from "astro/loaders";
 
 // 全コンテンツを Astro リポジトリ内（src/content/）に取り込み、自己完結させた。
@@ -66,4 +66,47 @@ const neurology = defineCollection({
   }),
 });
 
-export const collections = { blog, wiki, database, neurology };
+// 疑問駆動パイプライン（GitHub Issue → Claude Code Action → PR）が書く、
+// 神経画像解析の方法論記事。疑問 1 つ = 記事 1 本。
+//
+// blog と別コレクションにしている理由:
+// 既存 blog の 6 本は出典リストを持たない個人ノートで、sources.min(2) を課すと
+// 全部落ちる。厳しさの違うものを同居させると「出典ゼロを CI で落とす」という
+// この仕組みの要が成立しない。
+//
+// ファイルは {Issue番号}-{英語スラッグ}.md のフラット配置で、category を
+// パスに含めない。分類し直したときに URL と related の両方が壊れるため。
+const imaging = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/imaging" }),
+  schema: z.object({
+    title: z.string().min(8).max(60),
+    description: z.string().min(40).max(160),
+    pubDate: z.coerce.date(),
+    // Claude は必ず true で出す。外すのは人の手。
+    // merge = 保存、draft を外す = 公開、の 2 段にするための鍵。
+    draft: z.boolean().default(true),
+    category: z.enum(["methods", "tools", "stats", "misc"]),
+    tags: z.array(z.string()).min(2).max(6),
+    sources: z
+      .array(
+        z.object({
+          title: z.string(),
+          url: z.string().url(),
+          kind: z.enum(["docs", "paper", "repo", "web"]),
+        }),
+      )
+      .min(2)
+      // 「一次資料（公式ドキュメント or 原著）を最低 1 件当たる」をプロンプト頼みに
+      // せず、ここで落とす。二次情報だけで書かれた記事はビルドを通さない。
+      .refine((list) => list.some((s) => s.kind === "docs" || s.kind === "paper"), {
+        message:
+          "sources に kind が docs か paper のもの（一次資料）が最低 1 件必要です",
+      }),
+    // reference() はスキーマ検証の時点では形しか見ない（存在確認はしない）。
+    // 実在チェックは src/pages/imaging/[...slug].astro で明示的に行う。
+    related: z.array(reference("imaging")).default([]),
+    fromIssue: z.number().int().positive().optional(),
+  }),
+});
+
+export const collections = { blog, wiki, database, neurology, imaging };

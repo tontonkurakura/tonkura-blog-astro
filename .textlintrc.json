@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": {
+        "max": 120
+      },
+      "max-comma": {
+        "max": 4
+      },
+      "max-ten": {
+        "max": 4
+      },
+      "//": "以下は無効化した理由がある。安易に戻さないこと。",
+      "//max-kanji-continuous-len": "医学用語は長い漢字熟語が普通（安静時機能的結合、磁気共鳴画像法など）。このルールは分野語彙をすべて誤検出する。",
+      "max-kanji-continuous-len": false,
+      "//ja-unnatural-alphabet": "rsfMRI・fMRIPrep・ASL など英字略語が本文に頻出する。",
+      "ja-unnatural-alphabet": false,
+      "//no-exclamation-question-mark": "疑問駆動なので見出しに疑問符を使うことがある。",
+      "no-exclamation-question-mark": false,
+      "//ja-no-weak-phrase": "「〜と考えられる」は、断定を避けるべき場面で意図的に使う。CLAUDE.md で未検証の推測に使うよう指示している。",
+      "ja-no-weak-phrase": false,
+      "no-doubled-joshi": {
+        "min_interval": 1
+      },
+      "//no-mix-dearu-desumasu": "CLAUDE.md で だ・である調 に統一すると決めている。既定は文書内の多数決で揺れるため固定する。",
+      "no-mix-dearu-desumasu": {
+        "preferInBody": "である",
+        "preferInHeader": "",
+        "preferInList": ""
+      }
+    }
+  }
+}
