@@ -18,7 +18,7 @@
   --step-3: clamp(1.9rem, 1.6rem + 1.5vw, 2.5rem);
 
   /* レイアウト */
-  --measure: 44rem; /* 読み幅 */
+  --measure: 48rem; /* 読み幅（元サイトの max-w-3xl に合わせる） */
   --measure-wide: 70rem; /* 一覧・グリッド */
   --pad-x: clamp(1.5rem, 6vw, 4rem); /* ページ左右の余白 */
   --radius: 12px;
