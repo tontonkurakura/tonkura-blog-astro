@@ -3,22 +3,28 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    # 記事の下書き PR はレビュー対象から外す。
+    # 疑問駆動パイプラインが吐く PR は中身が Markdown で、コードレビュー用の
+    # プロンプトが噛み合わない。内容の検証は人が読んで行い、機械的な検証
+    # （出典2件・一次資料・文体・related の実在）は validate-content.yml が担う。
+    paths:
+      - 'src/**'
+      - '.github/workflows/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '*.ts'
+      - '*.mjs'
+      - '*.json'
+      - '!src/content/**'
+
+concurrency:
+  group: claude-review-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       pull-requests: read
@@ -26,10 +32,9 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+      # fetch-depth は既定（shallow）のまま。差分は `gh pr diff`（API 経由）で取る。
+      # この repo は画像で 170MB 超あり、履歴を引くのは無駄。
+      - uses: actions/checkout@v6
 
       - name: Run Claude Code Review
         id: claude-review
@@ -39,7 +44,11 @@ jobs:
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
           prompt: '/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
 
+          # 既定の allowedTools は inline comment の MCP ツールだけで、Bash が入って
+          # いない。それだと code-review スキルが差分を取れず、2026-08-21 の初回実行
+          # （run 32494667770）は permission_denials_count: 1、コメント 0 件、$0.18 の
+          # 空振りに終わった。差分取得に要る読み取り系だけを明示的に許可する。
+          # 書き込みは inline comment の MCP ツールに限る（gh pr comment 等は渡さない）。
+          claude_args: >-
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git status:*)"
