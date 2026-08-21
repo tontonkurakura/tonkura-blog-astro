@@ -1,0 +1,185 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import {
+  includeDrafts,
+  resolveRelated,
+  CATEGORY_LABEL,
+  KIND_LABEL,
+  type ImagingPost,
+} from "../../lib/imaging";
+import "../../styles/prose.css";
+
+export async function getStaticPaths() {
+  // 見本（000-template）もページとして作る。描画が壊れていないかを確かめる役目があり、
+  // draft: true なので本番には出ない。
+  const posts = await getCollection("imaging", ({ data }) =>
+    includeDrafts ? true : !data.draft,
+  );
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: ImagingPost;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// 存在しない related があればここで例外になり、astro build が落ちる。
+const related = await resolveRelated(post);
+
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat("ja-JP", { dateStyle: "long" }).format(d);
+---
+
+<Base title={`${post.data.title} | TonKurA`} description={post.data.description}>
+  <a class="back" href="/imaging">← Imaging 一覧</a>
+  <article>
+    <h1>{post.data.title}</h1>
+    <div class="meta">
+      <time datetime={post.data.pubDate.toISOString()}>
+        {fmt(post.data.pubDate)}
+      </time>
+      <span class="tag">{CATEGORY_LABEL[post.data.category]}</span>
+      {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+      {post.data.draft && <span class="draft">下書き</span>}
+    </div>
+
+    {
+      post.data.draft && (
+        <p class="notice">
+          この記事は下書きである。内容の検証が済んでいない。
+        </p>
+      )
+    }
+
+    <div class="prose imaging-body">
+      <Content />
+    </div>
+
+    <section class="sources">
+      <h2>出典</h2>
+      <ol>
+        {
+          post.data.sources.map((s) => (
+            <li>
+              <a href={s.url} rel="noopener noreferrer" target="_blank">
+                {s.title}
+              </a>
+              <span class="kind">{KIND_LABEL[s.kind]}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="related">
+          <h2>関連する記事</h2>
+          <ul>
+            {related.map((r) => (
+              <li>
+                <a href={`/imaging/${r.id}`}>{r.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      post.data.fromIssue != null && (
+        <p class="origin">
+          この記事のもとになった疑問:{" "}
+          <a
+            href={`https://github.com/tontonkurakura/tonkura-blog-astro/issues/${post.data.fromIssue}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            #{post.data.fromIssue}
+          </a>
+        </p>
+      )
+    }
+  </article>
+
+  <style>
+    .back {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    article h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 1rem 0 0.6rem;
+    }
+    .meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+      margin-bottom: 1.5rem;
+    }
+    .tag {
+      background: var(--bg-subtle);
+      color: var(--fg-muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+    }
+    .draft {
+      border: 1px dashed var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+    }
+    .notice {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin-bottom: 2rem;
+    }
+    /* frontmatter の title を見出しに使うので、本文冒頭の重複 H1 は隠す */
+    .imaging-body :global(h1) {
+      display: none;
+    }
+    .sources,
+    .related {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .sources h2,
+    .related h2 {
+      font-size: var(--step-0);
+      font-weight: 600;
+      margin: 0 0 0.8rem;
+    }
+    .sources ol,
+    .related ul {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--fg-muted);
+    }
+    .sources li,
+    .related li {
+      margin-bottom: 0.4rem;
+    }
+    .kind {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+      margin-left: 0.5rem;
+    }
+    .origin {
+      margin-top: 2rem;
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+  </style>
+</Base>

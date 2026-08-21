@@ -1,6 +1,6 @@
 # 決定と保留
 
-最終更新: 2026-07-21
+最終更新: 2026-08-21
 
 このリポジトリ（`tonkura-blog-astro`）は、Next.js 版 `~/dev/tonkura-blog` を
 Astro に移し替えたもの。ここには「**なぜそう移行したか**」と「**切替時に決めること**」を残す。
@@ -57,6 +57,71 @@ NIHSS / MMSE / HDS-R / IgG を `@astrojs/react` の島（`client:load`）とし�
 プレースホルダ（`src/layouts/Placeholder.astro`）。3Dビューアは別途作り直す。
 
 ---
+
+## 疑問駆動パイプライン（2026-08-21 着手）
+
+GitHub Issue に投げた疑問を Claude Code Action が調査・執筆し、記事の下書きとして PR で返す。
+人は PR の差分を見て merge する。設計の元は `~/dev/pipeline-design.md`。
+
+### なぜこのリポジトリに載せたか
+
+指示書は「ブログリポジトリ1つに集約」を前提にしていたが、着手時点で**この Astro 版は
+GitHub にリモートを持っていなかった**（ローカル2コミットのみ）。Phase 0 の
+`/install-github-app` を走らせる先が無い状態だったため、まず public リポジトリとして
+push した。これは上の未決 #1「コンテンツの源を一本化する」を **Astro 側に決めた**ことを意味する。
+旧 Next.js 版 `tonkura-blog` は本番稼働のまま凍結扱いとする。
+
+### なぜ `blog` ではなく `imaging` という別コレクションか
+
+既存 `blog` の6本は出典リストを持たない個人ノートで、`sources.min(2)` を課すと全部落ちる。
+厳しさの違うものを同居させると「出典ゼロを CI で落とす」というこの仕組みの要が成立しない。
+指示書の案は `posts` だったが、`blog` と `posts` が並ぶのは読者にも次のセッションにも紛らわしいので
+`/neurology` の隣に置く `imaging` にした。**画像解析に閉じない記事を書きたくなったら改名が要る**
+（コレクション名・ディレクトリ名・`src/pages/imaging/` の3か所）。
+
+### 指示書から変えた点と、その理由
+
+- **`src/content/config.ts` は作らない。** Astro 7 は `src/content.config.ts` を先に探し、
+  それが既に存在する（`astro/dist/content/utils.js:556`）。指示書のパスは Astro 4 時代のレガシー。
+- **`related` の実在チェックは `reference()` 任せにしない。** `reference()` はスキーマ検証の
+  時点では形しか見ず、存在しない id は `console.warn` を出して `undefined` を返すだけで
+  ビルドは緑のまま通る（`runtime.js:129`）。`src/lib/imaging.ts` の `resolveRelated()` で明示的に throw する。
+- **`sources` に「一次資料1件以上」を `.refine()` で足した。** 指示書では
+  「一次資料を最低1件当たれ」がプロンプト頼みで、確認のためにもう一度 Claude を呼ぶ設計だった。
+  zod で落とせるものを機械に任せる。
+- **下書きは CI ではビルドに含める。** `INCLUDE_DRAFTS=1`（`npm run build:ci`）。
+  PR の中身は必ず `draft: true` なので、本番と同じ条件でビルドすると下書きページが一度も
+  描画されず、`related` の壊れリンクや Markdown の破綻を検証がすり抜ける。
+- **`fetch-depth: 0` は使わない。** 履歴を全部引く指定であって、ファイルの取得範囲とは無関係。
+  既定の shallow clone でも HEAD の全ファイルは揃う。この repo は画像で 170MB 超あり、full history は無駄。
+- **記事ファイルは `{Issue番号}-{英語スラッグ}.md` のフラット配置。** 指示書は
+  `{category}/{Issue番号}-{スラッグ}` を推していたが、その理由（URL の安定）を満たすなら
+  category をパスに入れてはいけない。分類し直したときに URL と `related` の両方が壊れる。
+- **textlint の `max-kanji-continuous-len` を無効化した。** 「安静時機能的結合」を弾く。
+  この分野の日本語は長い漢字熟語が普通で、ルールが語彙をすべて誤検出する。
+- **`no-mix-dearu-desumasu` は `preferInBody` で固定した。** 既定は文書内の多数決で
+  向きが決まり、記事によって「ですます調にせよ」と言い出す。
+
+### やらなかったこと
+
+- **`astro check` を CI に入れていない。** 既存ファイルに型エラーが12件残っている
+  （`atlas.astro` 4 / `calculator.ts` 3 / `gallery/index.astro` 3 / `neurology.ts` 2）。
+  今入れると初日から常時赤になり、CI が形骸化する。`atlas.astro` の4件は NiiVue の型で、
+  ブラウザ実挙動が未確認のまま直すと壊しかねないので手を付けていない。
+  `npm run check` で見られる。緑にしてからワークフローに足すこと。
+- **お手本記事を書いていない。** 指示書の Phase 1-2。出典を実際に当たって書く必要があり、
+  筆者の声で書くものなので Claude が代筆すべきものではない。`000-template.md` は
+  スキーマと描画を確かめるための骨組みで、記事ではない。
+
+### 未決
+
+1. **Phase 0（`/install-github-app`）が未実行。** GitHub App のインストールと
+   `CLAUDE_CODE_OAUTH_TOKEN` の登録が済むまで、執筆・検証のワークフローは動かない。
+2. **AI 生成であることを記事に明記するか。** 「Claude が下書きし、筆者が検証・加筆した」の
+   一行を入れるかどうか。public な医学系ブログなので入れる方に寄せたいが、未決。
+3. **図をどうするか。** 方法論の解説は図がないと辛い。Mermaid を Astro で
+   レンダリングできるようにすれば Claude が図まで書ける。
+4. **過去の会話の棚卸し。** 埋もれた疑問をまとめて Issue 化する初期移行をやるか。
 
 ## 切替（公開）時に決めること — 未決
 

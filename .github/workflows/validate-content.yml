@@ -1,0 +1,44 @@
+name: Validate content
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # fetch-depth は既定（shallow）でよい。HEAD の全ファイルは揃うので、
+      # 履歴を引く必要はない。この repo は画像で 170MB 超あり、full history は無駄。
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 下書きを含めてビルドする。PR の中身は必ず draft: true なので、
+      # 本番と同じ条件（draft 除外）でビルドすると、下書きページが一度も
+      # 描画されず related の壊れリンクや Markdown の破綻を見逃す。
+      #
+      # zod スキーマ違反（出典2件未満、一次資料ゼロ、related の不在 slug）は
+      # ここで落ちる。
+      - name: Build with drafts
+        run: npm run build:ci
+
+      - name: textlint
+        run: npm run lint:text
+
+      # `astro check`（型チェック）はここに入れていない。
+      # 既存ファイルに 12 件の型エラーが残っており（atlas.astro 4 / calculator.ts 3 /
+      # gallery 3 / neurology.ts 2）、今入れると初日から常時赤になる。
+      # 赤いままの CI は誰も見なくなり、検証の仕組みごと死ぬ。
+      # 先に `npm run check` を緑にしてから、このステップを足すこと。

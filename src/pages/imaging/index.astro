@@ -1,0 +1,106 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import {
+  getImagingPosts,
+  includeDrafts,
+  CATEGORY_LABEL,
+} from "../../lib/imaging";
+
+const posts = await getImagingPosts();
+const published = posts.filter((p) => !p.data.draft);
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat("ja-JP", { dateStyle: "long" }).format(d);
+
+// 本番では draft を含まないので published.length と一致する。
+// dev / CI では下書きも並ぶため、内訳が分かるようにしておく。
+const meta = includeDrafts
+  ? `全 ${posts.length} 本（公開 ${published.length} / 下書き ${posts.length - published.length}）`
+  : `全 ${published.length} 本`;
+---
+
+<Base title="Imaging | TonKurA" wide>
+  <PageHeader title="Imaging" meta={meta} />
+
+  <p class="lead">
+    神経画像解析の方法論についての解説。疑問ひとつにつき記事ひとつ。
+  </p>
+
+  {posts.length === 0 && <p class="empty">まだ記事がない。</p>}
+
+  <ul class="list">
+    {
+      posts.map((post) => (
+        <li>
+          <a href={`/imaging/${post.id}`} class="title">
+            {post.data.title}
+          </a>
+          <p class="desc">{post.data.description}</p>
+          <div class="meta">
+            <time datetime={post.data.pubDate.toISOString()}>
+              {fmt(post.data.pubDate)}
+            </time>
+            <span class="tag">{CATEGORY_LABEL[post.data.category]}</span>
+            {post.data.draft && <span class="draft">下書き</span>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <style>
+    .lead {
+      color: var(--fg-muted);
+      margin: 0 0 2rem;
+    }
+    .empty {
+      color: var(--fg-muted);
+    }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .list li {
+      padding: 1.3rem 1rem;
+      margin-inline: -1rem;
+      border-top: 1px solid var(--border);
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+    .list li:hover {
+      background: var(--bg-subtle);
+    }
+    .title {
+      display: inline-block;
+      font-size: var(--step-1);
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .desc {
+      color: var(--fg-muted);
+      margin: 0.4rem 0 0.6rem;
+    }
+    .meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+    }
+    .tag {
+      background: var(--bg-subtle);
+      color: var(--fg-muted);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+      border: 1px solid var(--border);
+    }
+    .draft {
+      border: 1px dashed var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.65rem;
+    }
+  </style>
+</Base>

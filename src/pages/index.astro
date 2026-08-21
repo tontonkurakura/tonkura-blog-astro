@@ -2,8 +2,10 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 import { getRealQuestions } from "../lib/wiki";
+import { getImagingPosts } from "../lib/imaging";
 
 const posts = await getCollection("blog");
+const imaging = await getImagingPosts();
 const questions = await getRealQuestions();
 
 const sections = [
@@ -11,6 +13,7 @@ const sections = [
   { href: "/database", title: "Database", count: null },
   { href: "/neurology", title: "Notes", count: null },
   { href: "/blog", title: "Blog", count: posts.length },
+  { href: "/imaging", title: "Imaging", count: imaging.length },
   { href: "/tools", title: "Tools", count: null },
   { href: "/gallery", title: "Gallery", count: null },
 ];
