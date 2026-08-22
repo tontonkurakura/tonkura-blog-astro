@@ -1,0 +1,18 @@
+{
+  "label": "前頭葉機能障害",
+  "order": [
+    "alien-hand-syndrome.md",
+    "perseveration.md",
+    "personality-change.md",
+    "motivational-disorder.md",
+    "emotional-incontinence.md",
+    "grasping-reflex.md",
+    "antagonistic-apraxia.md",
+    "disinhibition.md",
+    "environmental-dependency.md",
+    "executive-dysfunction.md",
+    "motor-impersistence.md",
+    "motor-initiation-difficulty.md",
+    "compulsive-tool-use.md"
+  ]
+}

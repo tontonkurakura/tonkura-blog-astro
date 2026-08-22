@@ -1,0 +1,10 @@
+{
+  "label": "中枢神経",
+  "order": [
+    "claustrum.md",
+    "cerebral-cortex.md",
+    "neural-pathways.md",
+    "cranial-nerves.md",
+    "thalamus.md"
+  ]
+}

@@ -1,0 +1,14 @@
+---
+title: "前鋸筋"
+Nerve:
+  - 長胸神経
+Segment:
+  - C5
+  - C6
+  - C7
+English: Serratus anterior
+中心髄節: C5
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

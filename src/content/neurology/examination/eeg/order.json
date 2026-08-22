@@ -1,0 +1,9 @@
+{
+  "label": "EEG",
+  "order": [
+    "sleep-eeg",
+    "eeg.md",
+    "posterior-dominant-rhythm.md",
+    "paroxysmal-abnormalities.md"
+  ]
+}

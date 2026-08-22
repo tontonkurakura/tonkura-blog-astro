@@ -1,0 +1,11 @@
+{
+  "label": "Parkinson病",
+  "order": [
+    "pd.md",
+    "dbs-for-pd.md",
+    "pd-treatment.md",
+    "pd-diagnosis.md",
+    "pd-non-motor-symptoms.md",
+    "pd-cognitive-impairment.md"
+  ]
+}

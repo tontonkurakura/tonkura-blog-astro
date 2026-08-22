@@ -1,0 +1,12 @@
+---
+title: "母指対立筋"
+Nerve:
+  - 正中神経
+Segment:
+  - C8
+  - T1
+English: Opponens Pollicis
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

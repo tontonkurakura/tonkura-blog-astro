@@ -1,0 +1,13 @@
+---
+title: "足部の小筋群"
+English: Small muscles of the foot
+Nerve:
+  - 内側足底神経
+  - 外側足底神経
+Segment:
+  - S1
+  - S2
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

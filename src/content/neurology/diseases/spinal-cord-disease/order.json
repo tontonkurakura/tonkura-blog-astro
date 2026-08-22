@@ -1,0 +1,10 @@
+{
+  "label": "脊髄疾患",
+  "order": [
+    "htlv-1-associated-myelopathy.md",
+    "spinal-cord-disease.md",
+    "template.md",
+    "intramedullary-avm.md",
+    "spinal-dural-avf.md"
+  ]
+}

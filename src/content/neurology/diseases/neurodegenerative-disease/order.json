@@ -1,0 +1,14 @@
+{
+  "label": "神経変性疾患",
+  "order": [
+    "ftd",
+    "msa-multiple-system-atrophy",
+    "parkinson-disease",
+    "alzheimer-disease.md",
+    "hdls.md",
+    "neurodegenerative-disease.md",
+    "parkinson-disease.md",
+    "amyotrophic-lateral-sclerosis.md",
+    "progressive-supranuclear-palsy.md"
+  ]
+}

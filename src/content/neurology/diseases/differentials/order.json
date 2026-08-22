@@ -1,0 +1,21 @@
+{
+  "label": "Differentials",
+  "order": [
+    "differentials.md",
+    "letm-longitudinally-extensive-transverse-myelitis.md",
+    "lower-motor-neuron-syndromes.md",
+    "small-fiber-neuropathy.md",
+    "ufiberlesion.md",
+    "hypophysitis.md",
+    "bilateral-thalamic-lesions.md",
+    "middle-cerebellar-peduncle-lesions.md",
+    "oculomotor-nerve-palsy.md",
+    "multiple-mononeuropathy.md",
+    "polyneuropathy.md",
+    "dentate-nucleus-lesions.md",
+    "neuronopathy.md",
+    "spastic-paraparesis.md",
+    "leukoencephalopathy.md",
+    "motor-and-sensory-neuropathies.md"
+  ]
+}

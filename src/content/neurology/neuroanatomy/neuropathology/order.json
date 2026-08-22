@@ -1,0 +1,14 @@
+{
+  "label": "神経病理",
+  "order": [
+    "abnormal-structures",
+    "neurodegenerative-pathology",
+    "cerebral-infarction-pathology",
+    "dementia-clinical-subtypes",
+    "neuropathology.md",
+    "immune-mediated-necrotizing-myopathy.md",
+    "muscle-fiber-types.md",
+    "muscle-biopsy.md",
+    "muscle-pathology.md"
+  ]
+}

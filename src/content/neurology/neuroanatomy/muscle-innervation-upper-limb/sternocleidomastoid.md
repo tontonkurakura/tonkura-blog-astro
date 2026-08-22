@@ -1,0 +1,12 @@
+---
+title: "胸鎖乳突筋"
+Nerve:
+  - 副神経
+Segment:
+  - C2
+  - C3
+English: Sternocleidomastoid (SCM)
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

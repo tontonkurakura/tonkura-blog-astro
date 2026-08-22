@@ -1,0 +1,17 @@
+{
+  "label": "失語症",
+  "order": [
+    "broca-aphasia.md",
+    "wernicke-aphasia.md",
+    "conduction-aphasia.md",
+    "global-aphasia.md",
+    "anomic-aphasia.md",
+    "mixed-transcortical-aphasia.md",
+    "apraxia-of-speech.md",
+    "subcortical-aphasia.md",
+    "optic-aphasia.md",
+    "gogi-aphasia.md",
+    "transcortical-sensory-aphasia.md",
+    "transcortical-motor-aphasia.md"
+  ]
+}

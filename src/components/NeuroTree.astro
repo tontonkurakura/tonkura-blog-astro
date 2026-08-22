@@ -14,12 +14,12 @@ const { nodes, open = false } = Astro.props;
     nodes.map((node) =>
       node.slug ? (
         <li class="leaf">
-          <a href={`/neurology/${node.slug}`}>{node.name}</a>
+          <a href={`/neurology/${node.slug}`}>{node.label ?? node.name}</a>
         </li>
       ) : (
         <li class="branch">
           <details open={open}>
-            <summary>{node.name}</summary>
+            <summary>{node.label ?? node.name}</summary>
             <NeuroTree nodes={node.children} />
           </details>
         </li>

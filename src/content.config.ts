@@ -61,6 +61,9 @@ const database = defineCollection({
 const neurology = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/neurology" }),
   schema: z.object({
+    // ファイル名を英小文字スラッグに統一した際、表示名（日本語）をここへ退避した。
+    // ページの H1 とツリーの葉ラベルはこの title を使う。id（＝パス）からは作らない。
+    title: z.string().optional(),
     lastmod: z.coerce.date().optional(),
     last_edited: z.coerce.date().optional(),
   }),

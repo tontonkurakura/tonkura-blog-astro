@@ -1,0 +1,11 @@
+{
+  "label": "診察",
+  "order": [
+    "topographical-disorientation.md",
+    "apraxia.md",
+    "agnosia.md",
+    "aphasia.md",
+    "symptom-screening.md",
+    "color-perception-disorder.md"
+  ]
+}

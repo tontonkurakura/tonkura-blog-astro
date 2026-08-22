@@ -1,0 +1,8 @@
+{
+  "label": "末梢性疾患",
+  "order": [
+    "multifocal-motor-neuropathy",
+    "guillain-barre-syndrome.md",
+    "cidp.md"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "label": "Symptoms",
+  "order": [
+    "numbness",
+    "symptomatology.md",
+    "numbness.md",
+    "dizziness.md",
+    "examination-methods-summary.md",
+    "assets",
+    "musical-hallucination.md"
+  ]
+}

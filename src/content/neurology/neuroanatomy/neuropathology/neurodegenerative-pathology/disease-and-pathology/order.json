@@ -1,0 +1,18 @@
+{
+  "label": "神経変性疾患と病理",
+  "order": [
+    "ad",
+    "als-ftld-tdp",
+    "cbd",
+    "msa",
+    "pd-dlb",
+    "psp",
+    "agd.md",
+    "diffuse-neurofibrillary-tangles-with-calcification.md",
+    "dlb.md",
+    "picks-disease.md",
+    "prion-disease.md",
+    "sd-nft.md",
+    "neurodegenerative-pathology-database.md"
+  ]
+}

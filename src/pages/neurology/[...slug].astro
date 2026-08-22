@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
+import { sectionLabel } from "../../lib/neurology";
 import Base from "../../layouts/Base.astro";
 import "../../styles/prose.css";
 
@@ -15,8 +16,9 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const segments = entry.id.split("/");
-const title = segments[segments.length - 1];
-const section = segments[0];
+// ファイル名は英小文字スラッグなので、表示名は frontmatter の title を優先する。
+const title = entry.data.title ?? segments[segments.length - 1];
+const section = sectionLabel(segments[0]);
 ---
 
 <Base title={`${title} | 神経内科ノート`}>

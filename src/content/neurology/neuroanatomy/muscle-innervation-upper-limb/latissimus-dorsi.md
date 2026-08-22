@@ -1,0 +1,16 @@
+---
+title: "広背筋"
+Nerve:
+  - 胸背神経
+Segment:
+  - C6
+  - C7
+  - C8
+English: Latissimus Dorsi
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+
+中心髄節:: C7
+![Pasted image 20240803184813.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184813.png)
+![Pasted image 20240803184826.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184826.png)

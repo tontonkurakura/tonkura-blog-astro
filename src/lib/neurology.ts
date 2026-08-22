@@ -5,21 +5,39 @@ import path from "node:path";
 const ROOT = path.resolve("src/content/neurology");
 
 export interface TreeNode {
-  name: string; // 表示名（ディレクトリ名 or ファイル basename）
+  name: string; // スラッグ（英小文字）。order.json との照合と並べ替えに使う
+  label?: string; // 表示名（日本語）。葉は frontmatter title、枝は order.json の label
   slug?: string; // 葉（.md）のときの entry.id
   children: TreeNode[];
 }
 
-/** そのディレクトリの order.json（子の並び順）。拡張子 .md は落として比較する。 */
-function readOrder(dirRel: string): string[] {
+/** order.json を読む。order は拡張子 .md を落として比較する。 */
+function readOrderFile(dirRel: string): { label?: string; order: string[] } {
   const f = path.join(ROOT, dirRel, "order.json");
-  if (!fs.existsSync(f)) return [];
+  if (!fs.existsSync(f)) return { order: [] };
   try {
-    const arr = JSON.parse(fs.readFileSync(f, "utf8")).order as string[];
-    return (arr ?? []).map((n) => n.replace(/\.md$/, ""));
+    const j = JSON.parse(fs.readFileSync(f, "utf8"));
+    return {
+      label: j.label,
+      order: ((j.order ?? []) as string[]).map((n) => n.replace(/\.md$/, "")),
+    };
   } catch {
-    return [];
+    return { order: [] };
   }
+}
+
+function readOrder(dirRel: string): string[] {
+  return readOrderFile(dirRel).order;
+}
+
+/**
+ * ディレクトリの表示名。
+ *
+ * ファイル名・ディレクトリ名を英小文字スラッグに統一したとき、日本語の表示名を
+ * 各 order.json の label に退避した。無ければスラッグをそのまま出す。
+ */
+export function sectionLabel(dirRel: string): string {
+  return readOrderFile(dirRel).label ?? dirRel;
 }
 
 /** order.json を反映して子を並べ替える。定義に無いものは後ろに五十音順で。 */
@@ -47,10 +65,16 @@ export async function buildNeurologyTree(): Promise<TreeNode[]> {
       const isLeaf = i === parts.length - 1;
       let child = node.children.find((c) => c.name === part);
       if (!child) {
+        // name はスラッグ（並べ替えと照合に使う）。label が実際の表示名。
         child = { name: part, children: [] };
         node.children.push(child);
       }
-      if (isLeaf) child.slug = entry.id;
+      if (isLeaf) {
+        child.slug = entry.id;
+        child.label = entry.data.title ?? part;
+      } else {
+        child.label ??= sectionLabel(parts.slice(0, i + 1).join("/"));
+      }
       node = child;
     });
   }

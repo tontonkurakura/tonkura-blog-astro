@@ -1,0 +1,9 @@
+{
+  "label": "失読・失書・失算",
+  "order": [
+    "acalculia.md",
+    "alexia-agraphia.md",
+    "pure-agraphia.md",
+    "pure-alexia.md"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "label": "脳血管障害",
+  "order": [
+    "convexal-sah-csah",
+    "cerebrovascular-disease.md",
+    "disease-names.md",
+    "cerebral-artery-dissection.md",
+    "cerebral-venous-sinus-thrombosis.md"
+  ]
+}

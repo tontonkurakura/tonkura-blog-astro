@@ -1,0 +1,13 @@
+---
+title: "房状アストロサイト"
+カテゴリー:
+  - リン酸化タウ
+疾患:
+  - '[進行性核上性麻痺](/neurology/diseases/neurodegenerative-disease/progressive-supranuclear-palsy)'
+蓄積する場所:
+  - アストロサイト
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/異常構造物/房状アストロサイト/media/Untitled.png)

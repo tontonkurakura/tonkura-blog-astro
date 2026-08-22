@@ -1,0 +1,8 @@
+{
+  "label": "中枢性疾患",
+  "order": [
+    "mogad.md",
+    "multiple-sclerosis.md",
+    "neuromyelitis-optica.md"
+  ]
+}

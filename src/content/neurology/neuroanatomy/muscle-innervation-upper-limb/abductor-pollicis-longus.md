@@ -1,0 +1,12 @@
+---
+title: "長母指外転筋"
+Nerve:
+  - 後骨間神経
+Segment:
+  - C7
+  - C8
+English: Abductor Pollicis Longus (APL)
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

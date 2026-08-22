@@ -1,0 +1,27 @@
+{
+  "label": "MMT",
+  "order": [
+    "mmt.md",
+    "forearm-flexors.md",
+    "wrist-radial-deviation.md",
+    "finger-abduction.md",
+    "finger-extension.md",
+    "finger-flexion.md",
+    "great-toe-extension.md",
+    "flexor-digitorum-profundus-ii-iii.md",
+    "flexor-digitorum-profundus-iv-v.md",
+    "abductor-pollicis-brevis.md",
+    "elbow-extension.md",
+    "elbow-flexion.md",
+    "hip-extension.md",
+    "hip-adduction.md",
+    "hip-flexion.md",
+    "shoulder-abduction.md",
+    "brachioradialis.md",
+    "knee-extension.md",
+    "knee-flexion.md",
+    "ankle-eversion.md",
+    "ankle-plantarflexion.md",
+    "ankle-dorsiflexion.md"
+  ]
+}

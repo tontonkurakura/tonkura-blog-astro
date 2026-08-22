@@ -1,10 +1,10 @@
 {
   "order": [
-    "Neuroanatomy",
-    "Diseases",
-    "Symptoms",
-    "Examination",
-    "Treatment",
+    "neuroanatomy",
+    "diseases",
+    "symptoms",
+    "examination",
+    "treatment",
     "template.md"
   ]
 }

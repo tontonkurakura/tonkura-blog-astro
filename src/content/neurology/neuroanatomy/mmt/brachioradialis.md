@@ -1,0 +1,12 @@
+---
+title: "腕橈骨筋"
+Root:
+  - C6
+Muscle:
+  - 腕撓骨筋
+Nerve:
+  - 橈骨神経
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

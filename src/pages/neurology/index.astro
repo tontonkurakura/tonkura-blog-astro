@@ -16,7 +16,7 @@ const total = (await getCollection("neurology")).length;
     {
       tree.map((section) => (
         <section>
-          <h2>{section.name}</h2>
+          <h2>{section.label ?? section.name}</h2>
           <NeuroTree nodes={section.children} />
         </section>
       ))

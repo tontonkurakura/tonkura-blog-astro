@@ -1,0 +1,10 @@
+{
+  "label": "筋疾患",
+  "order": [
+    "autoimmune-myositis",
+    "cpeo.md",
+    "fshd.md",
+    "myotonic-dystrophy.md",
+    "mitochondrial-encephalomyopathy.md"
+  ]
+}

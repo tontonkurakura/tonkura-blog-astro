@@ -1,0 +1,17 @@
+{
+  "label": "Diseases",
+  "order": [
+    "differentials",
+    "metabolic-disease",
+    "myopathy",
+    "peripheral-neuropathy",
+    "neurodegenerative-disease",
+    "spinal-cord-disease",
+    "demyelinating-disease",
+    "cerebrovascular-disease",
+    "restless-legs-syndrome.md",
+    "conversion-disorder.md",
+    "guidelines",
+    "template.md"
+  ]
+}

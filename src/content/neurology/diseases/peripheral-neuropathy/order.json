@@ -1,0 +1,18 @@
+{
+  "label": "末梢神経障害",
+  "order": [
+    "entrapment-neuropathy",
+    "charcot-marie-tooth-disease.md",
+    "small-fiber-neuropathy.md",
+    "alcoholic-neuropathy.md",
+    "vitamin-b12-deficiency-neuropathy.md",
+    "vitamin-b1-deficiency-neuropathy.md",
+    "anti-mag-neuropathy.md",
+    "diabetic-neuropathy.md",
+    "erythromelalgia.md",
+    "folate-deficiency-neuropathy.md",
+    "drug-induced-neuropathy.md",
+    "neuralgic-amyotrophy.md",
+    "brachial-plexopathy.md"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "label": "認知の障害",
+  "order": [
+    "anton-syndrome.md",
+    "hemiasomatognosia.md",
+    "auditory-agnosia-broad.md",
+    "sensory-amusia.md",
+    "environmental-sound-agnosia.md",
+    "anosognosia.md",
+    "cortical-deafness.md",
+    "prosopagnosia.md",
+    "pure-word-deafness.md",
+    "integrative-visual-agnosia.md",
+    "apperceptive-visual-agnosia.md",
+    "color-anomia.md",
+    "tactile-agnosia.md",
+    "associative-visual-agnosia.md"
+  ]
+}

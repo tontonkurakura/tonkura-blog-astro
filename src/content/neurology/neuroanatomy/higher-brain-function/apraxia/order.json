@@ -1,0 +1,13 @@
+{
+  "label": "行為の障害",
+  "order": [
+    "utilization-behavior.md",
+    "buccofacial-apraxia.md",
+    "constructional-disorder.md",
+    "imitation-behavior.md",
+    "dressing-apraxia.md",
+    "limb-kinetic-apraxia.md",
+    "ideational-apraxia.md",
+    "ideomotor-apraxia.md"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "label": "Neuroanatomy",
+  "order": [
+    "central-nervous-system",
+    "peripheral-nerves.md",
+    "brachial-plexus.md",
+    "reflexes.md",
+    "muscle-innervation-upper-limb",
+    "muscle-innervation-lower-limb",
+    "mmt",
+    "higher-brain-function",
+    "neuropathology",
+    "assets"
+  ]
+}

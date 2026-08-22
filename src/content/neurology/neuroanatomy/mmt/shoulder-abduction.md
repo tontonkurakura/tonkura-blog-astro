@@ -1,0 +1,12 @@
+---
+title: "肩関節外転"
+Root:
+  - C5
+Muscle:
+  - 三角筋
+Nerve:
+  - 腋窩神経
+lastmod: '2026-07-21'
+last_edited: 2025-02-27T00:00:00.000Z
+---
+

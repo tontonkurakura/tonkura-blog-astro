@@ -1,0 +1,22 @@
+{
+  "label": "筋・神経支配（下肢）",
+  "order": [
+    "muscle-innervation-lower-limb.md",
+    "hamstrings.md",
+    "soleus.md",
+    "gluteus-medius-and-minimus.md",
+    "hip-adductors.md",
+    "tibialis-anterior.md",
+    "gluteus-maximus.md",
+    "quadriceps-femoris.md",
+    "tibialis-posterior.md",
+    "extensor-digitorum-brevis.md",
+    "gastrocnemius.md",
+    "iliopsoas.md",
+    "intrinsic-foot-muscles.md",
+    "extensor-hallucis-longus.md",
+    "peroneus-longus-and-brevis.md",
+    "extensor-digitorum-longus.md",
+    "flexor-digitorum-and-hallucis-longus.md"
+  ]
+}
