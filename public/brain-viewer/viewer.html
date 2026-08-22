@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Slice Reference</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0a0d14;
+    font-family:system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;color:#e8eefc}
+  #app{position:fixed;inset:0}
+  #panel{position:fixed;top:14px;right:14px;width:250px;z-index:10;
+    background:rgba(16,21,33,.88);border:1px solid #2b3550;border-radius:10px;
+    padding:13px 15px;backdrop-filter:blur(4px);font-size:13px}
+  .lbl{font-size:12px;color:#93a6cf;margin:11px 0 5px}
+  .lbl:first-child{margin-top:0}
+  .seg{display:flex;gap:6px}
+  .seg button{flex:1;padding:7px 0 6px;border-radius:7px;cursor:pointer;font-size:13px;line-height:1.25;
+    border:1px solid #2b3550;background:#18233b;color:#e8eefc}
+  .seg button.on{background:#2b6fd6;border-color:#5aa0ff}
+  .seg button small{display:block;font-size:10px;color:#8fa3cc;margin-top:1px;letter-spacing:.02em}
+  .seg button.on small{color:#cfe0ff}
+  input[type=range]{width:100%}
+  .row{display:flex;justify-content:space-between;align-items:baseline}
+  .val{font-variant-numeric:tabular-nums;color:#9fb5e6}
+  label.chk{display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:13px}
+  #hud{position:fixed;left:14px;bottom:14px;z-index:10;font-size:11px;color:#8fa3cc;
+    background:rgba(16,21,33,.85);border:1px solid #2b3550;border-radius:8px;padding:8px 11px;
+    line-height:1.7}
+  #hud b{color:#cfe0ff;font-variant-numeric:tabular-nums}
+  /* SVG は幅・高さを明示しないと既定の 300x150 になり、線がクリップされる */
+  #lead{position:fixed;left:0;top:0;width:100vw;height:100vh;
+    z-index:25;pointer-events:none;display:none;overflow:visible}
+  #tip{position:fixed;z-index:30;pointer-events:none;display:none;
+    background:rgba(12,18,35,.94);border:1px solid rgba(120,160,230,.45);
+    border-radius:9px;padding:11px 15px;box-shadow:0 4px 18px rgba(0,0,0,.55)}
+  #tip .ja{font-size:19px;font-weight:600;color:#eaf1ff;line-height:1.25}
+  #tip .en{font-size:13px;color:#9ab0df;margin-top:3px}
+  #tip .gp{font-size:12px;color:#8b9dc0;margin-top:7px;display:flex;align-items:center;gap:7px}
+  #tip .sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+  #load{position:fixed;inset:0;display:grid;place-items:center;background:#0a0d14;z-index:100;
+    transition:opacity .35s ease}
+  #load.done{opacity:0;pointer-events:none}
+  #load .box{width:290px;text-align:center}
+  #load .ttl{font-size:13px;color:#cfe0ff;letter-spacing:.04em;margin-bottom:14px}
+  #load .track{height:4px;background:#1b2437;border-radius:2px;overflow:hidden}
+  #load .fill{height:100%;width:0;background:linear-gradient(90deg,#2b6fd6,#5aa0ff);
+    border-radius:2px;transition:width .18s ease}
+  #load .row{display:flex;justify-content:space-between;margin-top:9px;
+    font-size:11px;color:#7d8fb5;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="load"><div class="box">
+  <div class="ttl">Brain Slice Reference</div>
+  <div class="track"><div class="fill" id="lfill"></div></div>
+  <div class="row"><span id="lwhat">準備中…</span><span id="lpct">0%</span></div>
+</div></div>
+
+<div id="panel">
+  <div class="lbl">断面</div>
+  <div class="seg" id="axis">
+    <button data-p="sagittal">矢状断<small>Sagittal</small></button>
+    <button data-p="coronal">冠状断<small>Coronal</small></button>
+    <button data-p="axial" class="on">軸位断<small>Axial</small></button>
+  </div>
+
+  <div class="lbl row"><span>位置 (world mm)</span><span class="val" id="pv">0.0</span></div>
+  <input type="range" id="pos">
+
+  <div class="lbl">表示</div>
+  <label class="chk"><input type="checkbox" id="cLabel" checked> 領域色を重ねる</label>
+  <label class="chk"><input type="checkbox" id="cClip" checked> モデルを断面で切る</label>
+  <div class="seg" style="margin-top:8px;"><button id="flip">切る向きを反転</button></div>
+</div>
+
+<div id="hud"></div>
+<svg id="lead"><line id="leadline" stroke="rgba(150,185,240,.75)" stroke-width="1.4"/>
+<circle id="leaddot" r="3.2" fill="none" stroke="rgba(190,215,255,.95)" stroke-width="1.6"/></svg>
+<div id="tip"></div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   このファイルの主張
+
+   座標変換関数が 1 つもない。
+
+   メッシュの頂点は world RAS(mm) で格納されている。断面の位置も world
+   RAS(mm)。スライス画像のファイル名も world RAS(mm)。すべて同じ数値なので、
+   「モデル座標系」と「画像座標系」を相互変換する必要がそもそも発生しない。
+
+   変換式を書きたくなったら、どこかで別の座標系を持ち込んでいる。
+   探すべきは変換式ではなく、その持ち込みのほう。
+
+   glTF は Y-up が慣習だが、頂点を回転させて焼き込むと上の性質が壊れる。
+   代わりにカメラの up を +Z にしてある（下の camera.up）。データは RAS のまま。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const Q = new URLSearchParams(location.search);
+const ROOT  = Q.get('assets') || 'assets';   // スライス画像とメタデータ
+const MODEL = Q.get('model')  || 'brain.glb'; // メッシュ（この HTML からの相対）
+const AX = { sagittal:'x', coronal:'y', axial:'z' };
+const IDX = { x:0, y:1, z:2 };
+
+const meta = await (await fetch(`${ROOT}/slice_metadata.json`)).json();
+const labels = await (await fetch('labels.json')).json();
+
+/* 断面上のホバー判定は、ラベル画像の画素の色から領域を逆引きして行う。
+   ただし FreeSurfer の LUT は左右の同名構造に同じ色を割り当てているため
+   （95 領域に対して色は 53 種）、色だけでは左右が決まらない。
+   当たった点の world x の符号で判別する。中央構造は色が一意なので問題ない。 */
+const colorKey = (r, g, b) => (r << 16) | (g << 8) | b;
+const byColor = new Map();
+for (const [name, v] of Object.entries(labels)) {
+  if (!v.color) continue;
+  const k = colorKey(...v.color);
+  if (!byColor.has(k)) byColor.set(k, []);
+  byColor.get(k).push(name);
+}
+function regionFromColor(r, g, b, worldX){
+  const cands = byColor.get(colorKey(r, g, b));
+  if (!cands) return null;
+  if (cands.length === 1) return cands[0];
+  const L = worldX < 0;
+  return cands.find(n => n.startsWith(L ? 'Left-' : 'Right-') ||
+                         n.startsWith(L ? 'ctx-lh-' : 'ctx-rh-')) || cands[0];
+}
+
+/* 初期ロードが終わるまで操作させない。
+   読み込み中に回せてしまうと、断面が出ていない状態で触ることになり、
+   何が起きているのか分からない。 */
+const loadEl = document.getElementById('load');
+const parts = new Map();                 // key -> { loaded, total }
+let uiReady = false;
+
+function setProgress(key, loaded, total, what){
+  parts.set(key, { loaded, total });
+  let l = 0, t = 0;
+  for (const v of parts.values()) { l += v.loaded; t += v.total; }
+  const pct = t ? Math.min(100, Math.round(l / t * 100)) : 0;
+  document.getElementById('lfill').style.width = pct + '%';
+  document.getElementById('lpct').textContent = pct + '%';
+  if (what) document.getElementById('lwhat').textContent = what;
+}
+
+function finishLoading(){
+  if (uiReady) return;
+  uiReady = true;
+  controls.enabled = true;
+  loadEl.classList.add('done');
+  setTimeout(() => loadEl.remove(), 400);
+}
+
+/* バイト単位で進捗を取りたいので fetch で読む。
+   取得した Blob を objectURL 経由で TextureLoader に渡すことで、
+   二重ダウンロードを避けつつ、上下反転などの扱いを TextureLoader に任せる
+   （ここを自前でやると、検証済みの UV 計算が崩れる）。 */
+async function fetchBlob(url, key, what, track){
+  const res = await fetch(url);
+  const total = +res.headers.get('content-length') || 0;
+  if (track) setProgress(key, 0, total, what);
+  const reader = res.body.getReader();
+  const chunks = []; let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value); got += value.length;
+    if (track) setProgress(key, got, total, what);
+  }
+  return new Blob(chunks);
+}
+
+const app = document.getElementById('app');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.localClippingEnabled = true;
+app.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 1, 4000);
+camera.up.set(0,0,1);                      // ← RAS は Z が上。頂点は回転させない
+camera.position.set(320, -290, 210);
+scene.add(camera);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.enableZoom = false;         // ホイールは断面めくりに使うので自前で扱う
+controls.enabled = false;            // ロード完了まで操作させない
+
+scene.add(new THREE.AmbientLight(0xffffff, .85));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x4c566e, 1.3));
+const head = new THREE.DirectionalLight(0xffffff, 1.4); camera.add(head);
+for (const [p,i] of [[[1,1,1],.5],[[-1,-.4,-1],.45],[[0,1,-.6],.35]]) {
+  const d = new THREE.DirectionalLight(0xffffff, i); d.position.set(...p); scene.add(d);
+}
+
+/* ---- 断面プレーンとクリップ平面 ------------------------------------- */
+const clip = new THREE.Plane(new THREE.Vector3(0,-1,0), 0);
+const planeNormal = new THREE.Vector3(0,-1,0);
+const planePoint  = new THREE.Vector3();
+
+/* どちら側を切り落とすか。
+   かつてはカメラ位置から毎フレーム決めていたが、カメラが断面をまたぐ瞬間に
+   法線が真逆になり、回転中に見えている半分が突然入れ替わっていた
+   （水平に一周させると 2 箇所で反転する）。カメラは滑らかに動いていても
+   モデルが飛んで見えるため、自動判定はやめた。
+
+   既定は断面を切り替えた時点のカメラ位置から決め、以後は固定する。
+   反対側を見たいときは UI から明示的に反転させる。 */
+let clipSide = 1;
+
+function applyClip(){
+  clip.normal.copy(planeNormal).multiplyScalar(clipSide);
+  clip.constant = -clipSide * planeNormal.dot(planePoint);
+}
+
+function autoPickClipSide(){
+  const v = planePoint.clone().sub(camera.position);
+  clipSide = Math.sign(planeNormal.dot(v)) || 1;
+  applyClip();
+}
+
+/* 断面は「T1 の板」と「ラベルの板」を重ねて表現する。
+   canvas 合成やカスタムシェーダを使わないので、描画系の差異に強い。
+   ラベル板は半透明で、深度を書かず、polygonOffset で手前に寄せてある
+   （同一平面なので、これが無いと Z ファイティングで斑になる）。 */
+const texLoader = new THREE.TextureLoader();
+
+/* 断面画像はアトラス（全スライスを敷き詰めた1枚の大画像）で持つ。
+
+   1枚ずつ HTTP で取りに行く作りだと、ホイールを速く回したときに読み込みが
+   追いつかず、断面が前の画像のまま滑る。前の画像を出したまま待つ小細工では
+   症状が変わるだけで、原因は「めくるたびに取りに行く」設計そのものにある。
+
+   アトラスなら、その断面について最初に一度読むだけ。以降のめくりは
+   UV オフセットを変えるだけで、GPU 上のデータは一切動かない。
+   **読み込み待ちが原理的に発生しない。**
+
+   タイルの並びは index = row * cols + col（左上から右へ、行は下へ）。
+   three.js は既定でテクスチャを上下反転して読むので、v 方向のオフセットは
+   上下を入れ替えて計算する。 */
+const atlasCache = new Map();          // plane -> { t1, label, cols, rows, promise }
+
+function loadAtlas(plane){
+  const hit = atlasCache.get(plane);
+  if (hit) return hit;
+  const A = meta.planes[plane].atlas;
+  const e = { cols:A.cols, rows:A.rows, t1:null, label:null, promise:null };
+  const track = !uiReady;              // 裏の先読みは進捗に混ぜない
+  const one = async (url, nearest, key, what) => {
+    const blob = await fetchBlob(`${ROOT}/${url}`, key, what, track);
+    return new Promise(res => {
+      const u = URL.createObjectURL(blob);
+      texLoader.load(u, t => {
+        URL.revokeObjectURL(u);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.generateMipmaps = false;
+        // ラベルは ID であって輝度ではない。線形補間すると存在しない領域の色が生まれる
+        t.minFilter = t.magFilter = nearest ? THREE.NearestFilter : THREE.LinearFilter;
+        t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+        t.repeat.set(1 / A.cols, 1 / A.rows);
+        res(t);
+      }, undefined, () => { URL.revokeObjectURL(u); res(null); });
+    });
+  };
+  e.promise = Promise.all([
+      one(A.t1, false, `${plane}-t1`, '読み込み中'),
+      one(A.label, true, `${plane}-lab`, '読み込み中'),
+    ]).then(([x, y]) => { e.t1 = x; e.label = y; return e; });
+  atlasCache.set(plane, e);
+  return e;
+}
+
+/* ホバー判定用に、表示中のタイル（256x256）だけを canvas に取り出す。
+   アトラス全体(4096x4096)を展開すると 1 断面で 64MB 使うので、必要な 1 枚だけ。 */
+const lblCanvas = document.createElement('canvas');
+const lblCtx = lblCanvas.getContext('2d', { willReadFrequently:true });
+let lblData = null, lblTile = [0, 0];
+
+function readLabelTile(e, i){
+  if (!e.label || !e.label.image) return;
+  const [tw, th] = meta.planes[state.plane].atlas.tile;
+  lblCanvas.width = tw; lblCanvas.height = th;
+  lblCtx.clearRect(0, 0, tw, th);
+  lblCtx.drawImage(e.label.image, (i % e.cols) * tw, Math.floor(i / e.cols) * th,
+                   tw, th, 0, 0, tw, th);
+  lblData = lblCtx.getImageData(0, 0, tw, th);
+  lblTile = [tw, th];
+}
+
+function setTile(tex, i, cols, rows){
+  tex.offset.set((i % cols) / cols, 1 - (Math.floor(i / cols) + 1) / rows);
+}
+
+const t1Mat = new THREE.MeshBasicMaterial({
+  side:THREE.DoubleSide, toneMapped:false, transparent:true, depthWrite:false
+});
+const labMat = new THREE.MeshBasicMaterial({
+  side:THREE.DoubleSide, toneMapped:false, transparent:true, opacity:.55,
+  depthWrite:false, polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-1
+});
+const sliceMesh = new THREE.Mesh(new THREE.PlaneGeometry(1,1), t1Mat);
+sliceMesh.renderOrder = 2;
+sliceMesh.visible = false;   // 最初の画像が読めるまで出さない
+const labMesh   = new THREE.Mesh(sliceMesh.geometry, labMat);
+labMesh.renderOrder = 3;
+sliceMesh.add(labMesh);
+scene.add(sliceMesh);
+
+// world 軸の指定 ("+x"/"-z" 等) を単位ベクトルにする
+function dir(spec){
+  const v = new THREE.Vector3();
+  v.setComponent(IDX[spec[1]], spec[0]==='+' ? 1 : -1);
+  return v;
+}
+
+// その断面で、画像の列方向・行方向が world 上で張る範囲
+function span(axisLetter){
+  const p = Object.keys(AX).find(k => AX[k]===axisLetter);
+  const w = meta.planes[p].world_coords;
+  return { lo:w[0], hi:w[w.length-1], mid:(w[0]+w[w.length-1])/2 };
+}
+
+function layoutPlane(plane, world){
+  const P = meta.planes[plane];
+  const colD = dir(P.col_axis), rowD = dir(P.row_axis);
+  // 画像の行は下向きに増えるが、プレーンのローカル +Y は上向き。よって反転する
+  const upD = rowD.clone().negate();
+  const nD  = new THREE.Vector3().crossVectors(colD, upD).normalize();
+
+  const cs = span(P.col_axis[1]), rs = span(P.row_axis[1]);
+  sliceMesh.geometry.dispose();
+  const g = new THREE.PlaneGeometry(cs.hi-cs.lo, rs.hi-rs.lo);
+  sliceMesh.geometry = g; labMesh.geometry = g;
+  sliceMesh.setRotationFromMatrix(new THREE.Matrix4().makeBasis(colD, upD, nD));
+
+  const c = new THREE.Vector3();
+  c.setComponent(IDX[P.col_axis[1]], cs.mid);
+  c.setComponent(IDX[P.row_axis[1]], rs.mid);
+  c.setComponent(IDX[AX[plane]], world);      // ← 断面位置は world 座標そのもの
+  sliceMesh.position.copy(c);
+
+  // クリップ平面も同じ world 座標に置く。同じ変数から駆動するのが要点で、
+  // 別々に計算すると必ずずれる
+  planeNormal.copy(nD); planePoint.copy(c);
+  applyClip();
+}
+
+/* ---- テクスチャ ------------------------------------------------------ */
+const meshByName = new Map();     // ノード名 -> メッシュ（ホバーの強調に使う）
+const state = { plane: (Q.get('plane')||'axial'), world:{x:0,y:0,z:0}, clip:true };
+
+function sliceIndex(plane, v){
+  const w = meta.planes[plane].world_coords;
+  let bi = 0, bd = Infinity;
+  for (let i=0;i<w.length;i++){ const d = Math.abs(w[i]-v); if (d<bd){bd=d;bi=i;} }
+  return bi;
+}
+
+/* ホイール = 断面めくり。Shift で 10 枚単位、Ctrl/⌘ でズーム。
+   3D ビューアの慣習ではホイールはズームだが、断面を持つビューアでは
+   めくりに割り当てたほうが操作回数が圧倒的に少ない。 */
+function stepSlice(n){
+  const p = state.plane;
+  const w = meta.planes[p].world_coords;
+  const i = Math.min(w.length-1, Math.max(0, sliceIndex(p, state.world[AX[p]]) + n));
+  state.world[AX[p]] = w[i];
+  syncSlider(); apply();
+}
+
+function zoomBy(f){
+  const v = camera.position.clone().sub(controls.target);
+  const d = Math.min(1400, Math.max(50, v.length() * f));
+  camera.position.copy(controls.target).add(v.setLength(d));
+}
+
+function snap(plane, v){
+  const w = meta.planes[plane].world_coords;
+  let bi = 0, bd = Infinity;
+  for (let i=0;i<w.length;i++){ const d = Math.abs(w[i]-v); if (d<bd){bd=d;bi=i;} }
+  return w[bi];
+}
+const fname = (plane, w) => `${AX[plane]}_${w.toFixed(1)}.png`;
+
+/* 断面の切り替え。読み込みは発生せず、UV オフセットを変えるだけ。 */
+function showSlice(p, w){
+  const i = sliceIndex(p, w);
+  const e = loadAtlas(p);
+  const put = () => {
+    if (!e.t1 || !e.label) return;
+    if (t1Mat.map !== e.t1) {
+      t1Mat.map = e.t1; labMat.map = e.label;
+      t1Mat.needsUpdate = labMat.needsUpdate = true;
+    }
+    setTile(e.t1, i, e.cols, e.rows);
+    setTile(e.label, i, e.cols, e.rows);
+    readLabelTile(e, i);
+    computeAnchors();
+    if (hovered) setHover(null);
+    sliceMesh.visible = true;
+  };
+  if (e.t1) put(); else e.promise.then(put);
+}
+
+/* 表示中の断面が出そろったら、残りの断面のアトラスも裏で読んでおく。
+   断面を切り替えたときの待ちを無くすため。 */
+function prefetchOtherPlanes(){
+  for (const p of Object.keys(AX)) if (!atlasCache.has(p)) loadAtlas(p);
+}
+
+function apply(){
+  const p = state.plane;
+  const w = snap(p, state.world[AX[p]]);
+  state.world[AX[p]] = w;
+  layoutPlane(p, w);
+  showSlice(p, w);
+  document.getElementById('pv').textContent = w.toFixed(1);
+  const at = meta.planes[p].atlas;
+  document.getElementById('hud').innerHTML =
+    `断面 <b>${AX[p]} = ${w.toFixed(1)} mm</b> (world RAS)<br>` +
+    `画像 <b>アトラス ${at.cols}×${at.rows} のタイル ${sliceIndex(p, w)}</b><br>` +
+    `クリップ平面 <b>${AX[p]} = ${w.toFixed(1)} mm</b> — 同じ値<br>` +
+    `<span style="color:#6f82a8">座標変換は行っていない</span>`;
+}
+
+/* ---- モデル ---------------------------------------------------------- */
+/* 3Dモデルと断面アトラスは並行して読む。
+   直列にすると待ち時間が単純に足し算になるうえ、進捗バーの分母が
+   途中まで不完全なため、モデル分だけで一度 100% に達してしまう。 */
+const atlasReady = loadAtlas(state.plane).promise;
+const gltf = await new GLTFLoader().loadAsync(MODEL, ev => {
+  if (ev.lengthComputable) setProgress('model', ev.loaded, ev.total, '読み込み中');
+});
+const brain = gltf.scene;
+const mats = [];
+brain.traverse(o=>{
+  if(!o.isMesh) return;
+  const src = o.material;
+  /* transparent:true にすると three.js は不透明でも半透明キューに回し、
+     背面から順に描く。DoubleSide と重なると描画順が乱れて中が透けて見える。
+     不透明なうちは transparent を立てないこと。 */
+  o.material = new THREE.MeshStandardMaterial({
+    color: src.color ? src.color.clone() : new THREE.Color(0xaabbcc),
+    roughness:.85, metalness:0, side:THREE.DoubleSide,
+    clippingPlanes:[clip], clipShadows:true, transparent:false, opacity:1
+  });
+  mats.push(o.material);
+  if (o.name) meshByName.set(o.name, o);
+});
+scene.add(brain);
+
+const box = new THREE.Box3().setFromObject(brain);
+const ctr = box.getCenter(new THREE.Vector3());
+controls.target.copy(ctr);
+camera.position.copy(ctr).add(new THREE.Vector3(330,-135,215));  // 断面法線に対して斜め。正対すると平面的な MRI にしか見えない
+
+/* ---- UI -------------------------------------------------------------- */
+const posEl = document.getElementById('pos');
+function syncSlider(){
+  const w = meta.planes[state.plane].world_coords;
+  posEl.min = w[0].toFixed(1); posEl.max = w[w.length-1].toFixed(1);
+  posEl.step = Math.abs(w[1]-w[0]).toFixed(4);
+  posEl.value = state.world[AX[state.plane]];
+}
+document.querySelectorAll('#axis button').forEach(b=>{
+  b.classList.toggle('on', b.dataset.p === state.plane);
+  b.onclick = ()=>{
+    document.querySelectorAll('#axis button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); state.plane = b.dataset.p; syncSlider(); apply();
+    autoPickClipSide();
+  };
+});
+posEl.oninput = e=>{ state.world[AX[state.plane]] = parseFloat(e.target.value); apply(); };
+document.getElementById('cLabel').onchange = e=>{ labMesh.visible = e.target.checked; };
+document.getElementById('cClip').onchange = e=>{
+  state.clip = e.target.checked;
+  mats.forEach(m=>{ m.clippingPlanes = state.clip ? [clip] : []; m.needsUpdate = true; });
+};
+document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
+
+/* ───────────── ホバーによる領域表示 ─────────────
+   断面と 3D で判定方法が違う。
+
+     断面: 板に当たった点の UV からラベル画像の画素を読み、色で逆引きする
+     3D  : 当たったメッシュのノード名がそのまま領域名
+
+   板は 3D モデルより手前にあり、脳の外では透明なので、
+   **先に板を見て、そこが背景なら 3D に落とす**。逆順にすると板の透明部分を
+   ホバーしたときに背後のモデルを拾えない。
+
+   どちらで当たっても対応する 3D 領域を光らせる。断面上をなぞると 3D 側が
+   光るので、2 つの表示が同じものを指していることが目で分かる。 */
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+const tipEl = document.getElementById('tip');
+const leadEl = document.getElementById('lead');
+const lineEl = document.getElementById('leadline');
+const dotEl = document.getElementById('leaddot');
+let hovered = null, ptr = null, ptrDirty = false;
+
+/* パネルを出さない領域。大脳白質は面積が大きく、指しても情報にならない。 */
+const NO_PANEL = new Set([
+  'Left-Cerebral-White-Matter', 'Right-Cerebral-White-Matter',
+  'WM-hypointensities', 'CSF',
+]);
+
+/* ───────── 領域ごとのアンカー（引き出し線の根元） ─────────
+   カーソル位置に線を引くと、動かすたびに線が揺れて読みにくい。
+   その断面における領域の代表点を 1 つ決めて、そこから引く。
+
+   重心そのものだと、C 字型の領域では領域の外に出てしまう。
+   重心に最も近い「その領域の画素」を選ぶ。 */
+let anchors = new Map();     // 領域名 -> [px, py]（タイル内の画素座標）
+let brainBox = null;         // タイル内の脳の外接矩形
+
+function computeAnchors(){
+  anchors = new Map(); brainBox = null;
+  if (!lblData) return;
+  sliceMesh.updateMatrixWorld(true);
+  const [tw, th] = lblTile, d = lblData.data;
+
+  /* 集計は色ではなく**解決後の領域名**をキーにする。
+     LUT は左右の同名構造に同じ色を使うので、色でまとめると左右の海馬が
+     1 つのアンカーを共有してしまい、パネルが左右で同じ場所に出る。
+
+     左右の判別には world x が要る。断面ごとに x が何に対応するかが違う:
+       矢状断 … 面全体が 1 つの x（法線が x）
+       冠状断・軸位断 … 画像の列が x に対応（col_axis が +x） */
+  const P = meta.planes[state.plane];
+  let colX = null, fixedX = null;
+  if (P.normal_axis === 'x') fixedX = state.world.x;
+  else colX = Array.from({ length: tw }, (_, c) => pixelToWorld(c, 0).x);
+
+  const acc = new Map();
+  let x0 = tw, y0 = th, x1 = -1, y1 = -1;
+  for (let y = 0; y < th; y++) for (let x = 0; x < tw; x++) {
+    const o = (y * tw + x) * 4;
+    if (d[o + 3] === 0) continue;
+    if (x < x0) x0 = x; if (x > x1) x1 = x;
+    if (y < y0) y0 = y; if (y > y1) y1 = y;
+    const name = regionFromColor(d[o], d[o + 1], d[o + 2],
+                                 fixedX !== null ? fixedX : colX[x]);
+    if (!name) continue;
+    let a = acc.get(name); if (!a) acc.set(name, a = [0, 0, 0, []]);
+    a[0] += x; a[1] += y; a[2]++;
+    if (a[2] % 4 === 1) a[3].push(x, y);      // 代表点探索用に間引いて保持
+  }
+  if (x1 < 0) return;
+  brainBox = [x0, y0, x1, y1];
+
+  /* 代表点は重心そのものではなく、重心に最も近い「その領域の画素」。
+     重心だと C 字型の領域では領域の外に出る。 */
+  for (const [name, a] of acc) {
+    const cx = a[0] / a[2], cy = a[1] / a[2];
+    let best = null, bd = Infinity;
+    for (let i = 0; i < a[3].length; i += 2) {
+      const dx = a[3][i] - cx, dy = a[3][i + 1] - cy, dd = dx * dx + dy * dy;
+      if (dd < bd) { bd = dd; best = [a[3][i], a[3][i + 1]]; }
+    }
+    anchors.set(name, best);
+  }
+}
+
+/* タイル内の画素 -> world 座標（板のローカル系を経由する） */
+function pixelToWorld(px, py){
+  const [tw, th] = lblTile;
+  const g = sliceMesh.geometry.parameters;
+  const u = (px + 0.5) / tw, v = 1 - (py + 0.5) / th;
+  return sliceMesh.localToWorld(
+    new THREE.Vector3((u - 0.5) * g.width, (v - 0.5) * g.height, 0));
+}
+
+function toScreen(v3){
+  const p = v3.clone().project(camera);
+  return [(p.x + 1) / 2 * innerWidth, (-p.y + 1) / 2 * innerHeight];
+}
+
+function hideCallout(){
+  tipEl.style.display = 'none';
+  leadEl.style.display = 'none';
+}
+
+/* 引き出し線とパネルを配置する。カメラが動いても追従させたいので毎フレーム呼ぶ。
+
+   線の起点は**カーソル位置**、パネルの位置は**領域の代表点**から決める。
+   こうするとカーソルを領域内で動かしても、パネルは動かず線だけが動く。
+   （起点も代表点にすると線が固まって指している場所が分からず、
+     パネルもカーソル追従にすると今度はパネルが揺れて読みにくい） */
+function layoutCallout(){
+  if (!hovered || !lblData || !brainBox || !ptr) { hideCallout(); return; }
+  const a = anchors.get(hovered);
+  if (!a) { hideCallout(); return; }
+
+  const [ax, ay] = toScreen(pixelToWorld(a[0], a[1]));   // パネル位置の基準（安定）
+  const [lx, ly] = [ptr.x, ptr.y];                       // 線の起点（カーソル）
+  // 脳の外接矩形を画面に投影して、その外側にパネルを置く
+  const [bx0, by0, bx1, by1] = brainBox;
+  const cs = [[bx0, by0], [bx1, by0], [bx0, by1], [bx1, by1]]
+    .map(([px, py]) => toScreen(pixelToWorld(px, py)));
+  const sx0 = Math.min(...cs.map(c => c[0])), sx1 = Math.max(...cs.map(c => c[0]));
+
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight, gap = 46;
+  const left = ax < (sx0 + sx1) / 2;
+  let px = left ? sx0 - gap - w : sx1 + gap;
+  px = Math.max(8, Math.min(innerWidth - w - 8, px));
+  const py = Math.max(8, Math.min(innerHeight - h - 8, ay - h / 2));
+
+  tipEl.style.left = px + 'px';
+  tipEl.style.top = py + 'px';
+  lineEl.setAttribute('x1', lx); lineEl.setAttribute('y1', ly);
+  lineEl.setAttribute('x2', left ? px + w : px); lineEl.setAttribute('y2', py + h / 2);
+  dotEl.setAttribute('cx', lx); dotEl.setAttribute('cy', ly);
+  leadEl.style.display = 'block';
+}
+
+function setHover(name){
+  if (name === hovered) { layoutCallout(); return; }
+  const prev = meshByName.get(hovered);
+  if (prev) prev.material.emissive.setHex(0x000000);
+  hovered = name;
+  const cur = meshByName.get(name);
+  if (cur) cur.material.emissive.setHex(0x2a3550);
+
+  const v = name && labels[name];
+  if (!v) { hideCallout(); return; }
+  const c = v.color ? `rgb(${v.color.join(',')})` : '#888';
+  tipEl.innerHTML = `<div class="ja">${v.ja}</div><div class="en">${v.en}</div>` +
+    (v.group ? `<div class="gp"><span class="sw" style="background:${c}"></span>${v.group}</div>` : '');
+  tipEl.style.display = 'block';
+  layoutCallout();
+}
+
+/* その断面上の点が、3D モデルに隠れていないか。
+
+   隠れている側から覗いてもパネルが出るのは不自然なので、
+   立体的に最前面にあるときだけ出す。
+
+   注意: Raycaster はクリップ平面を見ない。切り落とされて画面に出ていない
+   メッシュにも当たる。そのままでは「切り落とした側の面」を遮蔽物として
+   数えてしまうので、当たった点がクリップで残る側にあるかを自分で調べる。 */
+function occludedByModel(sliceHit){
+  if (!brain.visible) return false;
+  for (const h of ray.intersectObject(brain, true)) {
+    if (h.distance >= sliceHit.distance - 1e-3) break;   // 断面より奥は無関係
+    if (state.clip && clip.normal.dot(h.point) + clip.constant <= 0) continue;  // 切り落とし済み
+    return true;
+  }
+  return false;
+}
+
+/* 判定は表示中の断面だけを見る。
+   3D メッシュへのレイキャストは行わない。皮質表面は開いた面で、内側に
+   皮質下構造や白質のメッシュが入れ子になっているため、見た目の最前面と
+   レイが最初に当たる面が一致せず、指しているつもりのない領域を拾う。 */
+function updateHover(){
+  if (!ptrDirty || !ptr || !uiReady) return;
+  ptrDirty = false;
+  if (!sliceMesh.visible || !lblData) { setHover(null); return; }
+
+  ndc.x = (ptr.x / innerWidth) * 2 - 1;
+  ndc.y = -(ptr.y / innerHeight) * 2 + 1;
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObject(sliceMesh, false)[0];
+  if (!hit || !hit.uv) { setHover(null); return; }
+  if (occludedByModel(hit)) { setHover(null); return; }
+
+  const [tw, th] = lblTile;
+  // uv の原点は下端。画像の行は上端から数えるので v を反転する
+  const cx = Math.max(0, Math.min(tw - 1, Math.floor(hit.uv.x * tw)));
+  const cy = Math.max(0, Math.min(th - 1, Math.floor((1 - hit.uv.y) * th)));
+  const o = (cy * tw + cx) * 4, d = lblData.data;
+  if (d[o + 3] === 0) { setHover(null); return; }
+  const name = regionFromColor(d[o], d[o + 1], d[o + 2], hit.point.x);
+  setHover(NO_PANEL.has(name) ? null : name);
+}
+
+renderer.domElement.addEventListener('pointermove', (e)=>{
+  ptr = { x:e.clientX, y:e.clientY }; ptrDirty = true;
+});
+renderer.domElement.addEventListener('pointerleave', ()=>{
+  ptr = null; ptrDirty = false; setHover(null);
+});
+
+/* スクロールボタン（中ボタン）を押したまま上下に動かしてズーム。
+   OrbitControls の enableZoom は中ボタンのドラッグも一緒に止めてしまうため、
+   ホイールを断面めくりに使う以上、ここは自前で実装する。 */
+let midY = null;
+renderer.domElement.addEventListener('pointerdown', (e)=>{
+  if (e.button !== 1) return;
+  e.preventDefault();                       // 中ボタンのオートスクロールを抑える
+  midY = e.clientY;
+  renderer.domElement.setPointerCapture(e.pointerId);
+});
+renderer.domElement.addEventListener('pointermove', (e)=>{
+  if (midY === null) return;
+  const dy = e.clientY - midY; midY = e.clientY;
+  zoomBy(Math.pow(1.006, dy));              // 上へ動かすと寄る
+});
+const endMid = ()=>{ midY = null; };
+renderer.domElement.addEventListener('pointerup', endMid);
+renderer.domElement.addEventListener('pointercancel', endMid);
+renderer.domElement.addEventListener('auxclick', (e)=>{ if (e.button === 1) e.preventDefault(); });
+
+renderer.domElement.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) { zoomBy(e.deltaY > 0 ? 1.12 : 1/1.12); return; }
+  const step = e.shiftKey ? 10 : 1;
+  stepSlice(e.deltaY > 0 ? step : -step);
+}, { passive:false });
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+for (const p of Object.keys(AX)) state.world[AX[p]] = snap(p, 0);
+syncSlider(); apply(); autoPickClipSide();
+atlasReady.then(()=>{
+  apply();                       // 最初の断面を出してから
+  finishLoading();               // 操作を許可する
+  prefetchOtherPlanes();         // 残りは裏で読む（進捗には出さない）
+});
+(function loop(){ requestAnimationFrame(loop); controls.update(); updateHover(); if (hovered) layoutCallout(); renderer.render(scene,camera); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1047 @@
+{
+  "ctx-lh-caudalanteriorcingulate": {
+    "ja": "左尾側前帯状皮質",
+    "en": "Left Caudal Anterior Cingulate",
+    "base": "caudalanteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      125,
+      100,
+      160
+    ]
+  },
+  "ctx-rh-caudalanteriorcingulate": {
+    "ja": "右尾側前帯状皮質",
+    "en": "Right Caudal Anterior Cingulate",
+    "base": "caudalanteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      125,
+      100,
+      160
+    ]
+  },
+  "ctx-lh-caudalmiddlefrontal": {
+    "ja": "左尾側中前頭回",
+    "en": "Left Caudal Middle Frontal",
+    "base": "caudalmiddlefrontal",
+    "group": "前頭葉",
+    "color": [
+      100,
+      25,
+      0
+    ]
+  },
+  "ctx-rh-caudalmiddlefrontal": {
+    "ja": "右尾側中前頭回",
+    "en": "Right Caudal Middle Frontal",
+    "base": "caudalmiddlefrontal",
+    "group": "前頭葉",
+    "color": [
+      100,
+      25,
+      0
+    ]
+  },
+  "ctx-lh-cuneus": {
+    "ja": "左楔部",
+    "en": "Left Cuneus",
+    "base": "cuneus",
+    "group": "後頭葉",
+    "color": [
+      220,
+      20,
+      100
+    ]
+  },
+  "ctx-rh-cuneus": {
+    "ja": "右楔部",
+    "en": "Right Cuneus",
+    "base": "cuneus",
+    "group": "後頭葉",
+    "color": [
+      220,
+      20,
+      100
+    ]
+  },
+  "ctx-lh-entorhinal": {
+    "ja": "左嗅内皮質",
+    "en": "Left Entorhinal",
+    "base": "entorhinal",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      20,
+      10
+    ]
+  },
+  "ctx-rh-entorhinal": {
+    "ja": "右嗅内皮質",
+    "en": "Right Entorhinal",
+    "base": "entorhinal",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      20,
+      10
+    ]
+  },
+  "ctx-lh-fusiform": {
+    "ja": "左紡錘状回",
+    "en": "Left Fusiform",
+    "base": "fusiform",
+    "group": "側頭葉",
+    "color": [
+      180,
+      220,
+      140
+    ]
+  },
+  "ctx-rh-fusiform": {
+    "ja": "右紡錘状回",
+    "en": "Right Fusiform",
+    "base": "fusiform",
+    "group": "側頭葉",
+    "color": [
+      180,
+      220,
+      140
+    ]
+  },
+  "ctx-lh-inferiorparietal": {
+    "ja": "左下頭頂小葉",
+    "en": "Left Inferior Parietal",
+    "base": "inferiorparietal",
+    "group": "頭頂葉",
+    "color": [
+      220,
+      60,
+      220
+    ]
+  },
+  "ctx-rh-inferiorparietal": {
+    "ja": "右下頭頂小葉",
+    "en": "Right Inferior Parietal",
+    "base": "inferiorparietal",
+    "group": "頭頂葉",
+    "color": [
+      220,
+      60,
+      220
+    ]
+  },
+  "ctx-lh-inferiortemporal": {
+    "ja": "左下側頭回",
+    "en": "Left Inferior Temporal",
+    "base": "inferiortemporal",
+    "group": "側頭葉",
+    "color": [
+      180,
+      40,
+      120
+    ]
+  },
+  "ctx-rh-inferiortemporal": {
+    "ja": "右下側頭回",
+    "en": "Right Inferior Temporal",
+    "base": "inferiortemporal",
+    "group": "側頭葉",
+    "color": [
+      180,
+      40,
+      120
+    ]
+  },
+  "ctx-lh-isthmuscingulate": {
+    "ja": "左帯状回峡",
+    "en": "Left Isthmus Cingulate",
+    "base": "isthmuscingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      140,
+      20,
+      140
+    ]
+  },
+  "ctx-rh-isthmuscingulate": {
+    "ja": "右帯状回峡",
+    "en": "Right Isthmus Cingulate",
+    "base": "isthmuscingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      140,
+      20,
+      140
+    ]
+  },
+  "ctx-lh-lateraloccipital": {
+    "ja": "左外側後頭皮質",
+    "en": "Left Lateral Occipital",
+    "base": "lateraloccipital",
+    "group": "後頭葉",
+    "color": [
+      20,
+      30,
+      140
+    ]
+  },
+  "ctx-rh-lateraloccipital": {
+    "ja": "右外側後頭皮質",
+    "en": "Right Lateral Occipital",
+    "base": "lateraloccipital",
+    "group": "後頭葉",
+    "color": [
+      20,
+      30,
+      140
+    ]
+  },
+  "ctx-lh-lateralorbitofrontal": {
+    "ja": "左外側眼窩前頭皮質",
+    "en": "Left Lateral Orbitofrontal",
+    "base": "lateralorbitofrontal",
+    "group": "前頭葉",
+    "color": [
+      35,
+      75,
+      50
+    ]
+  },
+  "ctx-rh-lateralorbitofrontal": {
+    "ja": "右外側眼窩前頭皮質",
+    "en": "Right Lateral Orbitofrontal",
+    "base": "lateralorbitofrontal",
+    "group": "前頭葉",
+    "color": [
+      35,
+      75,
+      50
+    ]
+  },
+  "ctx-lh-lingual": {
+    "ja": "左舌状回",
+    "en": "Left Lingual",
+    "base": "lingual",
+    "group": "後頭葉",
+    "color": [
+      225,
+      140,
+      140
+    ]
+  },
+  "ctx-rh-lingual": {
+    "ja": "右舌状回",
+    "en": "Right Lingual",
+    "base": "lingual",
+    "group": "後頭葉",
+    "color": [
+      225,
+      140,
+      140
+    ]
+  },
+  "ctx-lh-medialorbitofrontal": {
+    "ja": "左内側眼窩前頭皮質",
+    "en": "Left Medial Orbitofrontal",
+    "base": "medialorbitofrontal",
+    "group": "前頭葉",
+    "color": [
+      200,
+      35,
+      75
+    ]
+  },
+  "ctx-rh-medialorbitofrontal": {
+    "ja": "右内側眼窩前頭皮質",
+    "en": "Right Medial Orbitofrontal",
+    "base": "medialorbitofrontal",
+    "group": "前頭葉",
+    "color": [
+      200,
+      35,
+      75
+    ]
+  },
+  "ctx-lh-middletemporal": {
+    "ja": "左中側頭回",
+    "en": "Left Middle Temporal",
+    "base": "middletemporal",
+    "group": "側頭葉",
+    "color": [
+      160,
+      100,
+      50
+    ]
+  },
+  "ctx-rh-middletemporal": {
+    "ja": "右中側頭回",
+    "en": "Right Middle Temporal",
+    "base": "middletemporal",
+    "group": "側頭葉",
+    "color": [
+      160,
+      100,
+      50
+    ]
+  },
+  "ctx-lh-parahippocampal": {
+    "ja": "左海馬傍回",
+    "en": "Left Parahippocampal",
+    "base": "parahippocampal",
+    "group": "大脳辺縁系",
+    "color": [
+      20,
+      220,
+      60
+    ]
+  },
+  "ctx-rh-parahippocampal": {
+    "ja": "右海馬傍回",
+    "en": "Right Parahippocampal",
+    "base": "parahippocampal",
+    "group": "大脳辺縁系",
+    "color": [
+      20,
+      220,
+      60
+    ]
+  },
+  "ctx-lh-paracentral": {
+    "ja": "左中心傍小葉",
+    "en": "Left Paracentral",
+    "base": "paracentral",
+    "group": "前頭葉",
+    "color": [
+      60,
+      220,
+      60
+    ]
+  },
+  "ctx-rh-paracentral": {
+    "ja": "右中心傍小葉",
+    "en": "Right Paracentral",
+    "base": "paracentral",
+    "group": "前頭葉",
+    "color": [
+      60,
+      220,
+      60
+    ]
+  },
+  "ctx-lh-parsopercularis": {
+    "ja": "左弁蓋部",
+    "en": "Left Pars Opercularis",
+    "base": "parsopercularis",
+    "group": "前頭葉",
+    "color": [
+      220,
+      180,
+      140
+    ]
+  },
+  "ctx-rh-parsopercularis": {
+    "ja": "右弁蓋部",
+    "en": "Right Pars Opercularis",
+    "base": "parsopercularis",
+    "group": "前頭葉",
+    "color": [
+      220,
+      180,
+      140
+    ]
+  },
+  "ctx-lh-parsorbitalis": {
+    "ja": "左眼窩部",
+    "en": "Left Pars Orbitalis",
+    "base": "parsorbitalis",
+    "group": "前頭葉",
+    "color": [
+      20,
+      100,
+      50
+    ]
+  },
+  "ctx-rh-parsorbitalis": {
+    "ja": "右眼窩部",
+    "en": "Right Pars Orbitalis",
+    "base": "parsorbitalis",
+    "group": "前頭葉",
+    "color": [
+      20,
+      100,
+      50
+    ]
+  },
+  "ctx-lh-parstriangularis": {
+    "ja": "左三角部",
+    "en": "Left Pars Triangularis",
+    "base": "parstriangularis",
+    "group": "前頭葉",
+    "color": [
+      220,
+      60,
+      20
+    ]
+  },
+  "ctx-rh-parstriangularis": {
+    "ja": "右三角部",
+    "en": "Right Pars Triangularis",
+    "base": "parstriangularis",
+    "group": "前頭葉",
+    "color": [
+      220,
+      60,
+      20
+    ]
+  },
+  "ctx-lh-pericalcarine": {
+    "ja": "左鳥距溝周囲皮質",
+    "en": "Left Pericalcarine",
+    "base": "pericalcarine",
+    "group": "後頭葉",
+    "color": [
+      120,
+      100,
+      60
+    ]
+  },
+  "ctx-rh-pericalcarine": {
+    "ja": "右鳥距溝周囲皮質",
+    "en": "Right Pericalcarine",
+    "base": "pericalcarine",
+    "group": "後頭葉",
+    "color": [
+      120,
+      100,
+      60
+    ]
+  },
+  "ctx-lh-postcentral": {
+    "ja": "左中心後回",
+    "en": "Left Postcentral",
+    "base": "postcentral",
+    "group": "頭頂葉",
+    "color": [
+      220,
+      20,
+      20
+    ]
+  },
+  "ctx-rh-postcentral": {
+    "ja": "右中心後回",
+    "en": "Right Postcentral",
+    "base": "postcentral",
+    "group": "頭頂葉",
+    "color": [
+      220,
+      20,
+      20
+    ]
+  },
+  "ctx-lh-posteriorcingulate": {
+    "ja": "左後帯状皮質",
+    "en": "Left Posterior Cingulate",
+    "base": "posteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      180,
+      220
+    ]
+  },
+  "ctx-rh-posteriorcingulate": {
+    "ja": "右後帯状皮質",
+    "en": "Right Posterior Cingulate",
+    "base": "posteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      180,
+      220
+    ]
+  },
+  "ctx-lh-precentral": {
+    "ja": "左中心前回",
+    "en": "Left Precentral",
+    "base": "precentral",
+    "group": "前頭葉",
+    "color": [
+      60,
+      20,
+      220
+    ]
+  },
+  "ctx-rh-precentral": {
+    "ja": "右中心前回",
+    "en": "Right Precentral",
+    "base": "precentral",
+    "group": "前頭葉",
+    "color": [
+      60,
+      20,
+      220
+    ]
+  },
+  "ctx-lh-precuneus": {
+    "ja": "左楔前部",
+    "en": "Left Precuneus",
+    "base": "precuneus",
+    "group": "頭頂葉",
+    "color": [
+      160,
+      140,
+      180
+    ]
+  },
+  "ctx-rh-precuneus": {
+    "ja": "右楔前部",
+    "en": "Right Precuneus",
+    "base": "precuneus",
+    "group": "頭頂葉",
+    "color": [
+      160,
+      140,
+      180
+    ]
+  },
+  "ctx-lh-rostralanteriorcingulate": {
+    "ja": "左吻側前帯状皮質",
+    "en": "Left Rostral Anterior Cingulate",
+    "base": "rostralanteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      80,
+      20,
+      140
+    ]
+  },
+  "ctx-rh-rostralanteriorcingulate": {
+    "ja": "右吻側前帯状皮質",
+    "en": "Right Rostral Anterior Cingulate",
+    "base": "rostralanteriorcingulate",
+    "group": "大脳辺縁系",
+    "color": [
+      80,
+      20,
+      140
+    ]
+  },
+  "ctx-lh-rostralmiddlefrontal": {
+    "ja": "左吻側中前頭回",
+    "en": "Left Rostral Middle Frontal",
+    "base": "rostralmiddlefrontal",
+    "group": "前頭葉",
+    "color": [
+      75,
+      50,
+      125
+    ]
+  },
+  "ctx-rh-rostralmiddlefrontal": {
+    "ja": "右吻側中前頭回",
+    "en": "Right Rostral Middle Frontal",
+    "base": "rostralmiddlefrontal",
+    "group": "前頭葉",
+    "color": [
+      75,
+      50,
+      125
+    ]
+  },
+  "ctx-lh-superiorfrontal": {
+    "ja": "左上前頭回",
+    "en": "Left Superior Frontal",
+    "base": "superiorfrontal",
+    "group": "前頭葉",
+    "color": [
+      20,
+      220,
+      160
+    ]
+  },
+  "ctx-rh-superiorfrontal": {
+    "ja": "右上前頭回",
+    "en": "Right Superior Frontal",
+    "base": "superiorfrontal",
+    "group": "前頭葉",
+    "color": [
+      20,
+      220,
+      160
+    ]
+  },
+  "ctx-lh-superiorparietal": {
+    "ja": "左上頭頂小葉",
+    "en": "Left Superior Parietal",
+    "base": "superiorparietal",
+    "group": "頭頂葉",
+    "color": [
+      20,
+      180,
+      140
+    ]
+  },
+  "ctx-rh-superiorparietal": {
+    "ja": "右上頭頂小葉",
+    "en": "Right Superior Parietal",
+    "base": "superiorparietal",
+    "group": "頭頂葉",
+    "color": [
+      20,
+      180,
+      140
+    ]
+  },
+  "ctx-lh-superiortemporal": {
+    "ja": "左上側頭回",
+    "en": "Left Superior Temporal",
+    "base": "superiortemporal",
+    "group": "側頭葉",
+    "color": [
+      140,
+      220,
+      220
+    ]
+  },
+  "ctx-rh-superiortemporal": {
+    "ja": "右上側頭回",
+    "en": "Right Superior Temporal",
+    "base": "superiortemporal",
+    "group": "側頭葉",
+    "color": [
+      140,
+      220,
+      220
+    ]
+  },
+  "ctx-lh-supramarginal": {
+    "ja": "左縁上回",
+    "en": "Left Supramarginal",
+    "base": "supramarginal",
+    "group": "頭頂葉",
+    "color": [
+      80,
+      160,
+      20
+    ]
+  },
+  "ctx-rh-supramarginal": {
+    "ja": "右縁上回",
+    "en": "Right Supramarginal",
+    "base": "supramarginal",
+    "group": "頭頂葉",
+    "color": [
+      80,
+      160,
+      20
+    ]
+  },
+  "ctx-lh-transversetemporal": {
+    "ja": "左横側頭回",
+    "en": "Left Transverse Temporal",
+    "base": "transversetemporal",
+    "group": "側頭葉",
+    "color": [
+      150,
+      150,
+      200
+    ]
+  },
+  "ctx-rh-transversetemporal": {
+    "ja": "右横側頭回",
+    "en": "Right Transverse Temporal",
+    "base": "transversetemporal",
+    "group": "側頭葉",
+    "color": [
+      150,
+      150,
+      200
+    ]
+  },
+  "ctx-lh-insula": {
+    "ja": "左島皮質",
+    "en": "Left Insula",
+    "base": "insula",
+    "group": "大脳辺縁系",
+    "color": [
+      255,
+      192,
+      32
+    ]
+  },
+  "ctx-rh-insula": {
+    "ja": "右島皮質",
+    "en": "Right Insula",
+    "base": "insula",
+    "group": "大脳辺縁系",
+    "color": [
+      255,
+      192,
+      32
+    ]
+  },
+  "Left-Cerebral-White-Matter": {
+    "ja": "左大脳白質",
+    "en": "Left Cerebral White Matter",
+    "base": "Cerebral-White-Matter",
+    "group": "白質",
+    "color": [
+      245,
+      245,
+      245
+    ]
+  },
+  "Right-Cerebral-White-Matter": {
+    "ja": "右大脳白質",
+    "en": "Right Cerebral White Matter",
+    "base": "Cerebral-White-Matter",
+    "group": "白質",
+    "color": [
+      245,
+      245,
+      245
+    ]
+  },
+  "Left-Cerebellum-White-Matter": {
+    "ja": "左小脳白質",
+    "en": "Left Cerebellum White Matter",
+    "base": "Cerebellum-White-Matter",
+    "group": "小脳",
+    "color": [
+      220,
+      248,
+      164
+    ]
+  },
+  "Right-Cerebellum-White-Matter": {
+    "ja": "右小脳白質",
+    "en": "Right Cerebellum White Matter",
+    "base": "Cerebellum-White-Matter",
+    "group": "小脳",
+    "color": [
+      220,
+      248,
+      164
+    ]
+  },
+  "Left-Cerebellum-Cortex": {
+    "ja": "左小脳皮質",
+    "en": "Left Cerebellum Cortex",
+    "base": "Cerebellum-Cortex",
+    "group": "小脳",
+    "color": [
+      230,
+      148,
+      34
+    ]
+  },
+  "Right-Cerebellum-Cortex": {
+    "ja": "右小脳皮質",
+    "en": "Right Cerebellum Cortex",
+    "base": "Cerebellum-Cortex",
+    "group": "小脳",
+    "color": [
+      230,
+      148,
+      34
+    ]
+  },
+  "Left-Thalamus": {
+    "ja": "左視床",
+    "en": "Left Thalamus",
+    "base": "Thalamus",
+    "group": "視床・間脳",
+    "color": [
+      0,
+      118,
+      14
+    ]
+  },
+  "Right-Thalamus": {
+    "ja": "右視床",
+    "en": "Right Thalamus",
+    "base": "Thalamus",
+    "group": "視床・間脳",
+    "color": [
+      0,
+      118,
+      14
+    ]
+  },
+  "Left-Caudate": {
+    "ja": "左尾状核",
+    "en": "Left Caudate",
+    "base": "Caudate",
+    "group": "大脳基底核",
+    "color": [
+      122,
+      186,
+      220
+    ]
+  },
+  "Right-Caudate": {
+    "ja": "右尾状核",
+    "en": "Right Caudate",
+    "base": "Caudate",
+    "group": "大脳基底核",
+    "color": [
+      122,
+      186,
+      220
+    ]
+  },
+  "Left-Putamen": {
+    "ja": "左被殻",
+    "en": "Left Putamen",
+    "base": "Putamen",
+    "group": "大脳基底核",
+    "color": [
+      236,
+      13,
+      176
+    ]
+  },
+  "Right-Putamen": {
+    "ja": "右被殻",
+    "en": "Right Putamen",
+    "base": "Putamen",
+    "group": "大脳基底核",
+    "color": [
+      236,
+      13,
+      176
+    ]
+  },
+  "Left-Pallidum": {
+    "ja": "左淡蒼球",
+    "en": "Left Pallidum",
+    "base": "Pallidum",
+    "group": "大脳基底核",
+    "color": [
+      12,
+      48,
+      255
+    ]
+  },
+  "Right-Pallidum": {
+    "ja": "右淡蒼球",
+    "en": "Right Pallidum",
+    "base": "Pallidum",
+    "group": "大脳基底核",
+    "color": [
+      13,
+      48,
+      255
+    ]
+  },
+  "Left-Hippocampus": {
+    "ja": "左海馬",
+    "en": "Left Hippocampus",
+    "base": "Hippocampus",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      216,
+      20
+    ]
+  },
+  "Right-Hippocampus": {
+    "ja": "右海馬",
+    "en": "Right Hippocampus",
+    "base": "Hippocampus",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      216,
+      20
+    ]
+  },
+  "Left-Amygdala": {
+    "ja": "左扁桃体",
+    "en": "Left Amygdala",
+    "base": "Amygdala",
+    "group": "大脳辺縁系",
+    "color": [
+      103,
+      255,
+      255
+    ]
+  },
+  "Right-Amygdala": {
+    "ja": "右扁桃体",
+    "en": "Right Amygdala",
+    "base": "Amygdala",
+    "group": "大脳辺縁系",
+    "color": [
+      103,
+      255,
+      255
+    ]
+  },
+  "Left-Accumbens-area": {
+    "ja": "左側坐核",
+    "en": "Left Accumbens Area",
+    "base": "Accumbens-area",
+    "group": "大脳基底核",
+    "color": [
+      255,
+      165,
+      0
+    ]
+  },
+  "Right-Accumbens-area": {
+    "ja": "右側坐核",
+    "en": "Right Accumbens Area",
+    "base": "Accumbens-area",
+    "group": "大脳基底核",
+    "color": [
+      255,
+      165,
+      0
+    ]
+  },
+  "Left-VentralDC": {
+    "ja": "左腹側間脳",
+    "en": "Left Ventral Diencephalon",
+    "base": "VentralDC",
+    "group": "視床・間脳",
+    "color": [
+      145,
+      42,
+      42
+    ]
+  },
+  "Right-VentralDC": {
+    "ja": "右腹側間脳",
+    "en": "Right Ventral Diencephalon",
+    "base": "VentralDC",
+    "group": "視床・間脳",
+    "color": [
+      165,
+      42,
+      42
+    ]
+  },
+  "Left-Lateral-Ventricle": {
+    "ja": "左側脳室",
+    "en": "Left Lateral Ventricle",
+    "base": "Lateral-Ventricle",
+    "group": "脳室系",
+    "color": [
+      120,
+      18,
+      134
+    ]
+  },
+  "Right-Lateral-Ventricle": {
+    "ja": "右側脳室",
+    "en": "Right Lateral Ventricle",
+    "base": "Lateral-Ventricle",
+    "group": "脳室系",
+    "color": [
+      120,
+      18,
+      134
+    ]
+  },
+  "Left-Inf-Lat-Vent": {
+    "ja": "左側脳室下角",
+    "en": "Left Inferior Lateral Ventricle",
+    "base": "Inf-Lat-Vent",
+    "group": "脳室系",
+    "color": [
+      196,
+      58,
+      250
+    ]
+  },
+  "Right-Inf-Lat-Vent": {
+    "ja": "右側脳室下角",
+    "en": "Right Inferior Lateral Ventricle",
+    "base": "Inf-Lat-Vent",
+    "group": "脳室系",
+    "color": [
+      196,
+      58,
+      250
+    ]
+  },
+  "Left-choroid-plexus": {
+    "ja": "左脈絡叢",
+    "en": "Left Choroid Plexus",
+    "base": "choroid-plexus",
+    "group": "脳室系",
+    "color": [
+      0,
+      200,
+      200
+    ]
+  },
+  "Right-choroid-plexus": {
+    "ja": "右脈絡叢",
+    "en": "Right Choroid Plexus",
+    "base": "choroid-plexus",
+    "group": "脳室系",
+    "color": [
+      0,
+      200,
+      221
+    ]
+  },
+  "Brain-Stem": {
+    "ja": "脳幹",
+    "en": "Brain Stem",
+    "base": "Brain-Stem",
+    "group": "脳幹",
+    "color": [
+      119,
+      159,
+      176
+    ]
+  },
+  "3rd-Ventricle": {
+    "ja": "第三脳室",
+    "en": "Third Ventricle",
+    "base": "3rd-Ventricle",
+    "group": "脳室系",
+    "color": [
+      204,
+      182,
+      142
+    ]
+  },
+  "4th-Ventricle": {
+    "ja": "第四脳室",
+    "en": "Fourth Ventricle",
+    "base": "4th-Ventricle",
+    "group": "脳室系",
+    "color": [
+      42,
+      204,
+      164
+    ]
+  },
+  "CSF": {
+    "ja": "脳脊髄液",
+    "en": "Cerebrospinal Fluid",
+    "base": "CSF",
+    "group": "脳室系",
+    "color": [
+      60,
+      60,
+      60
+    ]
+  },
+  "WM-hypointensities": {
+    "ja": "白質低信号域",
+    "en": "White Matter Hypointensities",
+    "base": "WM-hypointensities",
+    "group": "白質",
+    "color": [
+      200,
+      70,
+      255
+    ]
+  }
+}

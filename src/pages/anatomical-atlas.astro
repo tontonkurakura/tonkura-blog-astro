@@ -1,4 +1,84 @@
 ---
-import Placeholder from "../layouts/Placeholder.astro";
+import Base from "../layouts/Base.astro";
+
+/* 3D ビューアは別プロジェクト (~/dev/3D_Brain) で作り、生成物だけを
+   public/brain-viewer/ に置いている。ビューアは自己完結した HTML なので
+   iframe で埋める。Astro のビルドは中身に関与しない（静的ファイルとして配信）。
+
+   loading="lazy" が要る。iframe は既定でページを開いた瞬間に読み込みを
+   始めるため、ここまでスクロールしない読者にも十数 MB を送ることになる。 */
+const viewer = "/brain-viewer/viewer.html";
 ---
-<Placeholder title="解剖学的アトラス" />
+
+<Base title="解剖学的アトラス | TonKurA" description="MNI 標準脳を DKT アトラスで領域分割した 3D モデル。断面で切ると切り口に MRI が出る。" wide>
+  <div class="head">
+    <h1>解剖学的アトラス</h1>
+    <p class="note">
+      MNI 標準脳を DKT アトラス（Desikan-Killiany-Tourville）で分割した 3D モデル。
+      断面で切ると、切り口に MRI と領域色が出る。皮質は FreeSurfer の表面から、
+      皮質下はラベルボリュームから起こしている。
+    </p>
+  </div>
+
+  <div class="viewer-wrap">
+    <iframe
+      src={viewer}
+      title="3D 脳アトラスビューア"
+      loading="lazy"
+      allow="fullscreen"
+    ></iframe>
+  </div>
+
+  <div class="usage">
+    <h2>操作</h2>
+    <dl>
+      <dt>左ドラッグ</dt><dd>回転</dd>
+      <dt>ホイール</dt><dd>断面を 1 枚めくる（Shift で 10 枚）</dd>
+      <dt>中ボタンドラッグ</dt><dd>拡大縮小（Ctrl + ホイールでも可）</dd>
+      <dt>断面上にカーソル</dt><dd>その位置の領域名を引き出し線で表示</dd>
+    </dl>
+    <p class="note">
+      断面がモデルに隠れている向きからは領域名を出さない。
+      「切る向きを反転」で手前側を切り替えられる。
+    </p>
+    <p class="hint">
+      <a href={viewer} target="_blank" rel="noopener">別タブで開く</a>
+    </p>
+  </div>
+
+  <style>
+    .head { margin-bottom: 1.25rem; }
+    h1 { font-size: var(--step-2); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+    .note { color: var(--fg-muted); margin: 0; max-width: var(--measure); }
+
+    .viewer-wrap {
+      /* 3D は縦に潰れると使いにくいので、横幅なりに高さを確保する */
+      aspect-ratio: 4 / 3;
+      max-height: 78vh;
+      border: 1px solid var(--border, #2a3450);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0a0d14;
+    }
+    .viewer-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    .usage { margin-top: 1.5rem; }
+    .usage h2 { font-size: var(--step-0); margin: 0 0 0.5rem; }
+    dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.3rem 1rem;
+      margin: 0 0 0.75rem;
+      font-size: var(--step--1);
+    }
+    dt { color: var(--fg-muted); }
+    dd { margin: 0; }
+    .hint { font-size: var(--step--1); margin-top: 0.75rem; }
+
+    @media (max-width: 640px) {
+      .viewer-wrap { aspect-ratio: 3 / 4; }
+      dl { grid-template-columns: 1fr; gap: 0 0; }
+      dt { margin-top: 0.5rem; }
+    }
+  </style>
+</Base>
