@@ -35,8 +35,20 @@ Astro 4 時代のレガシーパスで、こちらは読まれない。作らな
 - **日付を名前に入れない。** 順序は frontmatter（`date` / `pubDate`）が持っている
 - **分類はディレクトリで表し、ファイル名に入れない。** 分類し直すと URL が壊れる
 
-**ファイル名に番号を入れない。** `wiki` だけは `{id}-{slug}.md`（URL は frontmatter の `id`）
-という既存の形を維持する。他は全部スラッグのみ。
+**先頭の並び順番号は URL に出さない。** リポジトリのファイル一覧で意図した順に並べたいので
+番号は付ける。ただし `content.config.ts` の `generateId` が先頭の `\d+[-_]` を落とすため、
+URL には出ない。**番号を振り直しても URL と `related` は壊れない。**
+
+| コレクション | ファイル名 | URL |
+|---|---|---|
+| `imaging` | `01-mri-signal-basics.md` | `/imaging/mri-signal-basics` |
+| `blog` | `20250321-tau-pet.md` | `/blog/tau-pet` |
+| `wiki` | `q-001-time-vs-speed-perception.md` | `/wiki/q-001`（frontmatter の `id`） |
+| `database` | `attention/extinction.md` | `/database/attention/extinction` |
+| `neurology` | `diseases/differentials/hypophysitis.md` | 同じパス |
+
+`imaging` は読む順（上流の記事ほど若い番号）、`blog` は日付。`database` と `neurology` は
+順序に意味がないので番号なし。`neurology` の表示順は各 `order.json` が持つ。
 
 **ファイル名 = URL、`title` / `label` = 表示名、と役割が分かれている。**
 `neurology` は日本語の表示名を frontmatter の `title:` と各 `order.json` の `label:` に持つ。
@@ -110,8 +122,11 @@ Python と Linux は使えるが、その手法については初心者。
 
 ## 記事ファイルの置き方
 
-`src/content/imaging/{英語スラッグ}.md`（例: `fmriprep-confounds.md`）。フラット配置。
+`src/content/imaging/{並び順2桁}-{英語スラッグ}.md`（例: `03-fmriprep-confounds.md`）。フラット配置。
+番号は**読む順**であり、上流の記事ほど若くする。**Issue 番号ではない。**
+
 **category も Issue 番号もパスに含めない** — どちらも後から変わり、URL と `related` を壊すため。
+先頭の並び順番号は `generateId` が URL から落とすので、振り直しは安全である。
 
 **全ての記事は Issue を通す。** 対応は frontmatter の `fromIssue` が持ち（必須。CI で落ちる）、
 ページ下部に Issue へのリンクが出る。既存記事の分割で生まれた記事も、遡って Issue を立てる。
@@ -121,4 +136,4 @@ Python と Linux は使えるが、その手法については初心者。
 本文中の導線で示す。
 
 `draft` は**必ず `true`** で出す。外すのは人の操作である（merge = 保存、draft を外す = 公開）。
-`src/content/imaging/template.md` が見本。スキーマの型崩れに気づくために置いてあるので削除しない。
+`src/content/imaging/00-template.md` が見本。スキーマの型崩れに気づくために置いてあるので削除しない。

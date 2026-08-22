@@ -1,12 +1,33 @@
 import { defineCollection, reference, z } from "astro:content";
 import { glob } from "astro/loaders";
 
+/**
+ * ファイル名の先頭の並び順番号を URL から落とす。
+ *
+ * リポジトリのファイル一覧で記事を意図した順に並べたい。しかしその番号が URL に
+ * 出ると、間に記事を挟んで振り直したときに URL と related が壊れる。
+ * ファイル名 = 並び順、URL = スラッグ、と分離することで両立させる。
+ *
+ *   01-mri-signal-basics.md  →  /imaging/mri-signal-basics
+ *   20250224-tau-pet.md      →  /blog/tau-pet
+ *
+ * frontmatter に slug があればそちらを優先する（Astro の既定と同じ）。
+ */
+function idWithoutSortPrefix({ entry, data }: { entry: string; data: Record<string, unknown> }) {
+  if (typeof data.slug === "string" && data.slug) return data.slug;
+  return entry.replace(/\.md$/, "").replace(/^\d+[-_]/, "");
+}
+
 // 全コンテンツを Astro リポジトリ内（src/content/）に取り込み、自己完結させた。
 // デプロイ先には旧リポジトリが無いため、外部参照だと空になる。
 
 // ブログ記事（.md）
 const blog = defineCollection({
-  loader: glob({ pattern: "*.md", base: "./src/content/blog" }),
+  loader: glob({
+    pattern: "*.md",
+    base: "./src/content/blog",
+    generateId: idWithoutSortPrefix,
+  }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -80,7 +101,11 @@ const neurology = defineCollection({
 // ファイルは {Issue番号}-{英語スラッグ}.md のフラット配置で、category を
 // パスに含めない。分類し直したときに URL と related の両方が壊れるため。
 const imaging = defineCollection({
-  loader: glob({ pattern: "*.md", base: "./src/content/imaging" }),
+  loader: glob({
+    pattern: "*.md",
+    base: "./src/content/imaging",
+    generateId: idWithoutSortPrefix,
+  }),
   schema: z.object({
     title: z.string().min(8).max(60),
     description: z.string().min(40).max(160),
