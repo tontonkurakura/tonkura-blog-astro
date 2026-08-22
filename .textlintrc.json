@@ -1,8 +1,9 @@
 {
   "rules": {
     "preset-ja-technical-writing": {
+      "//sentence-length": "上限120字は筆者自身の文体より厳しく、リズムを平板にしていた。筆者の wiki 1049文の97パーセンタイルが148字（120字だと6.5%が違反）。150字にして自然な範囲を通し、極端な長文だけ捕まえる。",
       "sentence-length": {
-        "max": 120
+        "max": 150
       },
       "max-comma": {
         "max": 4

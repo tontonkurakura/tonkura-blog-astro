@@ -62,8 +62,9 @@ const fmt = (d: Date) =>
       <h2>出典</h2>
       <ol>
         {
-          post.data.sources.map((s) => (
-            <li>
+          /* 本文の [1] から飛べるよう id を振る。番号は sources の並び順＝初出順。 */
+          post.data.sources.map((s, i) => (
+            <li id={`ref-${i + 1}`}>
               <a href={s.url} rel="noopener noreferrer" target="_blank">
                 {s.title}
               </a>
@@ -154,6 +155,23 @@ const fmt = (d: Date) =>
       margin-top: 3rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--border);
+    }
+    /*
+     * 本文中の引用マーカー。Markdown には [1](#ref-1) と書き、角括弧は CSS で足す。
+     * 本文側を [1](#ref-1) のまま読める形にしておきたいので、この分担にしている。
+     */
+    .prose :global(a[href^="#ref-"]) {
+      font-size: 0.78em;
+      vertical-align: 0.35em;
+      text-decoration: none;
+      padding: 0 0.1em;
+      white-space: nowrap;
+    }
+    .prose :global(a[href^="#ref-"])::before {
+      content: "[";
+    }
+    .prose :global(a[href^="#ref-"])::after {
+      content: "]";
     }
     .sources h2,
     .related h2 {
