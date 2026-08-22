@@ -108,7 +108,10 @@ const imaging = defineCollection({
     // reference() はスキーマ検証の時点では形しか見ない（存在確認はしない）。
     // 実在チェックは src/pages/imaging/[...slug].astro で明示的に行う。
     related: z.array(reference("imaging")).default([]),
-    fromIssue: z.number().int().positive().optional(),
+    // 全記事は Issue を通す。ファイル名に Issue 番号は入れない（採番は作成順で、
+    // 記事の依存関係を表せないため）。対応はここだけが持ち、ページ下部に
+    // Issue へのリンクが出る。必須にして CI で担保する。
+    fromIssue: z.number().int().positive(),
   }),
 });
 

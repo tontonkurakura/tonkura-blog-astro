@@ -11,7 +11,7 @@ import {
 import "../../styles/prose.css";
 
 export async function getStaticPaths() {
-  // 見本（000-template）もページとして作る。描画が壊れていないかを確かめる役目があり、
+  // 見本（template）もページとして作る。描画が壊れていないかを確かめる役目があり、
   // draft: true なので本番には出ない。
   const posts = await getCollection("imaging", ({ data }) =>
     includeDrafts ? true : !data.draft,

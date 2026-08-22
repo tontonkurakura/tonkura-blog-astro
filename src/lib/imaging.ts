@@ -1,7 +1,7 @@
 import { getCollection, getEntries, type CollectionEntry } from "astro:content";
 
 /** 見本記事の id。wiki の q-000 と同じ役割で、スキーマの型崩れに気づくために置く。 */
-export const TEMPLATE_ID = "000-template";
+export const TEMPLATE_ID = "template";
 
 export type ImagingPost = CollectionEntry<"imaging">;
 

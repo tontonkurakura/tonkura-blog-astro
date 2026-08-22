@@ -20,7 +20,8 @@ sources:
     url: https://doi.org/10.1073/pnas.87.24.9868
     kind: paper
 related:
-  - 3-what-bold-measures
+  - what-bold-measures
+fromIssue: 5
 ---
 
 ## 3行まとめ

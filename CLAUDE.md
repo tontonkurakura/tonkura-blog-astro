@@ -35,9 +35,8 @@ Astro 4 時代のレガシーパスで、こちらは読まれない。作らな
 - **日付を名前に入れない。** 順序は frontmatter（`date` / `pubDate`）が持っている
 - **分類はディレクトリで表し、ファイル名に入れない。** 分類し直すと URL が壊れる
 
-番号の前置きだけコレクションごとに違う。`imaging` は `{Issue番号}-{slug}.md`
-（Issue から生まれない記事は番号なしでよい）、`wiki` は `{id}-{slug}.md`
-（URL は frontmatter の `id`）、`blog` と `database` と `neurology` は番号なし。
+**ファイル名に番号を入れない。** `wiki` だけは `{id}-{slug}.md`（URL は frontmatter の `id`）
+という既存の形を維持する。他は全部スラッグのみ。
 
 **ファイル名 = URL、`title` / `label` = 表示名、と役割が分かれている。**
 `neurology` は日本語の表示名を frontmatter の `title:` と各 `order.json` の `label:` に持つ。
@@ -111,11 +110,15 @@ Python と Linux は使えるが、その手法については初心者。
 
 ## 記事ファイルの置き方
 
-`src/content/imaging/{Issue番号}-{英語スラッグ}.md`（例: `12-fmriprep-confounds.md`）。
-フラット配置。**category をパスに含めない** — 分類し直したときに URL と `related` が両方壊れるため。
+`src/content/imaging/{英語スラッグ}.md`（例: `fmriprep-confounds.md`）。フラット配置。
+**category も Issue 番号もパスに含めない** — どちらも後から変わり、URL と `related` を壊すため。
 
-**Issue から生まれない記事は番号を付けない**（例: 既存記事の分割で生まれたもの）。
-その場合 `fromIssue` も書かない。番号は Issue との対応を示すためだけにある。
+**全ての記事は Issue を通す。** 対応は frontmatter の `fromIssue` が持ち（必須。CI で落ちる）、
+ページ下部に Issue へのリンクが出る。既存記事の分割で生まれた記事も、遡って Issue を立てる。
+
+**読む順は番号で表さない。** Issue 番号は作成順に GitHub が振るもので、記事の依存関係とは
+無関係である（実例: MRI 基礎は BOLD の上流だが Issue は #5 と #3）。順序は `related` と
+本文中の導線で示す。
 
 `draft` は**必ず `true`** で出す。外すのは人の操作である（merge = 保存、draft を外す = 公開）。
-`src/content/imaging/000-template.md` が見本。スキーマの型崩れに気づくために置いてあるので削除しない。
+`src/content/imaging/template.md` が見本。スキーマの型崩れに気づくために置いてあるので削除しない。
