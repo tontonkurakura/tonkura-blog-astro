@@ -337,6 +337,13 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
    `anatomical-atlas.astro` をプレースホルダから iframe 埋め込みに差し替えた**（`d5865d8`）。
    **上の「ビューア依存ページはプレースホルダ」は、このページについては過去の記述になる。**
    ビューアの作成自体は別プロジェクトのまま。ここには生成物（11MB）だけが入っている。
+   → **2026-08-23 追記。埋め込んだ直後、ビューアは three.js を jsdelivr から
+   読んでいた。**CDN を落として試すと**進捗 0% のまま無言で止まる**。読者からは
+   「重いページ」と区別がつかない。three.js を `public/brain-viewer/vendor/three/`
+   に同梱して解消した（r163・改変なし・MIT、1.5MB / gzip 約 300KB）。
+   これで「全コンテンツが自己完結」が再び成り立つ。
+   **`public/brain-viewer/` を手で編集しないこと。** 配る側は `~/dev/3D_Brain/viewer/`
+   ひとつで、`~/dev/3D_Brain/tools/sync_viewer.sh` が撒く。
 
 ## 積み残し（品質）
 
@@ -350,7 +357,12 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
 
 - **458ページ静的生成**（2026-08-23。`npm run build:ci` と `npm run lint:text` は緑）。
   内訳の変化は imaging 記事2本の追加による。全ルート HTTP 200 の確認は 453ページ時点のもの。
-- 全コンテンツが自己完結（外部パス参照ゼロ）。
+- 全コンテンツが自己完結（外部パス参照ゼロ）。**`/anatomical-atlas` は 2026-08-23 に
+  一度この性質を破っていた**（3D ビューアが three.js を CDN から読んでいた）。
+  three.js を同梱して回復。CDN を遮断したヘッドレス Chrome で描画を確認済み。
+- **`/anatomical-atlas` の 3D ビューアはヘッドレス Chrome で描画確認済み**
+  （`dist` を配信し、iframe 内で単体表示と同じ絵になること）。
+  ただし**スマートフォン幅（`aspect-ratio: 3/4`）とダークモードは未確認**。
 - **ブラウザでの通し確認（レイアウト・ダークモード・計算機の操作）は未了。**
 - **`imaging` の2記事はブラウザで一度も見ていない。** 特に引用マーカーの見た目
   （`font-size: 0.78em` / `vertical-align: 0.35em`）は当てずっぽうの値で、実機未確認。

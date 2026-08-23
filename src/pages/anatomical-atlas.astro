@@ -17,6 +17,7 @@ const viewer = "/brain-viewer/viewer.html";
       MNI 標準脳を DKT アトラス（Desikan-Killiany-Tourville）で分割した 3D モデル。
       断面で切ると、切り口に MRI と領域色が出る。皮質は FreeSurfer の表面から、
       皮質下はラベルボリュームから起こしている。
+      右上で<strong>血管支配（ACA / MCA / PCA / 椎骨脳底）</strong>に切り替えられる。
     </p>
   </div>
 
@@ -43,6 +44,17 @@ const viewer = "/brain-viewer/viewer.html";
     </p>
     <p class="hint">
       <a href={viewer} target="_blank" rel="noopener">別タブで開く</a>
+    </p>
+
+    <h2>出典</h2>
+    <p class="note">
+      血管支配アトラスは
+      <a href="https://github.com/Chin-Fu-Liu/Arterial_Atlas" rel="noopener">JHU Arterial Atlas</a>
+      の Level 1（Liu C-F, et al. <em>Digital 3D Brain MRI Arterial Territories Atlas.</em>
+      Scientific Data 10, 74, 2023 / © 2021 The Johns Hopkins University）を、
+      この標準脳の空間へ移して使っている。派生物にあたる断面画像と 3D モデルは
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>。
+      DKT 側は FastSurfer の出力で、標準脳は MNI152（患者の画像ではない）。
     </p>
   </div>
 
