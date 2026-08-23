@@ -77,7 +77,7 @@
   .tip .ja .sw{width:14px;height:14px;border-radius:4px}
   .tip .en{font-size:13px;color:#9ab0df;margin-top:3px}
   .tip .gp{font-size:12px;color:#8b9dc0;margin-top:7px}
-  /* 選択のパネルは**ホバーのものと同じ見た目**。留まるかどうかだけが違う */
+  /* 選択のパネルはホバーのものと同じ見た目。留まるかどうかだけが違う */
   #clearSel{display:none;margin-left:auto;cursor:pointer;font:inherit;font-size:11px;
     color:#cfe0ff;background:#25314c;border:1px solid #3b4a6b;border-radius:5px;padding:2px 7px}
   #clearSel:hover{background:#2f3d5e}
@@ -113,6 +113,46 @@
     .rgn{font-size:11px;padding-left:8px}
     #hud{display:none}
   }
+
+  /* ───────── 狭い画面（スマホ）─────────
+     3D を全画面にして、操作は下のバー 1 本に集約する。一覧と設定は
+     下から出るシート。実測で UI が画面の 60% を覆っていたのを約 12% にする。 */
+  #bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;
+    background:rgba(16,21,33,.94);border-top:1px solid #2b3550;
+    backdrop-filter:blur(6px);padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    display:none;flex-direction:column;gap:8px}
+  #bar .brow{display:flex;align-items:center;gap:8px}
+  #bar button{border:1px solid #2b3550;background:#18233b;color:#e8eefc;
+    border-radius:9px;font:inherit;font-size:14px;min-height:42px;padding:0 14px;cursor:pointer}
+  #bar button:active{background:#2b6fd6}
+  /* #bar button（id+要素）は .seg button.on（クラス2+要素）より詳細度が高い。
+     打ち消さないと、下のバーでどちらのモードか分からなくなる。 */
+  #bar .seg button.on{background:#2b6fd6;border-color:#5aa0ff}
+  #prevS,#nextS{min-width:46px;font-size:20px;line-height:1;padding:0}
+  #openList{flex:1}
+  #barMode{flex:1;display:flex}
+  #barMode .seg{flex:1}
+  #bar #posBlock{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+  #bar #posBlock .lbl{margin:0;order:2;flex:none}
+  #bar #posBlock .poslbl{display:none}
+  #bar #posBlock #pos{order:1;flex:1;min-width:0}
+  #scrim{display:none;position:fixed;inset:0;z-index:25;background:rgba(4,6,11,.5)}
+  #scrim.on{display:block}
+
+  body.narrow #list,
+  body.narrow #panel{
+    position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-width:none;
+    max-height:76vh;border-radius:14px 14px 0 0;border-width:1px 0 0;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom));
+    transform:translateY(101%);transition:transform .22s ease;z-index:30}
+  body.narrow #list.open,
+  body.narrow #panel.open{transform:none}
+  body.narrow #panel{overflow-y:auto}
+  body.narrow #list{max-height:76vh}
+  body.narrow #bar{display:flex}
+  @media (prefers-reduced-motion:reduce){
+    body.narrow #list, body.narrow #panel{transition:none}
+  }
 </style>
 </head>
 <body>
@@ -146,8 +186,10 @@
     <button data-p="axial" class="on">軸位断<small>Axial</small></button>
   </div>
 
-  <div class="lbl row"><span>位置 (world mm)</span><span class="val" id="pv">0.0</span></div>
-  <input type="range" id="pos">
+  <div id="posBlock">
+    <div class="lbl row"><span class="poslbl">位置 (world mm)</span><span class="val" id="pv">0.0</span></div>
+    <input type="range" id="pos">
+  </div>
 
   <div class="lbl">重ね方</div>
   <label class="chk"><input type="checkbox" id="cLabel" checked> 領域色を重ねる</label>
@@ -178,6 +220,21 @@
   <div id="tree"></div>
 </div>
 
+<!-- 狭い画面のときだけ出る下のバー。#mode と #posBlock は
+     ここへ「移動」する（複製しない。2 つあると必ず片方が古くなる） -->
+<div id="bar">
+  <div class="brow" id="barPos">
+    <button id="prevS" type="button" aria-label="前の断面">−</button>
+    <button id="nextS" type="button" aria-label="次の断面">＋</button>
+  </div>
+  <div class="brow" id="barMain">
+    <span id="barMode"></span>
+    <button id="openList" type="button">領域</button>
+    <button id="openSet" type="button" aria-label="設定">⚙</button>
+  </div>
+</div>
+<div id="scrim"></div>
+
 <div id="hud"></div>
 
 <!-- 引き出し線。色の線の下に黒い線を敷いて、断面のどんな色の上でも見えるようにする -->
@@ -205,21 +262,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-/* ═══════════════════════════════════════════════════════════════════════
-   このファイルの主張
+/* ───────────── 座標について ─────────────
 
-   座標変換関数が 1 つもない。
+   このファイルには座標変換関数が 1 つも無い。メッシュの頂点は world RAS(mm) で
+   格納されていて、断面の位置も、断面画像のスライス番号も同じ world RAS(mm)。
+   すべて同じ数値なので、「モデル座標系」と「画像座標系」を相互変換する必要が
+   そもそも発生しない。
 
-   メッシュの頂点は world RAS(mm) で格納されている。断面の位置も world
-   RAS(mm)。スライス画像のファイル名も world RAS(mm)。すべて同じ数値なので、
-   「モデル座標系」と「画像座標系」を相互変換する必要がそもそも発生しない。
+   変換式を書きたくなったときは、たいていどこかで別の座標系が混ざっている。
 
-   変換式を書きたくなったら、どこかで別の座標系を持ち込んでいる。
-   探すべきは変換式ではなく、その持ち込みのほう。
-
-   glTF は Y-up が慣習だが、頂点を回転させて焼き込むと上の性質が壊れる。
-   代わりにカメラの up を +Z にしてある（下の camera.up）。データは RAS のまま。
-   ═══════════════════════════════════════════════════════════════════════ */
+   glTF は Y-up が慣習だが、頂点を回転させて焼き込むとこの性質が壊れる。
+   代わりにカメラの up を +Z にしてある（下の camera.up）。データは RAS のまま。 */
 
 const Q = new URLSearchParams(location.search);
 const ROOT  = Q.get('assets') || 'assets';   // スライス画像とメタデータ
@@ -228,8 +281,8 @@ const AX = { sagittal:'x', coronal:'y', axial:'z' };
 const IDX = { x:0, y:1, z:2 };
 
 /* metadata と labels.json は毎回サーバに確認する（304 で済む）。
-   ここが古いと、**アトラスを増やしても閲覧側がそれを知らないまま**になり、
-   「切り替えても断面が変わらない」という形で出る。実際に踏んだ。
+   ここが古いと、アトラスを増やしても閲覧側がそれを知らないままになり、
+   「切り替えても断面が変わらない」という形で出る。
    重い画像とモデルの側は、URL に ?v=（中身のハッシュ）が付いているので
    普通にキャッシュさせてよい。 */
 const noCache = { cache: 'no-cache' };
@@ -242,7 +295,7 @@ const labels = await (await fetch('labels.json', noCache)).json();
    当たった点の world x の符号で判別する。中央構造は色が一意なので問題ない。 */
 const colorKey = (r, g, b) => (r << 16) | (g << 8) | b;
 
-/* 色 -> 領域名。**アトラスごとに別の表**にする。色は DKT と血管支配で
+/* 色 -> 領域名。アトラスごとに別の表にする。色は DKT と血管支配で
    平気で衝突するので、1 つの表にまとめると別のアトラスの領域が引かれる。 */
 const byColorOf = new Map();
 for (const [name, v] of Object.entries(labels)) {
@@ -275,8 +328,8 @@ function setProgress(key, loaded, total, what){
   parts.set(key, { loaded, total });
   /* 初期ロードが終わると進捗バーは DOM から消える。あとから読むもの
      （アトラス切り替え時のモデル）でここに来ると要素が無い。
-     素通りさせないと **GLTFLoader の進捗コールバックの中で例外になり、
-     読み込みそのものが失敗する**（実際にそれでモデルが切り替わらなかった）。 */
+     素通りさせないと GLTFLoader の進捗コールバックの中で例外になり、
+     読み込みそのものが失敗する（実際にそれでモデルが切り替わらなかった）。 */
   const fill = document.getElementById('lfill');
   if (!fill) return;
   let l = 0, t = 0;
@@ -379,17 +432,17 @@ const texLoader = new THREE.TextureLoader();
 
    アトラスなら、その断面について最初に一度読むだけ。以降のめくりは
    UV オフセットを変えるだけで、GPU 上のデータは一切動かない。
-   **読み込み待ちが原理的に発生しない。**
+   読み込み待ちが原理的に発生しない。
 
    タイルの並びは index = row * cols + col（左上から右へ、行は下へ）。
    three.js は既定でテクスチャを上下反転して読むので、v 方向のオフセットは
    上下を入れ替えて計算する。 */
 /* T1 はアトラス（DKT / 血管支配）で共通、ラベルの板だけがアトラスごとに違う。
-   だから **T1 は面ごとに 1 枚、ラベルは (面 × アトラス) ごとに 1 枚**持つ。
+   だから T1 は面ごとに 1 枚、ラベルは (面 × アトラス) ごとに 1 枚持つ。
 
    ここを「面ごとに t1 と label の対」で持つと、アトラスを切り替えたときに
    *T1 が同じかどうか*で差し替えを判定してしまい、ラベルだけが前のアトラスの
-   まま残る。前回の実装はそれで壊れていた（DECISIONS.md の「見送った案」）。 */
+   まま残る。前回の実装はそれで壊れていた。 */
 const t1Cache = new Map();       // 面 -> { tex, promise }
 const labCache = new Map();      // 面|アトラス -> { tex, promise }
 
@@ -415,7 +468,7 @@ function labelUrl(plane, atlas){
   const A = meta.planes[plane].atlas;
   if (A.labels && A.labels[atlas]) return A.labels[atlas];
   if (atlas === 'dkt' && A.label) return A.label;      // 旧い metadata との互換
-  /* **黙って別のアトラスの画像を出さない。**それをやると「切り替えたのに
+  /* 黙って別のアトラスの画像を出さない。それをやると「切り替えたのに
      絵が変わらない」だけの症状になり、原因が資産側なのか閲覧側なのか
      分からなくなる。 */
   fail(`この断面画像には「${atlas}」のラベルが入っていない`,
@@ -545,12 +598,19 @@ function layoutPlane(plane, world){
 let meshByName = new Map();       // ノード名 -> メッシュ（今のアトラスのぶん）
 let mats = [];                   // 今のアトラスのマテリアル（クリップの付け外しに使う）
 let brain = null;                // 今のアトラスのルート
+/* **入力と配置は別々に判定する。**「画面が狭い = タッチ」ではない。
+   実測でタブレット(820x1180)は配置に問題が無いのにホバーが無かった。
+     入力 … ホバーが使えるか（= タッチかどうか）
+     配置 … 幅が足りるか */
+const TOUCH  = matchMedia('(hover: none)');
+const NARROW = matchMedia('(max-width: 640px)');
+
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'dkt'), side:'L',
                 half:'both', cortex:true,          // 立体モードの見せ方
                 world:{x:0,y:0,z:0}, clip:true };
 
-/* アトラスの定義。**大分類の並び順はここで決める**（labels.json の並びは
+/* アトラスの定義。大分類の並び順はここで決める（labels.json の並びは
    生成側の宣言順で、読みたい順とは違う）。model は viewer.html からの相対。 */
 const ATLASES = {
   dkt: { name:'DKT', model:'brain.glb',
@@ -599,7 +659,7 @@ function showSlice(p, w){
     // 待っている間に断面やアトラスが変わっていたら、古い結果を貼らない
     if (state.plane !== plane0 || state.atlas !== atlas0) return;
     if (!e.t1 || !e.label) return;
-    // **両方の map を見る。**T1 はアトラス間で共有なので、T1 だけで判定すると
+    // 両方の map を見る。T1 はアトラス間で共有なので、T1 だけで判定すると
     // アトラスを切り替えてもラベルが差し替わらない
     if (t1Mat.map !== e.t1) { t1Mat.map = e.t1; t1Mat.needsUpdate = true; }
     if (labMat.map !== e.label) { labMat.map = e.label; labMat.needsUpdate = true; }
@@ -610,9 +670,9 @@ function showSlice(p, w){
     if (hovered) setHover(null);
     sliceMesh.visible = state.mode !== 'solid';   // 立体モードでは読めても出さない
   };
-  /* **両方揃ってから貼る。**T1 だけを見て put() を呼ぶと、アトラスを切り替えた
+  /* 両方揃ってから貼る。T1 だけを見て put() を呼ぶと、アトラスを切り替えた
      直後（T1 は読み終わっていてラベルはこれから）に put() が空振りし、
-     しかも promise を待たないので**そのまま前のアトラスの断面が残る**。
+     しかも promise を待たないのでそのまま前のアトラスの断面が残る。
      スライダーを動かすなど、次に apply() が走るまで直らない。 */
   if (e.t1 && e.label) put(); else e.promise.then(put);
 }
@@ -644,13 +704,13 @@ function apply(){
    途中まで不完全なため、モデル分だけで一度 100% に達してしまう。 */
 const atlasReady = loadAtlas(state.plane).promise;
 
-/* モデルはアトラスごとに 1 つ。**切り替えたときに初めて読む。**
+/* モデルはアトラスごとに 1 つ。切り替えたときに初めて読む。
    最初から両方読むと、DKT しか見ない読者にも 3.9MB 余計に送ることになる。 */
 const models = new Map();        // アトラス -> { root, meshByName, mats }
 
 /* パネルの基準に使う。アトラスを切り替えると対応が変わるので捨てる。
-   **useModel より前で宣言すること。**あとに置くと初回の useModel が
-   TDZ に落ちて、読み込みが進捗 0% のまま黙って止まる（実際に踏んだ）。 */
+   useModel より前で宣言すること。あとに置くと初回の useModel が
+   TDZ に落ちて、読み込みが進捗 0% のまま黙って止まる。 */
 const meshCenters = new Map();   // 領域名 -> world の中心
 let modelBox = null;             // 現在のモデルの外接直方体
 
@@ -700,6 +760,39 @@ const ctr = box.getCenter(new THREE.Vector3());
 controls.target.copy(ctr);
 camera.position.copy(ctr).add(new THREE.Vector3(330,-135,215));  // 断面法線に対して斜め。正対すると平面的な MRI にしか見えない
 
+/* モデルが画面に収まる距離まで引く。**縦長の画面では横で決まる。**
+   縦の fov だけで決めると左右がはみ出す（実機幅 390px で実際にそうなった）。
+   向きは変えない——既定の斜めの見え方は残す。 */
+function fitView(){
+  if (!brain) return;
+  const b = new THREE.Box3().setFromObject(brain);
+  if (b.isEmpty()) return;
+  const c = b.getCenter(new THREE.Vector3());
+  const r = b.getSize(new THREE.Vector3()).length() / 2;
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  controls.target.copy(c);
+
+  /* 外接球の半径から距離を出すと、斜めから見た平たい脳では引きすぎる
+     （実測で画面の 2 割しか使わなかった）。いったん置いてから**画面上の
+     広がりを実際に測って**詰める。1 回で十分近づく。 */
+  camera.position.copy(c).add(dir.clone().multiplyScalar(r * 3));
+  camera.updateMatrixWorld(true);
+  let mx = 0, my = 0;
+  for (const x of [b.min.x, b.max.x])
+    for (const y of [b.min.y, b.max.y])
+      for (const z of [b.min.z, b.max.z]) {
+        const q = new THREE.Vector3(x, y, z).project(camera);
+        mx = Math.max(mx, Math.abs(q.x)); my = Math.max(my, Math.abs(q.y));
+      }
+  /* 1.0 を超える値を許しているのは、測っているのが**外接直方体の角**だから。
+     角は脳の外の空白で、そのまま画面に収めると脳が小さくなる。実測で、
+     箱を 1.23 倍はみ出させたときに脳の横幅が画面の 85% になった。
+     縦は下のバーのぶんを少し空ける。 */
+  const k = Math.max(mx / 1.23, my / 1.05, 0.05);
+  camera.position.copy(c).add(dir.multiplyScalar(r * 3 * k));
+  controls.update();
+}
+
 /* ---- UI -------------------------------------------------------------- */
 const posEl = document.getElementById('pos');
 function syncSlider(){
@@ -720,13 +813,13 @@ posEl.oninput = e=>{ state.world[AX[state.plane]] = parseFloat(e.target.value); 
 document.getElementById('cLabel').onchange = e=>{ labMesh.visible = e.target.checked; };
 document.getElementById('cClip').onchange = ()=> applyMode();
 
-/* 皮質とみなすもの。**大脳白質も一緒に隠す。**皮質だけ消すと白い殻が残り、
+/* 皮質とみなすもの。大脳白質も一緒に隠す。皮質だけ消すと白い殻が残り、
    結局その中の皮質下構造が見えない。 */
 const CORTICAL = /^ctx-|Cerebral-White-Matter$/;
 
 /* 立体モードの見せ方（半割・皮質の有無）をメッシュに反映する。
 
-   **`Raycaster` は `visible` を見ない。**隠したメッシュにもレイは当たるので、
+   `Raycaster` は `visible` を見ない。隠したメッシュにもレイは当たるので、
    ホバー判定の側で自分で除外する（pickModel を参照）。
 
    一覧のボタンは、隠している領域を押せなくする。押しても何も起きないのに
@@ -769,13 +862,14 @@ document.getElementById('cCortex').onchange = e=>{
    立体モード … 板もカットラインも出さない。純粋な 3D モデルだけ
 
    立体モードでもホバーのパネルは出す。断面のときと同じ見た目・同じ置き方で、
-   **最前面に見えている領域**を指す。クリップが無いぶん判定は素直で、
+   最前面に見えている領域を指す。クリップが無いぶん判定は素直で、
    レイが最初に当たった面がそのまま見えている面になる。 */
 function applyMode(){
   const solid = state.mode === 'solid';
   document.querySelectorAll('#mode button').forEach(
     b => b.classList.toggle('on', b.dataset.m === state.mode));
   document.getElementById('sliceCtl').style.display = solid ? 'none' : '';
+  document.getElementById('barPos').style.display = solid ? 'none' : '';
   document.getElementById('solidCtl').style.display = solid ? '' : 'none';
   /* 血管支配アトラスに「皮質」という区分は無いので、その切り替えは出さない */
   document.getElementById('cCortexRow').style.display =
@@ -799,7 +893,7 @@ document.querySelectorAll('#mode button').forEach(b=>{
 document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
 
 /* ───────────── 左の領域リスト ─────────────
-   大分類 -> 小区分。選ぶとその領域を強調し、**その領域の代表スライスへ移動する**。
+   大分類 -> 小区分。選ぶとその領域を強調し、その領域の代表スライスへ移動する。
 
    飛び先は labels.json の `slice`（生成側が world RAS mm で書いている）。
    ここでも座標変換はしない。断面位置はいつも world 座標そのもの。
@@ -814,7 +908,7 @@ const itemByName = new Map();
 /* 強調の色は「選択 > ホバー > 無し」の優先で決める。
    ホバーが外れたときに 0 に戻すだけだと、選択中の領域の強調まで消える。
 
-   選択中は**その領域自身の色で光らせる**（灰色っぽい光だと、色の違う隣の領域と
+   選択中はその領域自身の色で光らせる（灰色っぽい光だと、色の違う隣の領域と
    見分けがつかない）。さらに描画ループで明るさを揺らす。静止した光だと、
    もともと明るい領域では光っているのかどうか分からない。 */
 function paint(name){
@@ -828,7 +922,7 @@ function paint(name){
   }
 }
 
-/* 選択したものを目立たせるには、そこを明るくするより**周りを落とす**ほうが効く。
+/* 選択したものを目立たせるには、そこを明るくするより周りを落とすほうが効く。
    emissive を足すだけだと、元から明るい領域では sRGB の上端で潰れて 1.3 倍程度に
    しかならない（実測）。地の色を暗くすれば差はいくらでも作れる。
 
@@ -867,14 +961,14 @@ function selectRegion(name){
 }
 
 /* 一覧を作る。アトラスか左右を切り替えたら作り直す。
-   **その大分類が ATLASES に並んでいなければ出さない**（DKT の脳室系・白質は
+   その大分類が ATLASES に並んでいなければ出さない（DKT の脳室系・白質は
    不要との判断。labels.json からは消していない。ホバーでは名前が要る）。
 
    左右は一覧の外（上のボタン）で決める。左右を両方並べると DKT で 83 件になり、
    同じ名前が「左◯◯」「右◯◯」と対で続いて目的のものを探しにくい。片側だけなら
    42 件で、名前から「左」「右」も落とせる（`ja_short`）。
 
-   **正中の構造（脳幹など）は side を持たないので、どちらを選んでも出す。**
+   正中の構造（脳幹など）は side を持たないので、どちらを選んでも出す。
    片側にしか出ないと「消えた」と受け取られる。
 
    3D やホバーのパネルでは `ja`（左右つき）のままにする。あちらは左右が
@@ -975,7 +1069,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') setSelected(null); })
      3D  : 当たったメッシュのノード名がそのまま領域名
 
    板は 3D モデルより手前にあり、脳の外では透明なので、
-   **先に板を見て、そこが背景なら 3D に落とす**。逆順にすると板の透明部分を
+   先に板を見て、そこが背景なら 3D に落とす。逆順にすると板の透明部分を
    ホバーしたときに背後のモデルを拾えない。
 
    どちらで当たっても対応する 3D 領域を光らせる。断面上をなぞると 3D 側が
@@ -1007,7 +1101,7 @@ function computeAnchors(){
   sliceMesh.updateMatrixWorld(true);
   const [tw, th] = lblTile, d = lblData.data;
 
-  /* 集計は色ではなく**解決後の領域名**をキーにする。
+  /* 集計は色ではなく解決後の領域名をキーにする。
      LUT は左右の同名構造に同じ色を使うので、色でまとめると左右の海馬が
      1 つのアンカーを共有してしまい、パネルが左右で同じ場所に出る。
 
@@ -1069,7 +1163,7 @@ function toScreen(v3){
      断面モード … その断面での代表画素（anchors）と、断面上の脳の外接矩形
      立体モード … 領域メッシュの中心と、モデル全体の外接直方体
 
-   どちらも**カーソルでは動かない**点であることが要件。カーソルを基準にすると、
+   どちらもカーソルでは動かない点であることが要件。カーソルを基準にすると、
    同じ領域の中で動かすたびにパネルが動いて読めない。 */
 function meshCenter(name){
   if (meshCenters.has(name)) return meshCenters.get(name);
@@ -1121,10 +1215,10 @@ function brainSpanScreen(){
 /* ───────────── 引き出し線とパネル ─────────────
    2 種類ある。どちらも同じ見た目のパネルで、線の色だけが違う。
 
-     選択  一覧から選んだ領域。**重心から**線を引き、解除するまで出たまま
-     ホバー カーソルが指している領域。線の起点は**カーソル**（そこに小さい丸）
+     選択  一覧から選んだ領域。重心から線を引き、解除するまで出たまま
+     ホバー カーソルが指している領域。線の起点はカーソル（そこに小さい丸）
 
-   **見た目は同じ**にしてある。選択は「ホバーのパネルがその場に留まったもの」であって、
+   見た目は同じにしてある。選択は「ホバーのパネルがその場に留まったもの」であって、
    別種の表示ではない。区別が要るときは、線の根元に丸があるほうがホバー。
 
    同じ領域を指したときは選択のほうを優先する（同じ内容を 2 枚出さない）。
@@ -1164,7 +1258,7 @@ const hideLine = ls => { for (const l of ls) l.style.display = 'none'; };
 /* パネルを置いてはいけない矩形。UI のパネルは畳み方や画面幅で動くので毎回読む。 */
 function uiRects(){
   const out = [];
-  for (const id of ['list', 'panel', 'hud']) {
+  for (const id of ['list', 'panel', 'hud', 'bar']) {
     const el = document.getElementById(id);
     if (el && el.offsetHeight) out.push(el.getBoundingClientRect());
   }
@@ -1203,7 +1297,7 @@ function placeTip(el, ls, name, origin, avoid){
   const prefLeft = ax < (sx0 + sx1) / 2, prefY = ay - h / 2;
 
   const clampX = x => Math.max(8, Math.min(innerWidth - w - 8, x));
-  /* 置き場の候補。外側が塞がっていたら**脳の上に重ねてでも**出す。
+  /* 置き場の候補。外側が塞がっていたら脳の上に重ねてでも出す。
      UI のパネルに重なるよりはよい（窓が狭いと外側には入らない）。 */
   const spots = [
     [prefLeft,  clampX(prefLeft ? sx0 - gap - w : sx1 + gap)],
@@ -1212,7 +1306,7 @@ function placeTip(el, ls, name, origin, avoid){
     [!prefLeft, clampX(prefLeft ? sx1 - w - 8 : sx0 + 8)],
     [prefLeft,  clampX((sx0 + sx1) / 2 - w / 2)],                // 真ん中
   ];
-  /* 置ける候補のうち、**本来置きたい高さから最も離れない**ものを採る。
+  /* 置ける候補のうち、本来置きたい高さから最も離れないものを採る。
      先に見つかった候補で打ち切ると、塞がれた側の遠い位置（一覧の下など）に
      落ち着いてしまい、引き出し線が画面を横切る。立体モードは脳が小さく
      反対側が空くので、そこが顕著に出た。同点なら prefLeft 側が勝つ。 */
@@ -1286,11 +1380,7 @@ function occludedByModel(sliceHit){
   return false;
 }
 
-/* 判定は表示中の断面だけを見る。
-   3D メッシュへのレイキャストは行わない。皮質表面は開いた面で、内側に
-   皮質下構造や白質のメッシュが入れ子になっているため、見た目の最前面と
-   レイが最初に当たる面が一致せず、指しているつもりのない領域を拾う。 */
-/* 立体モードのホバー。
+/* 立体モードで指しているものを拾う。
 
    レイが最初に当たった面が、そのまま見えている面になる。切り取りをしないので
    「切り落とされて画面に無いメッシュに当たる」問題は起きず、深度バッファで
@@ -1298,7 +1388,7 @@ function occludedByModel(sliceHit){
    クリップで消えたメッシュに当たるためだった）。 */
 function pickModel(){
   if (!brain || !brain.visible) return null;
-  /* **`visible` で自分で絞る。**Raycaster は見た目を知らないので、
+  /* `visible` で自分で絞る。Raycaster は見た目を知らないので、
      半割で消した側や隠した皮質にもそのまま当たる。 */
   for (const h of ray.intersectObject(brain, true)) {
     const name = h.object.name;
@@ -1308,37 +1398,106 @@ function pickModel(){
   return null;
 }
 
-function updateHover(){
-  if (!ptrDirty || !ptr || !uiReady) return;
-  ptrDirty = false;
+/* 画面上の 1 点が指している領域名。**ホバーとタップで同じものを使う。**
+   ここが 2 つあると、指したものと選んだものが食い違う余地ができる。
 
-  ndc.x = (ptr.x / innerWidth) * 2 - 1;
-  ndc.y = -(ptr.y / innerHeight) * 2 + 1;
+   断面モードでは表示中の断面だけを見て、3D メッシュへのレイキャストは
+   行わない。皮質表面は開いた面で、内側に皮質下構造や白質のメッシュが
+   入れ子になっているうえ、クリップで消えた面にも当たるため、見た目の
+   最前面とレイが最初に当たる面が一致しない。 */
+function pickAt(px, py){
+  if (!uiReady) return null;
+  ndc.x = (px / innerWidth) * 2 - 1;
+  ndc.y = -(py / innerHeight) * 2 + 1;
   ray.setFromCamera(ndc, camera);
 
-  if (state.mode === 'solid') { setHover(pickModel()); return; }
+  if (state.mode === 'solid') return pickModel();
 
-  if (!sliceMesh.visible || !lblData) { setHover(null); return; }
+  if (!sliceMesh.visible || !lblData) return null;
   const hit = ray.intersectObject(sliceMesh, false)[0];
-  if (!hit || !hit.uv) { setHover(null); return; }
-  if (occludedByModel(hit)) { setHover(null); return; }
+  if (!hit || !hit.uv) return null;
+  if (occludedByModel(hit)) return null;
 
   const [tw, th] = lblTile;
   // uv の原点は下端。画像の行は上端から数えるので v を反転する
   const cx = Math.max(0, Math.min(tw - 1, Math.floor(hit.uv.x * tw)));
   const cy = Math.max(0, Math.min(th - 1, Math.floor((1 - hit.uv.y) * th)));
   const o = (cy * tw + cx) * 4, d = lblData.data;
-  if (d[o + 3] === 0) { setHover(null); return; }
+  if (d[o + 3] === 0) return null;
   const name = regionFromColor(d[o], d[o + 1], d[o + 2], hit.point.x);
-  setHover(NO_PANEL.has(name) ? null : name);
+  return (name && !NO_PANEL.has(name)) ? name : null;
 }
 
+function updateHover(){
+  if (!ptrDirty || !ptr || !uiReady) return;
+  ptrDirty = false;
+  setHover(pickAt(ptr.x, ptr.y));
+}
+
+/* ホバーは「浮く」入力にしかない。タッチでは指を置いている間しか
+   pointermove が来ないので、そのまま拾うと触った瞬間に名前が出て離すと消える。
+   タッチでは使わず、タップで選ぶ側に寄せる。 */
 renderer.domElement.addEventListener('pointermove', (e)=>{
+  if (e.pointerType === 'touch') return;
   ptr = { x:e.clientX, y:e.clientY }; ptrDirty = true;
 });
 renderer.domElement.addEventListener('pointerleave', ()=>{
   ptr = null; ptrDirty = false; setHover(null);
 });
+
+/* ───────── タッチ ─────────
+   2 本指はこちらで扱うので OrbitControls から外す。**enableZoom は使えない。**
+   ホイールとピンチを 1 つのフラグで束ねており、有効にすると PC 側で
+   ホイールがズームに戻る（断面めくりが死ぬ）。中ボタンドラッグと同じ方式で、
+   ここだけ自前で持つ。 */
+controls.touches.TWO = null;
+
+let pinch = null, tap = null;
+const TAP_SLOP = 12, TAP_MS = 700;      // これを超えたら回転ドラッグとみなす
+
+/* ピンチは **PointerEvent ではなく TouchEvent から取る。**
+   2 本目以降の指に pointerdown が来ないことがある（Chrome のタッチ実機化で
+   実際にそうなり、指を広げても距離が一切変わらなかった）。`e.touches` なら
+   常に今触れている指が全部入っているので、数え違いが起きない。 */
+const gap = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+renderer.domElement.addEventListener('touchstart', (e)=>{
+  if (e.touches.length < 2) return;
+  pinch = gap(e.touches);
+  tap = null;                            // 2 本目が触れた時点でタップではない
+}, { passive:true });
+
+renderer.domElement.addEventListener('touchmove', (e)=>{
+  if (e.touches.length !== 2 || pinch === null) return;
+  e.preventDefault();
+  const d = gap(e.touches);
+  if (d > 0 && pinch > 0) zoomBy(pinch / d);                // 指を広げると寄る
+  pinch = d;
+}, { passive:false });
+
+const endPinch = (e)=>{ if (e.touches.length < 2) pinch = null; };
+renderer.domElement.addEventListener('touchend', endPinch);
+renderer.domElement.addEventListener('touchcancel', endPinch);
+
+/* タップで選ぶ。**一覧から選んだときと違って断面は動かさない。**
+   画面に見えているものを触ったのに表示が飛ぶのは筋が通らない。 */
+renderer.domElement.addEventListener('pointerdown', (e)=>{
+  if (e.pointerType !== 'touch') return;
+  tap = { x:e.clientX, y:e.clientY, t:performance.now(), id:e.pointerId };
+});
+renderer.domElement.addEventListener('pointermove', (e)=>{
+  if (!tap || e.pointerId !== tap.id) return;
+  if (Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > TAP_SLOP) tap = null;
+});
+renderer.domElement.addEventListener('pointerup', (e)=>{
+  if (!tap || e.pointerId !== tap.id) return;
+  const { x, y } = tap, quick = performance.now() - tap.t < TAP_MS;
+  tap = null;
+  if (!quick || pinch !== null) return;
+  const n = pickAt(x, y);
+  setSelected(n && n !== selected ? n : null);
+});
+renderer.domElement.addEventListener('pointercancel', ()=>{ tap = null; });
 
 /* スクロールボタン（中ボタン）を押したまま上下に動かしてズーム。
    OrbitControls の enableZoom は中ボタンのドラッグも一緒に止めてしまうため、
@@ -1372,13 +1531,65 @@ renderer.domElement.addEventListener('wheel', (e)=>{
 addEventListener('resize', ()=>{
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  if (NARROW.matches) fitView();
 });
+
+/* ───────────── 狭い画面の配置 ─────────────
+   #mode と #posBlock を下のバーへ**移動**する。複製しない——同じ操作子が
+   2 つあると、必ずどちらかが古い値を持つ（同じ理由で viewer.html も
+   1 か所から撒いている）。戻せるように、元の親と次の兄弟を控えておく。 */
+const homes = new Map();
+const takeHome = el => { if (!homes.has(el)) homes.set(el, [el.parentNode, el.nextSibling]); return el; };
+const goHome = el => { const [par, next] = homes.get(el); par.insertBefore(el, next); };
+
+const barEl = document.getElementById('bar');
+const scrim = document.getElementById('scrim');
+const modeEl = document.getElementById('mode');
+const posBlock = document.getElementById('posBlock');
+const listEl = document.getElementById('list');
+const panelEl = document.getElementById('panel');
+
+function closeSheets(){
+  listEl.classList.remove('open'); panelEl.classList.remove('open');
+  scrim.classList.remove('on');
+}
+function openSheet(el){
+  const already = el.classList.contains('open');
+  closeSheets();
+  if (already) return;
+  el.classList.add('open'); scrim.classList.add('on');
+}
+document.getElementById('openList').onclick = ()=> openSheet(listEl);
+document.getElementById('openSet').onclick  = ()=> openSheet(panelEl);
+scrim.onclick = closeSheets;
+document.getElementById('prevS').onclick = ()=> stepSlice(-1);
+document.getElementById('nextS').onclick = ()=> stepSlice(1);
+
+function relayout(){
+  const narrow = NARROW.matches;
+  document.body.classList.toggle('narrow', narrow);
+  if (narrow) {
+    document.getElementById('barMode').appendChild(takeHome(modeEl));
+    document.getElementById('barPos').insertBefore(takeHome(posBlock),
+                                                  document.getElementById('nextS'));
+  } else if (homes.size) {
+    goHome(modeEl); goHome(posBlock);
+  }
+  if (!narrow) closeSheets();
+  barEl.style.display = narrow ? 'flex' : 'none';
+  if (narrow) fitView();          // PC 側の見え方には触れない
+  layoutCallouts();
+}
+NARROW.addEventListener('change', relayout);
+addEventListener('orientationchange', relayout);
 
 /* テストから中の状態を数値で確かめるための口。表示には一切関与しない。
    これが無いと「モデルが本当に切り替わったか」を外から観測できない。 */
 window.__state = () => ({
   atlas: state.atlas, plane: state.plane, side: state.side, mode: state.mode,
   half: state.half, cortex: state.cortex,
+  touch: TOUCH.matches, narrow: NARROW.matches,
+  selected, camDist: +camera.position.distanceTo(controls.target).toFixed(2),
   shown: [...meshByName.values()].filter(o => o.visible).length,
   clip: state.clip, sliceVisible: sliceMesh.visible, world: { ...state.world },
   nodes: meshByName.size, models: [...models.keys()],
@@ -1387,12 +1598,16 @@ window.__state = () => ({
 });
 
 for (const p of Object.keys(AX)) state.world[AX[p]] = snap(p, 0);
-syncSlider(); apply(); autoPickClipSide(); applyMode();
+syncSlider(); apply(); autoPickClipSide(); relayout(); applyMode();
 atlasReady.then(()=>{
   apply();                       // 最初の断面を出してから
   finishLoading();               // 操作を許可する
   applyMode();                   // ?mode=solid で開かれた場合に効かせる
-  prefetchOtherPlanes();         // 残りは裏で読む（進捗には出さない）
+  if (NARROW.matches) fitView();
+  /* 残りの断面を裏で読む。**タッチ環境ではやらない。**アトラスは展開後
+     1 枚 64MiB で、3 断面ぶん先読みすると 384MiB になる。切り替えたときに
+     一度待ちが入るが、落ちるよりよい。 */
+  if (!TOUCH.matches) prefetchOtherPlanes();
 });
 (function loop(){
   requestAnimationFrame(loop);
