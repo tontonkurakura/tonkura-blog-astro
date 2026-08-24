@@ -17,7 +17,7 @@ const viewer = "/brain-viewer/viewer.html";
       MNI 標準脳を DKT アトラス（Desikan-Killiany-Tourville）で分割した 3D モデル。
       断面で切ると、切り口に MRI と領域色が出る。皮質は FreeSurfer の表面から、
       皮質下はラベルボリュームから起こしている。
-      右上で<strong>血管支配（ACA / MCA / PCA / 椎骨脳底）</strong>に切り替えられる。
+      右上で<strong>血管支配領域（ACA / MCA / PCA / 椎骨脳底）</strong>に切り替えられる。
     </p>
   </div>
 
@@ -37,10 +37,12 @@ const viewer = "/brain-viewer/viewer.html";
       <dt>ホイール</dt><dd>断面を 1 枚めくる（Shift で 10 枚）</dd>
       <dt>中ボタンドラッグ</dt><dd>拡大縮小（Ctrl + ホイールでも可）</dd>
       <dt>断面上にカーソル</dt><dd>その位置の領域名を引き出し線で表示</dd>
+      <dt>クリック</dt><dd>その領域を選ぶ。3 つまで。もう一度押すと外れる</dd>
+      <dt>右上の「断面／立体」</dt><dd>断面で切って中を見るか、3D モデルだけを回すか</dd>
     </dl>
     <p class="note">
       断面がモデルに隠れている向きからは領域名を出さない。
-      「切る向きを反転」で手前側を切り替えられる。
+      重ね方の「反転」で手前側を切り替えられる。
     </p>
     <p class="hint">
       <a href={viewer} target="_blank" rel="noopener">別タブで開く</a>
@@ -54,7 +56,8 @@ const viewer = "/brain-viewer/viewer.html";
       Scientific Data 10, 74, 2023 / © 2021 The Johns Hopkins University）を、
       この標準脳の空間へ移して使っている。派生物にあたる断面画像と 3D モデルは
       <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>。
-      DKT 側は FastSurfer の出力で、標準脳は MNI152（患者の画像ではない）。
+      解剖学領域は FastSurfer の出力（DKT）で、標準脳は公開されている MNI152。
+      脳底動脈は正中の 1 本として扱っている。
     </p>
   </div>
 
