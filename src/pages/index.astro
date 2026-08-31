@@ -1,88 +1,176 @@
 ---
 import Base from "../layouts/Base.astro";
-import { getCollection } from "astro:content";
-import { getRealQuestions } from "../lib/wiki";
-import { getImagingPosts } from "../lib/imaging";
+import { getRecent, formatDate } from "../lib/home";
 
-const posts = await getCollection("blog");
-const imaging = await getImagingPosts();
-const questions = await getRealQuestions();
+const recent = await getRecent(9);
 
 const sections = [
-  { href: "/wiki", title: "Wiki", count: questions.length },
-  { href: "/database", title: "Database", count: null },
-  { href: "/neurology", title: "Notes", count: null },
-  { href: "/blog", title: "Blog", count: posts.length },
-  { href: "/imaging", title: "Imaging", count: imaging.length },
-  { href: "/anatomical-atlas", title: "Atlas", count: null },
-  { href: "/tools", title: "Tools", count: null },
-  { href: "/gallery", title: "Gallery", count: null },
+  { href: "/wiki", title: "Wiki" },
+  { href: "/database", title: "Database" },
+  { href: "/neurology", title: "Notes" },
+  { href: "/blog", title: "Blog" },
+  { href: "/imaging", title: "Imaging" },
+  { href: "/anatomical-atlas", title: "Atlas" },
+  { href: "/tools", title: "Tools" },
+  { href: "/gallery", title: "Gallery" },
 ];
 ---
 
 <Base title="TonKurA" wide>
   <section class="hero">
     <h1>TonKurA</h1>
+    <p class="lead">
+      神経内科と神経画像のノート。臨床で引っかかったことを調べ、書き留めている。
+    </p>
   </section>
 
-  <nav class="index">
-    {
-      sections.map((s) => (
-        <a class="row" href={s.href}>
-          <span class="name">{s.title}</span>
-          {s.count != null && <span class="count">{s.count}</span>}
-        </a>
-      ))
-    }
+  <nav class="sections">
+    {sections.map((s) => <a href={s.href}>{s.title}</a>)}
   </nav>
+
+  <section class="recent">
+    <h2>Recent</h2>
+    <ul>
+      {
+        recent.map((r) => (
+          <li>
+            <a href={r.href}>
+              <time datetime={r.date.toISOString()}>{formatDate(r.date)}</time>
+              <span class="t">{r.title}</span>
+              <span class="s">{r.section}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
   <style>
     .hero {
-      min-height: 28vh;
-      display: flex;
-      align-items: flex-end;
+      padding: 4rem 0 1.75rem;
     }
     .hero h1 {
-      font-size: clamp(3rem, 9vw, 6rem);
+      font-size: clamp(2.8rem, 8vw, 5rem);
       font-weight: 700;
       letter-spacing: -0.045em;
       line-height: 1;
-      margin: 0 0 2rem;
+      margin: 0 0 1rem;
+    }
+    .lead {
+      color: var(--fg-muted);
+      font-size: var(--step-0);
+      line-height: 1.7;
+      margin: 0;
+      max-width: 32rem;
     }
 
-    .index {
-      display: flex;
-      flex-direction: column;
-      border-top: 1px solid var(--border);
+    /* セクションは囲まない。8つを 4 列 2 段に組んで、折り返しを意図した形にする。 */
+    .sections {
+      display: grid;
+      gap: 0.3rem 1.5rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 2.5rem 0 4rem;
     }
-    .row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1.5rem 0.75rem;
-      margin-inline: -0.75rem;
+    .sections a {
+      justify-self: start;
+      color: var(--fg);
+      font-size: clamp(1.5rem, 4vw, 2.3rem);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      position: relative;
+      transition: color 0.18s ease;
+    }
+    .sections a::after {
+      background: currentColor;
+      bottom: -0.3rem;
+      content: "";
+      height: 1px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.24s ease;
+    }
+    .sections a:hover,
+    .sections a:focus-visible {
+      color: var(--fg-muted);
+    }
+    .sections a:hover::after,
+    .sections a:focus-visible::after {
+      transform: scaleX(1);
+    }
+
+    .recent h2 {
       border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      color: inherit;
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      margin: 0;
+      padding-bottom: 0.9rem;
+      text-transform: uppercase;
+    }
+    .recent ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .recent li a {
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 5.5rem 1fr auto;
+      margin-inline: -0.75rem;
+      padding: 1.05rem 0.75rem;
       transition:
         background 0.18s ease,
         padding-left 0.18s ease;
     }
-    .row:hover {
+    .recent li a:hover {
       background: var(--bg-subtle);
       padding-left: 1.25rem;
     }
-    .name {
-      font-size: clamp(1.6rem, 4.5vw, 2.6rem);
-      font-weight: 550;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-    }
-    .count {
-      font-size: var(--step-0);
+    .recent time {
       color: var(--fg-muted);
+      font-size: var(--step--1);
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+    }
+    .recent .t {
+      font-size: var(--step-0);
+      line-height: 1.5;
+    }
+    .recent .s {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+    }
+
+    @media (max-width: 40rem) {
+      .hero {
+        padding-top: 2.5rem;
+      }
+      .sections {
+        gap: 0.2rem 1.25rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 2rem 0 3rem;
+      }
+      .recent li a {
+        gap: 0.3rem 1rem;
+        grid-template-columns: 1fr auto;
+      }
+      .recent time {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .recent .t {
+        grid-column: 1 / -1;
+      }
+      .recent .s {
+        grid-column: 2;
+        grid-row: 2;
+      }
     }
   </style>
 </Base>

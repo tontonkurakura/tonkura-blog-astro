@@ -8,24 +8,6 @@ export interface RecentItem {
   date: Date;
 }
 
-/** 各セクションの件数。imaging は下書きを除いた数（本番ビルドでは 0 になりうる）。 */
-export async function getCounts() {
-  const [blog, wiki, database, neurology, imaging] = await Promise.all([
-    getCollection("blog"),
-    getCollection("wiki"),
-    getCollection("database"),
-    getCollection("neurology"),
-    getImagingPosts(),
-  ]);
-  return {
-    blog: blog.length,
-    wiki: wiki.filter((e) => e.data.id !== "q-000").length,
-    database: database.filter((e) => !e.id.startsWith("_")).length,
-    neurology: neurology.length,
-    imaging: imaging.length,
-  };
-}
-
 /**
  * 最近書いたもの。項目ごとに意味のある日付を持つコレクションだけを混ぜる。
  *
