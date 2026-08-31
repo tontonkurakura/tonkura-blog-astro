@@ -115,7 +115,6 @@ const formatDate = (d: Date) =>
       const img = box.querySelector(".frame img");
       const info = box.querySelector(".info");
       const rows = box.querySelectorAll(".info .row");
-      const EASE = "linear";
       const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
       let origin = null;
 
@@ -152,8 +151,9 @@ const formatDate = (d: Date) =>
         });
       }
 
-      /* 押した写真の位置から拡大先へ動かす。先に縮小版を出しておき、
-         大きいほうは読めた時点で差し替える。待ち時間が見えない。 */
+      /* その場でわずかに膨らみながら現れる。閉じ方をそのまま逆にした形。
+         先に縮小版を出しておき、大きいほうは読めた時点で差し替えるので
+         待ち時間が見えない。 */
       function open(b) {
         origin = b;
         const thumb = b.querySelector("img");
@@ -162,35 +162,20 @@ const formatDate = (d: Date) =>
         box.showModal();
         sizeImage(b);
 
-        const from = thumb.getBoundingClientRect();
-        const to = img.getBoundingClientRect();
-        if (motion && to.width > 0) {
+        if (motion) {
           img.animate(
             [
-              {
-                transformOrigin: "center",
-                transform:
-                  "translate(" +
-                  (from.left + from.width / 2 - (to.left + to.width / 2)) +
-                  "px," +
-                  (from.top + from.height / 2 - (to.top + to.height / 2)) +
-                  "px) scale(" +
-                  from.width / to.width +
-                  "," +
-                  from.height / to.height +
-                  ")",
-              },
-              { transform: "none" },
-            ],
-            { duration: 120, easing: EASE },
-          );
-          info.animate(
-            [
-              { opacity: 0, transform: "translateX(0.75rem)" },
+              { opacity: 0, transform: "scale(0.96)" },
               { opacity: 1, transform: "none" },
             ],
-            { duration: 120, delay: 50, easing: EASE, fill: "backwards" },
+            { duration: 120, easing: "ease-out" },
           );
+          info.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: 120,
+            delay: 50,
+            easing: "ease-out",
+            fill: "backwards",
+          });
         }
 
         const full = new Image();
