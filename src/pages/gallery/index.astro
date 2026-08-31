@@ -62,6 +62,8 @@ const formatDate = (d: Date) =>
               class="shot"
               style={`height:${HEIGHT[p.orientation]}px`}
               data-full={p.full}
+              data-w={p.width}
+              data-h={p.height}
               data-place={p.description}
               data-date={p.date ? formatDate(p.date) : ""}
               data-camera={p.camera ?? ""}
@@ -117,6 +119,31 @@ const formatDate = (d: Date) =>
       const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
       let origin = null;
 
+      /* 表示サイズを縦横比から先に決めて px で固定する。
+         決めないと「いま読んでいる画像の実寸」で決まり、サムネイルから
+         拡大用に差し替わった瞬間に寸法が変わって跳ねる。 */
+      function sizeImage(b) {
+        const w = Number(b.dataset.w);
+        const h = Number(b.dataset.h);
+        if (!w || !h) return;
+        const narrow = matchMedia("(max-width: 48rem)").matches;
+        let maxW, maxH;
+        if (narrow) {
+          maxW = innerWidth * 0.92;
+          maxH = innerHeight * 0.62;
+        } else {
+          const gap = parseFloat(getComputedStyle(frame).columnGap) || 24;
+          maxW = Math.min(
+            innerWidth * 0.94 - info.getBoundingClientRect().width - gap,
+            1400,
+          );
+          maxH = innerHeight * 0.85;
+        }
+        const scale = Math.min(maxW / w, maxH / h);
+        img.style.width = Math.round(w * scale) + "px";
+        img.style.height = Math.round(h * scale) + "px";
+      }
+
       function fill(b) {
         rows.forEach(function (row) {
           const v = b.dataset[row.dataset.field] || "";
@@ -133,6 +160,7 @@ const formatDate = (d: Date) =>
         fill(b);
         img.src = thumb.currentSrc || thumb.src;
         box.showModal();
+        sizeImage(b);
 
         const from = thumb.getBoundingClientRect();
         const to = img.getBoundingClientRect();
@@ -226,8 +254,13 @@ const formatDate = (d: Date) =>
         e.preventDefault();
         close();
       });
+      addEventListener("resize", function () {
+        if (box.open && origin) sizeImage(origin);
+      });
       box.addEventListener("close", function () {
         img.removeAttribute("src");
+        img.style.width = "";
+        img.style.height = "";
       });
     })();
   </script>
@@ -471,6 +504,7 @@ const formatDate = (d: Date) =>
       max-height: 90vh;
       max-width: 94vw;
     }
+    /* 寸法は開くときに px で入れる。ここの上限は JS が効かないときの保険。 */
     .frame img {
       display: block;
       max-height: 85vh;
