@@ -2,12 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import exifr from "exifr";
+import { getImage } from "astro:assets";
 
 export type Orientation = "portrait" | "landscape" | "square";
 
 export interface GalleryPhoto {
   name: string;
-  src: string;
+  /** 一覧に出す縮小版（WebP） */
+  thumb: string;
+  /** 拡大表示に使う版（WebP）。原寸は配らない。 */
+  full: string;
   /** 撮影地。photos.yaml に人が書く。 */
   description: string;
   date: Date | null;
@@ -22,37 +26,18 @@ export interface GalleryPhoto {
   iso?: string;
 }
 
-const IMAGES_DIR = "public/images";
-
 /**
- * JPEG の SOF マーカーから縦横を読む。EXIF には入っていない（62枚とも
- * ExifImageWidth が無い）ので、ファイルのヘッダーを直接見る。
+ * 写真は src/assets 配下に置く。public だと astro:assets の対象外で、原寸が
+ * そのまま配られる（移行直後はそうなっていて、一覧が 78MB あった）。
  */
-function jpegSize(buf: Buffer): { width: number; height: number } | null {
-  let i = 2; // SOI を飛ばす
-  while (i + 9 < buf.length) {
-    if (buf[i] !== 0xff) {
-      i++;
-      continue;
-    }
-    const marker = buf[i + 1];
-    const isSOF =
-      marker >= 0xc0 &&
-      marker <= 0xcf &&
-      marker !== 0xc4 &&
-      marker !== 0xc8 &&
-      marker !== 0xcc;
-    if (isSOF) {
-      return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
-    }
-    if (marker === 0xd8 || (marker >= 0xd0 && marker <= 0xd9)) {
-      i += 2;
-      continue;
-    }
-    i += 2 + buf.readUInt16BE(i + 2);
-  }
-  return null;
-}
+const sources = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/photos/*.{jpg,jpeg,JPG,JPEG}",
+  { eager: true },
+);
+
+const PHOTOS_DIR = "src/assets/photos";
+const THUMB_WIDTH = 900;
+const FULL_WIDTH = 2200;
 
 function orientationOf(width: number, height: number): Orientation {
   const r = width / height;
@@ -78,48 +63,50 @@ export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
     fs.readFileSync(path.resolve("src/data/photos.yaml"), "utf-8"),
   ) ?? {}) as Record<string, { description?: string } | null>;
 
-  const dir = path.resolve(IMAGES_DIR);
-  const files = fs
-    .readdirSync(dir)
-    .filter((f) => /\.(jpe?g)$/i.test(f))
-    .filter((f) => f in meta);
-
   const photos = await Promise.all(
-    files.map(async (name) => {
-      const file = path.join(dir, name);
-      const head = fs.readFileSync(file);
-      const size = jpegSize(head) ?? { width: 3, height: 2 };
-      const e =
-        ((await exifr
-          .parse(file, {
-            pick: [
-              "DateTimeOriginal",
-              "Model",
-              "LensModel",
-              "FocalLength",
-              "FNumber",
-              "ExposureTime",
-              "ISO",
-            ],
-          })
-          .catch(() => null)) as Record<string, unknown> | null) ?? {};
+    Object.entries(sources)
+      .map(([key, mod]) => ({ name: path.basename(key), image: mod.default }))
+      .filter(({ name }) => name in meta)
+      .map(async ({ name, image }) => {
+        const e =
+          ((await exifr
+            .parse(path.resolve(PHOTOS_DIR, name), {
+              pick: [
+                "DateTimeOriginal",
+                "Model",
+                "LensModel",
+                "FocalLength",
+                "FNumber",
+                "ExposureTime",
+                "ISO",
+              ],
+            })
+            .catch(() => null)) as Record<string, unknown> | null) ?? {};
 
-      return {
-        name,
-        src: `/images/${encodeURIComponent(name)}`,
-        description: meta[name]?.description ?? "",
-        date: e.DateTimeOriginal ? new Date(e.DateTimeOriginal as string) : null,
-        width: size.width,
-        height: size.height,
-        orientation: orientationOf(size.width, size.height),
-        camera: (e.Model as string) || undefined,
-        lens: (e.LensModel as string) || undefined,
-        focalLength: e.FocalLength ? `${e.FocalLength}mm` : undefined,
-        aperture: e.FNumber ? `f/${e.FNumber}` : undefined,
-        shutterSpeed: shutter(e.ExposureTime as number | undefined),
-        iso: e.ISO ? `ISO ${e.ISO}` : undefined,
-      } satisfies GalleryPhoto;
-    }),
+        const [thumb, full] = await Promise.all([
+          getImage({ src: image, width: THUMB_WIDTH, format: "webp" }),
+          getImage({ src: image, width: FULL_WIDTH, format: "webp" }),
+        ]);
+
+        return {
+          name,
+          thumb: thumb.src,
+          full: full.src,
+          description: meta[name]?.description ?? "",
+          date: e.DateTimeOriginal
+            ? new Date(e.DateTimeOriginal as string)
+            : null,
+          width: image.width,
+          height: image.height,
+          orientation: orientationOf(image.width, image.height),
+          camera: (e.Model as string) || undefined,
+          lens: (e.LensModel as string) || undefined,
+          focalLength: e.FocalLength ? `${e.FocalLength}mm` : undefined,
+          aperture: e.FNumber ? `f/${e.FNumber}` : undefined,
+          shutterSpeed: shutter(e.ExposureTime as number | undefined),
+          iso: e.ISO ? `ISO ${e.ISO}` : undefined,
+        } satisfies GalleryPhoto;
+      }),
   );
 
   return photos.sort((a, b) => {

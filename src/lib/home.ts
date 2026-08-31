@@ -174,5 +174,5 @@ export async function getRecentPhotos(limit = 3): Promise<Photo[]> {
     .filter((p): p is typeof p & { date: Date } => Boolean(p.date))
     .filter((p, i, all) => all.findIndex((o) => day(o.date) === day(p.date)) === i)
     .slice(0, limit)
-    .map((p) => ({ src: p.src, description: p.description, date: p.date }));
+    .map((p) => ({ src: p.thumb, description: p.description, date: p.date }));
 }
