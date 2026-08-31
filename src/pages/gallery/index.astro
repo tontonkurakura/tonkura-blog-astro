@@ -182,14 +182,14 @@ const formatDate = (d: Date) =>
               },
               { transform: "none" },
             ],
-            { duration: 300, easing: EASE },
+            { duration: 170, easing: EASE },
           );
           info.animate(
             [
               { opacity: 0, transform: "translateX(0.75rem)" },
               { opacity: 1, transform: "none" },
             ],
-            { duration: 300, delay: 160, easing: EASE, fill: "backwards" },
+            { duration: 160, delay: 80, easing: EASE, fill: "backwards" },
           );
         }
 
@@ -442,7 +442,7 @@ const formatDate = (d: Date) =>
       justify-content: center;
     }
     #lightbox::backdrop {
-      animation: veil 0.22s linear both;
+      animation: veil 0.13s linear both;
       background: rgba(0, 0, 0, 0.96);
     }
     @keyframes veil {
