@@ -356,7 +356,8 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
 
 プロジェクトは `tonkura-blog-astro`（team `tonkuras-projects`、Hobby）。GitHub の
 `tontonkurakura/tonkura-blog-astro` に接続してあり、main への push で本番ビルドが走る。
-初回は 35 秒・455 ページで、フレームワークは Astro として自動検出された。
+初回のビルドは 24 秒で、`astro build` が 455 ページを出力した（デプロイ全体では 35 秒）。
+アダプタの追加や設定の変更は要らなかった。
 本番 URL は <https://tonkura-blog-astro.vercel.app>。
 **旧サイト（Vercel プロジェクト `tonkura-blog`、tonkura.blog）は触っていない。**
 
@@ -381,6 +382,9 @@ Preview 環境にだけ `INCLUDE_DRAFTS=1` を入れる。
 ## 積み残し（品質）
 
 - ギャラリーは JPG 直配信。`astro:assets` 最適化は upgrade 余地（62枚）。
+- Astro 7 が `markdown.remarkPlugins` を非推奨にした。ビルドは通るが警告が出る
+  （`remark-neurology-images` の登録先）。`@astrojs/markdown-remark` の
+  `unified({...})` へ移す必要がある。
 - 神経ノートの一部**壊れ画像リンク**（原コンテンツ由来、404 のまま）。
 - 神経ノートの Obsidian 埋め込みで、Notion 由来の `Untitled.png` など**曖昧な参照**は
   解決しきれず 404 になりうる。
