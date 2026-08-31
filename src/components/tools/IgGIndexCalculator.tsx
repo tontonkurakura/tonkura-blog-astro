@@ -105,15 +105,14 @@ export default function IgGIndexCalculator() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  // スコアに基づいて色を決定する関数
-  const getResultColorClass = () => {
-    if (!iggIndex || iggIndex === "計算エラー") return "bg-gray-600";
+  const getResultLevel = () => {
+    if (!iggIndex || iggIndex === "計算エラー") return "none";
 
     const index = parseFloat(iggIndex);
-    if (index >= 0.3 && index <= 0.7) return "bg-green-600";
-    if (index < 0.3) return "bg-blue-600";
-    if (index > 0.7 && index <= 1.0) return "bg-yellow-600";
-    return "bg-red-600";
+    if (index >= 0.3 && index <= 0.7) return "none";
+    if (index < 0.3) return "mild";
+    if (index <= 1.0) return "moderate";
+    return "critical";
   };
 
   // 結果のテキストを取得する関数
@@ -127,54 +126,34 @@ export default function IgGIndexCalculator() {
     return "明らかな上昇";
   };
 
-  // 結果に基づいてテキスト色を決定する関数
-  const getResultTextColorClass = (type: string) => {
+  // 基準を外れた値だけ段階名を返す（配色は calculator.css）
+  const getResultState = (type: string) => {
     if (type === "iggIndex" && iggIndex && iggIndex !== "計算エラー") {
       const index = parseFloat(iggIndex);
       if (index >= 0.3 && index <= 0.7) return "";
-      if (index < 0.3) return "text-blue-600";
-      if (index > 0.7 && index <= 1.0) return "text-yellow-600";
-      return "text-red-600";
+      if (index < 0.3) return "mild";
+      if (index <= 1.0) return "moderate";
+      return "critical";
     }
 
     if (type === "qAlb" && qAlb && qAlb !== "計算エラー") {
       const qAlbValue = parseFloat(qAlb);
       if (qAlbValue >= 2.0 && qAlbValue <= 9.0) return "";
-      if (qAlbValue < 2.0) return "text-blue-600";
-      return "text-red-600";
-    }
-
-    return "";
-  };
-
-  // 結果に基づいて背景色を決定する関数
-  const getResultBgClass = (type: string) => {
-    if (type === "iggIndex" && iggIndex && iggIndex !== "計算エラー") {
-      const index = parseFloat(iggIndex);
-      if (index >= 0.3 && index <= 0.7) return "";
-      if (index < 0.3) return "bg-blue-50";
-      if (index > 0.7 && index <= 1.0) return "bg-yellow-50";
-      return "bg-red-50";
-    }
-
-    if (type === "qAlb" && qAlb && qAlb !== "計算エラー") {
-      const qAlbValue = parseFloat(qAlb);
-      if (qAlbValue >= 2.0 && qAlbValue <= 9.0) return "";
-      if (qAlbValue < 2.0) return "bg-blue-50";
-      return "bg-red-50";
+      if (qAlbValue < 2.0) return "mild";
+      return "critical";
     }
 
     return "";
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 relative">
-      <h3 className="text-2xl font-bold mb-6 font-mplus">
+    <div className="calc" data-level={getResultLevel()}>
+      <h3 className="calc-title">
         IgG Index Calculator
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="calc-fields">
         <div>
-          <label className="block mb-2 text-gray-700">CSF-IgG (mg/dL):</label>
+          <label className="calc-label">CSF-IgG (mg/dL):</label>
           <input
             type="text"
             inputMode="decimal"
@@ -182,20 +161,18 @@ export default function IgGIndexCalculator() {
             onChange={(e) => handleInputChange(e, setCsfIgG, "csfIgG")}
             onBlur={() => handleBlur("csfIgG")}
             placeholder="0.5-4.0"
-            className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.csfIgG ? "border-red-500" : ""
-            }`}
+            className={`calc-input ${errors.csfIgG ? "has-error" : ""}`}
             aria-invalid={!!errors.csfIgG}
             aria-describedby={errors.csfIgG ? "csfIgG-error" : undefined}
           />
           {errors.csfIgG && (
-            <p id="csfIgG-error" className="text-red-500 text-sm mt-1">
+            <p id="csfIgG-error" className="calc-error">
               {errors.csfIgG}
             </p>
           )}
         </div>
         <div>
-          <label className="block mb-2 text-gray-700">CSF-Alb (mg/dL):</label>
+          <label className="calc-label">CSF-Alb (mg/dL):</label>
           <input
             type="text"
             inputMode="decimal"
@@ -203,20 +180,18 @@ export default function IgGIndexCalculator() {
             onChange={(e) => handleInputChange(e, setCsfAlb, "csfAlb")}
             onBlur={() => handleBlur("csfAlb")}
             placeholder="9-30"
-            className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.csfAlb ? "border-red-500" : ""
-            }`}
+            className={`calc-input ${errors.csfAlb ? "has-error" : ""}`}
             aria-invalid={!!errors.csfAlb}
             aria-describedby={errors.csfAlb ? "csfAlb-error" : undefined}
           />
           {errors.csfAlb && (
-            <p id="csfAlb-error" className="text-red-500 text-sm mt-1">
+            <p id="csfAlb-error" className="calc-error">
               {errors.csfAlb}
             </p>
           )}
         </div>
         <div>
-          <label className="block mb-2 text-gray-700">血清-IgG (mg/dL):</label>
+          <label className="calc-label">血清-IgG (mg/dL):</label>
           <input
             type="text"
             inputMode="decimal"
@@ -224,20 +199,18 @@ export default function IgGIndexCalculator() {
             onChange={(e) => handleInputChange(e, setSerumIgG, "serumIgG")}
             onBlur={() => handleBlur("serumIgG")}
             placeholder="870-1700"
-            className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.serumIgG ? "border-red-500" : ""
-            }`}
+            className={`calc-input ${errors.serumIgG ? "has-error" : ""}`}
             aria-invalid={!!errors.serumIgG}
             aria-describedby={errors.serumIgG ? "serumIgG-error" : undefined}
           />
           {errors.serumIgG && (
-            <p id="serumIgG-error" className="text-red-500 text-sm mt-1">
+            <p id="serumIgG-error" className="calc-error">
               {errors.serumIgG}
             </p>
           )}
         </div>
         <div>
-          <label className="block mb-2 text-gray-700">血清-Alb (g/dL):</label>
+          <label className="calc-label">血清-Alb (g/dL):</label>
           <input
             type="text"
             inputMode="decimal"
@@ -245,14 +218,12 @@ export default function IgGIndexCalculator() {
             onChange={(e) => handleInputChange(e, setSerumAlb, "serumAlb")}
             onBlur={() => handleBlur("serumAlb")}
             placeholder="3.8-5.2"
-            className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.serumAlb ? "border-red-500" : ""
-            }`}
+            className={`calc-input ${errors.serumAlb ? "has-error" : ""}`}
             aria-invalid={!!errors.serumAlb}
             aria-describedby={errors.serumAlb ? "serumAlb-error" : undefined}
           />
           {errors.serumAlb && (
-            <p id="serumAlb-error" className="text-red-500 text-sm mt-1">
+            <p id="serumAlb-error" className="calc-error">
               {errors.serumAlb}
             </p>
           )}
@@ -262,16 +233,16 @@ export default function IgGIndexCalculator() {
       {/* フローティングスコア表示 */}
       {iggIndex && qAlb && (
         <div
-          className={`mt-8 sticky bottom-4 z-10 ${getResultColorClass()} bg-opacity-90 text-white p-4 rounded-xl shadow-xl mb-6 flex flex-col sm:flex-row sm:justify-between items-center gap-2`}
+          className="calc-bar"
         >
-          <div className="flex items-center text-xl">
-            <span className="font-bold mr-2">IgG Index:</span>
-            <span className="text-3xl font-extrabold mx-1">{iggIndex}</span>
-            <span className="font-medium">(基準値: 0.3-0.7)</span>
+          <div className="calc-bar__main">
+            <span className="calc-bar__label">IgG Index:</span>
+            <span className="calc-bar__value">{iggIndex}</span>
+            <span className="calc-bar__ref">(基準値: 0.3-0.7)</span>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            <div className="px-3 py-1 bg-white bg-opacity-20 rounded-lg text-sm">
-              <span className="font-medium">
+          <div className="calc-bar__side">
+            <div className="calc-chip">
+              <span>
                 Q-Alb: {qAlb} ×10³ (基準値: 2.0-9.0)
               </span>
             </div>
@@ -286,11 +257,11 @@ export default function IgGIndexCalculator() {
                 setErrors({});
                 setTouched({});
               }}
-              className="px-3 py-1 bg-white bg-opacity-30 hover:bg-opacity-40 rounded-lg text-sm font-medium transition-colors"
+              className="calc-reset"
             >
               入力をクリア
             </button>
-            <div className="sm:border-l sm:border-white sm:pl-4 font-semibold text-lg">
+            <div className="calc-bar__verdict">
               {getResultText()}
             </div>
           </div>
@@ -298,35 +269,35 @@ export default function IgGIndexCalculator() {
       )}
 
       {/* 結果表示 */}
-      <div className="mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-white p-3 rounded-lg shadow-sm border">
-            <h3 className="font-semibold mb-2 text-center">計算結果</h3>
-            <div className="grid grid-cols-1 gap-2 text-sm">
+      <div className="calc-results">
+        <div className="calc-panels">
+          <div className="calc-panel">
+            <h3 className="calc-panel__title">計算結果</h3>
+            <div className="calc-rows">
               <div
-                className={`flex justify-between p-1.5 rounded ${getResultBgClass("iggIndex")}`}
+                className="calc-row" data-state={getResultState("iggIndex")}
               >
                 <span
-                  className={`font-bold ${getResultTextColorClass("iggIndex")}`}
+                  className="calc-row__name"
                 >
                   IgG Index:
                 </span>
                 <span
-                  className={`font-medium ${getResultTextColorClass("iggIndex")}`}
+                  className="calc-row__value"
                 >
                   {iggIndex || "-"}
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getResultBgClass("qAlb")}`}
+                className="calc-row" data-state={getResultState("qAlb")}
               >
                 <span
-                  className={`font-bold ${getResultTextColorClass("qAlb")}`}
+                  className="calc-row__name"
                 >
                   Q-Alb (×10³):
                 </span>
                 <span
-                  className={`font-medium ${getResultTextColorClass("qAlb")}`}
+                  className="calc-row__value"
                 >
                   {qAlb || "-"}
                 </span>
@@ -334,66 +305,45 @@ export default function IgGIndexCalculator() {
             </div>
           </div>
 
-          <div className="bg-white p-3 rounded-lg shadow-sm border md:col-span-2">
-            <h3 className="font-semibold mb-2 text-center">評価基準</h3>
-            <div className="grid grid-cols-1 gap-2 text-sm">
+          <div className="calc-panel calc-panel--wide">
+            <h3 className="calc-panel__title">評価基準</h3>
+            <div className="calc-rows">
               <div
-                className={`p-2 rounded ${
-                  iggIndex && parseFloat(iggIndex) < 0.3
-                    ? "bg-blue-100 text-blue-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${iggIndex && parseFloat(iggIndex) < 0.3 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">IgG Index &lt; 0.3:</span>{" "}
+                <span className="calc-strong">IgG Index &lt; 0.3:</span>{" "}
                 正常下限以下
               </div>
               <div
-                className={`p-2 rounded ${
-                  iggIndex &&
-                  parseFloat(iggIndex) >= 0.3 &&
-                  parseFloat(iggIndex) <= 0.7
-                    ? "bg-green-100 text-green-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${iggIndex && parseFloat(iggIndex) >= 0.3 && parseFloat(iggIndex) <= 0.7 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">IgG Index 0.3-0.7:</span>{" "}
+                <span className="calc-strong">IgG Index 0.3-0.7:</span>{" "}
                 正常範囲
               </div>
               <div
-                className={`p-2 rounded ${
-                  iggIndex &&
-                  parseFloat(iggIndex) > 0.7 &&
-                  parseFloat(iggIndex) <= 1.0
-                    ? "bg-yellow-100 text-yellow-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${iggIndex && parseFloat(iggIndex) > 0.7 && parseFloat(iggIndex) <= 1.0 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">IgG Index 0.7-1.0:</span>{" "}
+                <span className="calc-strong">IgG Index 0.7-1.0:</span>{" "}
                 軽度上昇
               </div>
               <div
-                className={`p-2 rounded ${
-                  iggIndex && parseFloat(iggIndex) > 1.0
-                    ? "bg-red-100 text-red-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${iggIndex && parseFloat(iggIndex) > 1.0 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">IgG Index &gt; 1.0:</span>{" "}
+                <span className="calc-strong">IgG Index &gt; 1.0:</span>{" "}
                 明らかな上昇（髄腔内IgG産生亢進）
               </div>
             </div>
           </div>
         </div>
-        <div className="text-sm text-gray-600 mt-4">
-          <p>
-            ※注意事項
-            <li className="ml-3 text-sm text-gray-600">
-              本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
-            </li>
-            <li className="ml-3 text-sm text-gray-600">
-              本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
-            </li>
-          </p>
+        <div className="calc-note">
+          <p>※注意事項</p>
+          <ul>
+            <li>
+                本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
+              </li>
+              <li>
+                本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
+              </li></ul>
         </div>
       </div>
     </div>

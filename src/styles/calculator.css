@@ -1,0 +1,552 @@
+/* 臨床スコアの計算機（NIHSS / MMSE / HDS-R / IgG index）の意匠。
+   移植元は Tailwind で書かれていたが、このサイトは Tailwind を入れていない。
+   クラスは効かないまま素の HTML が出ていたので、tokens.css の変数で組み直した。
+   色はモノクロ基調のまま、重症度だけ段階色を持たせる。 */
+
+.calc {
+  --calc-level: var(--fg);
+  --calc-level-bg: var(--bg-subtle);
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  position: relative;
+}
+
+/* 重症度の段階色。彩度を落として、地の文の黒に近い明度に揃える。 */
+.calc[data-level="none"] {
+  --calc-level: var(--fg);
+}
+.calc[data-level="mild"] {
+  --calc-level: #3f6b52;
+}
+.calc[data-level="moderate"] {
+  --calc-level: #8a6a2b;
+}
+.calc[data-level="severe"] {
+  --calc-level: #9a5a2b;
+}
+.calc[data-level="critical"] {
+  --calc-level: #8f3b34;
+}
+
+:root[data-theme="dark"] .calc[data-level="mild"] {
+  --calc-level: #7fae92;
+}
+:root[data-theme="dark"] .calc[data-level="moderate"] {
+  --calc-level: #c9a961;
+}
+:root[data-theme="dark"] .calc[data-level="severe"] {
+  --calc-level: #d19a67;
+}
+:root[data-theme="dark"] .calc[data-level="critical"] {
+  --calc-level: #d98a80;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .calc[data-level="mild"] {
+    --calc-level: #7fae92;
+  }
+  :root:not([data-theme="light"]) .calc[data-level="moderate"] {
+    --calc-level: #c9a961;
+  }
+  :root:not([data-theme="light"]) .calc[data-level="severe"] {
+    --calc-level: #d19a67;
+  }
+  :root:not([data-theme="light"]) .calc[data-level="critical"] {
+    --calc-level: #d98a80;
+  }
+}
+
+.calc-title {
+  font-size: var(--step-2);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0 0 1.5rem;
+}
+
+/* 設問 ------------------------------------------------------------------ */
+
+.calc-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.calc-item {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.5rem;
+}
+.calc-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.calc-item-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.calc-section-title {
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 0.75rem;
+}
+
+.calc-label {
+  display: block;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.calc-item-label {
+  line-height: 1.6;
+}
+
+.calc-help {
+  font-weight: 400;
+}
+
+.calc-help-text {
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  margin-top: 0.35rem;
+}
+
+/* 選択肢 ---------------------------------------------------------------- */
+
+.calc-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calc-choices--stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.calc-choice-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calc-choice-caption {
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+  min-width: 5rem;
+}
+
+.calc-choice {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.calc-choice:hover {
+  background: var(--bg-subtle);
+  border-color: var(--fg-muted);
+}
+
+.calc-choice:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* 選択済みは前景色を反転させる。青は使わない。 */
+.calc-choice.is-active {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* 入力欄 ---------------------------------------------------------------- */
+
+.calc-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .calc-fields {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .calc-item-grid {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+}
+
+.calc-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--fg);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.calc-input:focus-visible {
+  border-color: var(--fg);
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+
+.calc-input.has-error {
+  border-color: #8f3b34;
+}
+
+.calc-error {
+  color: #8f3b34;
+  font-size: var(--step--1);
+  margin: 0.35rem 0 0;
+}
+
+:root[data-theme="dark"] .calc-input.has-error {
+  border-color: #d98a80;
+}
+:root[data-theme="dark"] .calc-error {
+  color: #d98a80;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .calc-input.has-error {
+    border-color: #d98a80;
+  }
+  :root:not([data-theme="light"]) .calc-error {
+    color: #d98a80;
+  }
+}
+
+/* 合計スコアの帯 -------------------------------------------------------- */
+
+.calc-bar {
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--calc-level);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  justify-content: space-between;
+  margin: 2rem 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  position: sticky;
+  z-index: 10;
+}
+
+.calc-bar__main {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.calc-bar__label {
+  font-weight: 600;
+}
+
+.calc-bar__value {
+  color: var(--calc-level);
+  font-size: var(--step-2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.calc-bar__ref {
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+}
+
+.calc-bar__side {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.calc-bar__verdict {
+  color: var(--calc-level);
+  font-weight: 600;
+}
+
+.calc-chip {
+  background: var(--bg-subtle);
+  border-radius: 999px;
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+  padding: 0.3rem 0.75rem;
+}
+
+.calc-reset {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--step--1);
+  min-height: 2.25rem;
+  padding: 0.3rem 0.85rem;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.calc-reset:hover {
+  background: var(--bg-subtle);
+  color: var(--fg);
+}
+
+.calc-reset:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* 結果 ------------------------------------------------------------------ */
+
+.calc-results {
+  margin-top: 2rem;
+}
+
+.calc-panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .calc-panels {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .calc-panel--wide {
+    grid-column: span 2;
+  }
+}
+
+.calc-panel {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.calc-panel__title {
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.75rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.calc-rows {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--step--1);
+  gap: 0.4rem;
+}
+
+.calc-row {
+  border-radius: 6px;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.35rem 0.5rem;
+}
+
+.calc-row dt,
+.calc-row .calc-row__name {
+  font-weight: 600;
+}
+
+.calc-row__value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 基準に触れた行だけ色を付ける。地は無色のままにする。 */
+.calc-row[data-state="mild"],
+.calc-row[data-state="moderate"],
+.calc-row[data-state="severe"],
+.calc-row[data-state="critical"] {
+  background: color-mix(in srgb, var(--row-color) 12%, transparent);
+  color: var(--row-color);
+}
+
+.calc-row[data-state="mild"] {
+  --row-color: #3f6b52;
+}
+.calc-row[data-state="moderate"] {
+  --row-color: #8a6a2b;
+}
+.calc-row[data-state="severe"] {
+  --row-color: #9a5a2b;
+}
+.calc-row[data-state="critical"] {
+  --row-color: #8f3b34;
+}
+
+:root[data-theme="dark"] .calc-row[data-state="mild"] {
+  --row-color: #7fae92;
+}
+:root[data-theme="dark"] .calc-row[data-state="moderate"] {
+  --row-color: #c9a961;
+}
+:root[data-theme="dark"] .calc-row[data-state="severe"] {
+  --row-color: #d19a67;
+}
+:root[data-theme="dark"] .calc-row[data-state="critical"] {
+  --row-color: #d98a80;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .calc-row[data-state="mild"] {
+    --row-color: #7fae92;
+  }
+  :root:not([data-theme="light"]) .calc-row[data-state="moderate"] {
+    --row-color: #c9a961;
+  }
+  :root:not([data-theme="light"]) .calc-row[data-state="severe"] {
+    --row-color: #d19a67;
+  }
+  :root:not([data-theme="light"]) .calc-row[data-state="critical"] {
+    --row-color: #d98a80;
+  }
+}
+
+.calc-strong {
+  font-weight: 600;
+}
+
+.calc-note {
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  margin-top: 1.5rem;
+}
+
+.calc-note ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.25rem;
+}
+
+/* 重症度分類・評価基準のカード ------------------------------------------ */
+
+.calc-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+@media (min-width: 40rem) {
+  .calc-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 64rem) {
+  .calc-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.calc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  padding: 0.7rem 0.85rem;
+}
+
+/* 今の点数が当てはまる区分だけ強調する */
+.calc-card.is-current {
+  border-color: var(--calc-level);
+  box-shadow: inset 3px 0 0 var(--calc-level);
+  color: var(--calc-level);
+  font-weight: 600;
+}
+
+.calc-card__title {
+  font-weight: 600;
+  text-align: center;
+}
+
+.calc-card__text {
+  font-size: var(--step--1);
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+/* カテゴリー別スコアの段組み ------------------------------------------- */
+
+.calc-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem 0;
+}
+
+@media (min-width: 48rem) {
+  .calc-columns {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .calc-column + .calc-column {
+    border-left: 1px solid var(--border);
+  }
+}
+
+.calc-column {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--step--1);
+  gap: 0.15rem;
+  padding: 0 0.75rem;
+}
+
+.calc-column .calc-row__name {
+  min-width: 7.5rem;
+}
+
+.calc-column .calc-row__value {
+  margin-left: auto;
+}
+
+.calc-substack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 0.75rem;
+}

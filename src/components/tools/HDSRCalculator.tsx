@@ -112,11 +112,7 @@ export default function HDSRCalculator() {
         data-name={name}
         value={value}
         onClick={handleChange}
-        className={`border rounded px-3 py-1.5 transition-colors ${
-          currentScore === value
-            ? "bg-blue-600 text-white border-blue-600"
-            : "hover:bg-gray-100 border-gray-300"
-        }`}
+        className={`calc-choice ${currentScore === value ? "is-active" : ""}`}
       >
         {value}
       </button>
@@ -127,11 +123,11 @@ export default function HDSRCalculator() {
   const categoryScores = calculateCategoryScores();
 
   // スコアに基づいて色を決定する関数
-  const getScoreColorClass = () => {
-    if (totalScore > 20) return "bg-blue-600";
-    if (totalScore >= 15 && totalScore <= 20) return "bg-yellow-600";
-    if (totalScore >= 10 && totalScore < 15) return "bg-orange-600";
-    return "bg-red-600";
+  const getScoreLevel = () => {
+    if (totalScore > 20) return "none";
+    if (totalScore >= 15) return "moderate";
+    if (totalScore >= 10) return "severe";
+    return "critical";
   };
 
   // 重症度のテキストを取得する関数
@@ -142,59 +138,50 @@ export default function HDSRCalculator() {
     return "重症認知症の疑い";
   };
 
-  // カテゴリーごとのスコアに基づいて色を決定する関数
-  const getCategoryScoreColorClass = (score: number, maxScore: number) => {
-    if (score === maxScore) return ""; // 満点の場合は色を付けない
+  // カテゴリーごとのスコアの重みを段階名で返す（配色は calculator.css）
+  const getCategoryState = (score: number, maxScore: number) => {
+    if (score === maxScore) return "";
     const ratio = score / maxScore;
-    if (ratio >= 0.6) return ""; // 60%以上は無色
-    if (ratio >= 0.3) return "text-orange-600"; // 30-60%はオレンジ
-    return "text-red-600"; // 30%未満は赤
-  };
-
-  // カテゴリーごとのスコアに基づいて背景色を決定する関数
-  const getCategoryScoreBgClass = (score: number, maxScore: number) => {
-    if (score === maxScore) return ""; // 満点の場合は色を付けない
-    const ratio = score / maxScore;
-    if (ratio >= 0.6) return ""; // 60%以上は無色
-    if (ratio >= 0.3) return "bg-orange-50"; // 30-60%はオレンジ
-    return "bg-red-50"; // 30%未満は赤
+    if (ratio >= 0.6) return "";
+    if (ratio >= 0.3) return "severe";
+    return "critical";
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 relative">
-      <h3 className="text-2xl font-bold mb-6 font-mplus">
+    <div className="calc" data-level={getScoreLevel()}>
+      <h3 className="calc-title">
         改訂 長谷川式簡易認知能評価スケール (HDS-R)
       </h3>
 
-      <div className="flex flex-col gap-6">
+      <div className="calc-items">
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             1. 年齢の見当識
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『お歳はいくつですか？』
-              <div className="text-sm text-gray-500">
+              <div className="calc-help-text">
                 （2年までの誤差は正解）
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton name="age" value={0} currentScore={scores.age} />
             <ScoreButton name="age" value={1} currentScore={scores.age} />
           </div>
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             2. 時間の見当識
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『今日は何年何月何日何曜日ですか？』
-              <div className="text-sm text-gray-500">（各1点）</div>
+              <div className="calc-help-text">（各1点）</div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">曜日</span>
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <span className="calc-help-text">曜日</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="date_weekday"
                   value={0}
@@ -207,9 +194,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">日</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">日</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="date_day"
                   value={0}
@@ -222,9 +209,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">月</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">月</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="date_month"
                   value={0}
@@ -237,9 +224,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">年</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">年</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="date_year"
                   value={0}
@@ -256,16 +243,16 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             3. 場所の見当識
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『私たちがいまいるところはどこですか？』
-              <div className="text-sm text-gray-500">
+              <div className="calc-help-text">
                 （自発的に答えられれば2点、5秒おいて自発的に答えられなければ「ここは家ですか？病院ですか？施設ですか？」とヒントを出し、答えられれば1点）
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="location"
               value={0}
@@ -285,11 +272,11 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             4. 即時記憶
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『これから言う3つの言葉を言ってみてください。』
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="calc-help-text">
                 系列1:「桜」「猫」「電車」
                 <br />
                 系列2:「梅」「犬」「自動車」
@@ -298,10 +285,10 @@ export default function HDSRCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">1</span>
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <span className="calc-help-text">1</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="words_1"
                   value={0}
@@ -314,9 +301,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">2</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">2</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="words_2"
                   value={0}
@@ -329,9 +316,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">3</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">3</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="words_3"
                   value={0}
@@ -348,19 +335,19 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             5. 計算
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『100から7を順番に引いてください。』
-              <div className="text-sm text-gray-500">
+              <div className="calc-help-text">
                 （93まで1点、86まで2点。それ以降は不要）
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">93</span>
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <span className="calc-help-text">93</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="calc_1"
                   value={0}
@@ -373,9 +360,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">86</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">86</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="calc_2"
                   value={0}
@@ -392,21 +379,21 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             6. 数字の逆唱
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『これから言う数字を逆から言ってください。』
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="calc-help-text">
                 3桁：「6-8-2」（1点）
                 <br />
                 4桁：「3-5-2-9」（1点）
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">2-8-6</span>
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <span className="calc-help-text">2-8-6</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="reverse_3digit"
                   value={0}
@@ -419,9 +406,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">9-2-5-3</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">9-2-5-3</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="reverse_4digit"
                   value={0}
@@ -438,19 +425,19 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             7. 遅延再生
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『先ほど覚えていただいた3つの言葉をもう一度言ってみてください。』
-              <div className="text-sm text-gray-500">
+              <div className="calc-help-text">
                 （自発的に答えられれば2点、ヒント（植物、動物、乗り物）を与えて正答できれば1点）
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">1</span>
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <span className="calc-help-text">1</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="recall_1"
                   value={0}
@@ -468,9 +455,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">2</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">2</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="recall_2"
                   value={0}
@@ -488,9 +475,9 @@ export default function HDSRCalculator() {
                 />
               </div>
             </div>
-            <div className="flex justify-end items-center gap-2">
-              <span className="text-sm text-gray-500">3</span>
-              <div className="flex gap-2">
+            <div className="calc-choices">
+              <span className="calc-help-text">3</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="recall_3"
                   value={0}
@@ -512,23 +499,23 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             8. 視覚性記憶
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『これから5つの品物を見せます。それを隠しますので何があったか言ってください。』
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="calc-help-text">
                 「鉛筆」「時計」「スプーン」「鍵」「歯ブラシ」
                 <br />
                 （各1点）
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
+          <div className="calc-choices calc-choices--stack">
             {["鉛筆", "時計", "スプーン", "鍵", "歯ブラシ"].map(
               (item, index) => (
-                <div key={item} className="flex justify-end items-center gap-2">
-                  <span className="text-sm text-gray-500">{item}</span>
-                  <div className="flex gap-2">
+                <div key={item} className="calc-choices">
+                  <span className="calc-help-text">{item}</span>
+                  <div className="calc-choices">
                     <ScoreButton
                       name={`items_${index + 1}`}
                       value={0}
@@ -551,21 +538,21 @@ export default function HDSRCalculator() {
         </div>
 
         <div>
-          <label className="block mb-2 text-gray-700">
+          <label className="calc-label">
             9. 語想起
-            <div className="ml-4 text-gray-700">
+            <div className="calc-help">
               『知っている野菜の名前をできるだけ多く言ってください。』
-              <div className="text-sm text-gray-500">
+              <div className="calc-help-text">
                 （6個で1点、以降1つにつき1点追加。10個以上で5点）
               </div>
             </div>
           </label>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end items-center gap-2">
-              <div className="flex gap-2">
+          <div className="calc-choices calc-choices--stack">
+            <div className="calc-choices">
+              <div className="calc-choices">
                 {[5, 6, 7, 8, 9, 10].map((count) => (
-                  <div key={count} className="flex flex-col items-center">
-                    <span className="text-sm text-gray-500 mb-1">
+                  <div key={count} className="calc-bar__main">
+                    <span className="calc-help-text">
                       {count}個{count === 5 ? "以下" : ""}
                     </span>
                     <ScoreButton
@@ -581,14 +568,14 @@ export default function HDSRCalculator() {
         </div>
         {/* フローティングスコア表示 */}
         <div
-          className={`mt-8 sticky bottom-4 z-10 ${getScoreColorClass()} bg-opacity-90 text-white p-4 rounded-xl shadow-xl mb-6 flex flex-col sm:flex-row sm:justify-between items-center gap-2`}
+          className="calc-bar"
         >
-          <div className="flex items-center text-xl">
-            <span className="font-bold mr-2">合計点:</span>
-            <span className="text-3xl font-extrabold mx-1">{totalScore}</span>
-            <span className="font-medium">/30</span>
+          <div className="calc-bar__main">
+            <span className="calc-bar__label">合計点:</span>
+            <span className="calc-bar__value">{totalScore}</span>
+            <span className="calc-bar__ref">/30</span>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2">
+          <div className="calc-bar__side">
             <button
               onClick={() => {
                 setScores({
@@ -620,146 +607,146 @@ export default function HDSRCalculator() {
                   vegetables: 5,
                 });
               }}
-              className="px-3 py-1 bg-white bg-opacity-30 hover:bg-opacity-40 rounded-lg text-sm font-medium transition-colors"
+              className="calc-reset"
             >
               選択をクリア
             </button>
-            <div className="sm:border-l sm:border-white sm:pl-4 font-semibold text-lg">
+            <div className="calc-bar__verdict">
               {getSeverityText()}
             </div>
           </div>
         </div>
 
         {/* カテゴリー別スコアと評価基準 */}
-        <div className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-white p-3 rounded-lg shadow-sm border">
-              <h3 className="font-semibold mb-2 text-center">
+        <div>
+          <div className="calc-panels">
+            <div className="calc-panel">
+              <h3 className="calc-panel__title">
                 カテゴリー別スコア
               </h3>
-              <div className="grid grid-cols-1 gap-2 text-sm">
+              <div className="calc-rows">
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.age, 1)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.age, 1)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.age, 1)}`}
+                    className="calc-row__name"
                   >
                     年齢:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.age, 1)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.age}/1
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.timeOrientation, 4)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.timeOrientation, 4)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.timeOrientation, 4)}`}
+                    className="calc-row__name"
                   >
                     時間の見当識:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.timeOrientation, 4)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.timeOrientation}/4
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.placeOrientation, 2)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.placeOrientation, 2)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.placeOrientation, 2)}`}
+                    className="calc-row__name"
                   >
                     場所の見当識:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.placeOrientation, 2)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.placeOrientation}/2
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.immediateRecall, 3)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.immediateRecall, 3)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.immediateRecall, 3)}`}
+                    className="calc-row__name"
                   >
                     即時記憶:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.immediateRecall, 3)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.immediateRecall}/3
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.calculation, 2)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.calculation, 2)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.calculation, 2)}`}
+                    className="calc-row__name"
                   >
                     計算:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.calculation, 2)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.calculation}/2
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.recall, 6)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.recall, 6)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.recall, 6)}`}
+                    className="calc-row__name"
                   >
                     遅延再生:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.recall, 6)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.recall}/6
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.reverse, 2)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.reverse, 2)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.reverse, 2)}`}
+                    className="calc-row__name"
                   >
                     数字の逆唱:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.reverse, 2)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.reverse}/2
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.items, 5)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.items, 5)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.items, 5)}`}
+                    className="calc-row__name"
                   >
                     視覚性記憶:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.items, 5)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.items}/5
                   </span>
                 </div>
                 <div
-                  className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.verbal, 5)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores.verbal, 5)}
                 >
                   <span
-                    className={`font-bold ${getCategoryScoreColorClass(categoryScores.verbal, 5)}`}
+                    className="calc-row__name"
                   >
                     語想起:
                   </span>
                   <span
-                    className={`font-medium ${getCategoryScoreColorClass(categoryScores.verbal, 5)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores.verbal}/5
                   </span>
@@ -767,17 +754,13 @@ export default function HDSRCalculator() {
               </div>
             </div>
 
-            <div className="bg-white p-3 rounded-lg shadow-sm border md:col-span-2">
-              <h3 className="font-semibold mb-2 text-center">重症度分類</h3>
-              <div className="grid grid-cols-1 gap-2 text-sm">
+            <div className="calc-panel calc-panel--wide">
+              <h3 className="calc-panel__title">重症度分類</h3>
+              <div className="calc-rows">
                 <div
-                  className={`p-2 rounded ${
-                    totalScore > 20
-                      ? "bg-blue-100 text-blue-800 font-medium"
-                      : "bg-gray-50"
-                  }`}
+                  className={`calc-card ${totalScore > 20 ? "is-current" : ""}`}
                 >
-                  <span className="font-semibold">21-30点:</span>{" "}
+                  <span className="calc-strong">21-30点:</span>{" "}
                   正常（認知症の可能性は低い）
                 </div>
                 <div
@@ -787,11 +770,11 @@ export default function HDSRCalculator() {
                       : "bg-gray-50"
                   }`}
                 >
-                  <div className="mb-2">
-                    <span className="font-semibold">20点以下:</span>{" "}
+                  <div>
+                    <span className="calc-strong">20点以下:</span>{" "}
                     認知症の疑い（感度93％、特異度86％）
                   </div>
-                  <div className="space-y-2 pl-2 border-red-100">
+                  <div className="calc-substack">
                     <div
                       className={`p-2 rounded ${
                         totalScore >= 15 && totalScore <= 20
@@ -799,7 +782,7 @@ export default function HDSRCalculator() {
                           : "bg-gray-50"
                       }`}
                     >
-                      <span className="font-semibold">15-20点:</span>{" "}
+                      <span className="calc-strong">15-20点:</span>{" "}
                       軽症認知症の疑い
                     </div>
                     <div
@@ -809,7 +792,7 @@ export default function HDSRCalculator() {
                           : "bg-gray-50"
                       }`}
                     >
-                      <span className="font-semibold">10-14点:</span>{" "}
+                      <span className="calc-strong">10-14点:</span>{" "}
                       中等症認知症の疑い
                     </div>
                     <div
@@ -819,7 +802,7 @@ export default function HDSRCalculator() {
                           : "bg-gray-50"
                       }`}
                     >
-                      <span className="font-semibold">0-9点:</span>{" "}
+                      <span className="calc-strong">0-9点:</span>{" "}
                       重症認知症の疑い
                     </div>
                   </div>
@@ -827,22 +810,21 @@ export default function HDSRCalculator() {
               </div>
             </div>
           </div>
-          <div className="text-sm text-gray-600 mt-4">
-            <p>
-              ※注意事項
-              <li className="ml-3 text-sm text-gray-600">
-                本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
-              </li>
-              <li className="ml-3 text-sm text-gray-600">
-                計算結果や重症度判定はあくまで参考所見であり、医学的な診断を保証するものではありません。
-              </li>
-              <li className="ml-3 text-sm text-gray-600">
-                症状に関してご不安がある場合は、必ず医師や専門の医療機関にご相談ください。
-              </li>
-              <li className="ml-3 text-sm text-gray-600">
-                本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
-              </li>
-            </p>
+          <div className="calc-note">
+            <p>※注意事項</p>
+          <ul>
+            <li>
+                  本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
+                </li>
+                <li>
+                  計算結果や重症度判定はあくまで参考所見であり、医学的な診断を保証するものではありません。
+                </li>
+                <li>
+                  症状に関してご不安がある場合は、必ず医師や専門の医療機関にご相談ください。
+                </li>
+                <li>
+                  本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
+                </li></ul>
           </div>
         </div>
       </div>

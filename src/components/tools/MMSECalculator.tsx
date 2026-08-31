@@ -105,11 +105,7 @@ export default function MMSECalculator() {
         data-name={name}
         value={value}
         onClick={handleChange}
-        className={`border rounded px-2 py-1.5 transition-colors ${
-          currentScore === value
-            ? "bg-blue-600 text-white border-blue-600"
-            : "hover:bg-gray-100 border-gray-300"
-        }`}
+        className={`calc-choice ${currentScore === value ? "is-active" : ""}`}
       >
         {value}
       </button>
@@ -120,12 +116,12 @@ export default function MMSECalculator() {
   const categoryScores = calculateCategoryScores();
 
   // スコアに基づいて色を決定する関数
-  const getScoreColorClass = () => {
-    if (totalScore > 27) return "bg-blue-600";
-    if (totalScore > 23 && totalScore <= 27) return "bg-green-600";
-    if (totalScore >= 20 && totalScore <= 23) return "bg-yellow-600";
-    if (totalScore >= 10 && totalScore < 20) return "bg-orange-600";
-    return "bg-red-600";
+  const getScoreLevel = () => {
+    if (totalScore > 27) return "none";
+    if (totalScore > 23) return "mild";
+    if (totalScore >= 20) return "moderate";
+    if (totalScore >= 10) return "severe";
+    return "critical";
   };
 
   // 重症度のテキストを取得する関数
@@ -137,48 +133,39 @@ export default function MMSECalculator() {
     return "高度認知症の疑い";
   };
 
-  // カテゴリーごとのスコアに基づいて色を決定する関数
-  const getCategoryScoreColorClass = (score: number, maxScore: number) => {
-    if (score === maxScore) return ""; // 満点の場合は色を付けない
+  // カテゴリーごとのスコアの重みを段階名で返す（配色は calculator.css）
+  const getCategoryState = (score: number, maxScore: number) => {
+    if (score === maxScore) return "";
     const ratio = score / maxScore;
-    if (ratio >= 0.6) return ""; // 60%以上は無色
-    if (ratio >= 0.3) return "text-orange-600"; // 30-60%はオレンジ
-    return "text-red-600"; // 30%未満は赤
-  };
-
-  // カテゴリーごとのスコアに基づいて背景色を決定する関数
-  const getCategoryScoreBgClass = (score: number, maxScore: number) => {
-    if (score === maxScore) return ""; // 満点の場合は色を付けない
-    const ratio = score / maxScore;
-    if (ratio >= 0.6) return ""; // 60%以上は無色
-    if (ratio >= 0.3) return "bg-orange-50"; // 30-60%はオレンジ
-    return "bg-red-50"; // 30%未満は赤
+    if (ratio >= 0.6) return "";
+    if (ratio >= 0.3) return "severe";
+    return "critical";
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 relative">
-      <h3 className="text-2xl font-bold mb-6 font-mplus">
+    <div className="calc" data-level={getScoreLevel()}>
+      <h3 className="calc-title">
         Mini-Mental State Examination (MMSE)
       </h3>
 
       {/* 新しいレイアウト - 質問とボタンを横並びに */}
-      <div className="flex flex-col gap-6">
+      <div className="calc-items">
         {/* 時間の見当識 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">1. 時間の見当識 (5点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">1. 時間の見当識 (5点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『今年は何年ですか？』</p>
               <p>『今の季節は何ですか？』</p>
               <p>『今日は何曜日ですか？』</p>
               <p>『今日は何月ですか？』</p>
               <p>『今日は何日ですか？』</p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">年：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">年：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="time_year"
                     value={0}
@@ -191,9 +178,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">季節：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">季節：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="time_season"
                     value={0}
@@ -206,9 +193,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">曜日：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">曜日：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="time_day"
                     value={0}
@@ -221,9 +208,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">月：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">月：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="time_month"
                     value={0}
@@ -236,9 +223,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">日：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">日：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="time_date"
                     value={0}
@@ -256,21 +243,21 @@ export default function MMSECalculator() {
         </div>
 
         {/* 場所の見当識 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">2. 場所の見当識 (5点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">2. 場所の見当識 (5点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『ここは何県ですか？』</p>
               <p>『ここは何市ですか？』</p>
               <p>『ここは何病院ですか？』</p>
               <p>『ここは何階ですか？』</p>
               <p>『ここは何地方ですか？（例 関東地方）』</p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">県：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">県：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="place_prefecture"
                     value={0}
@@ -283,9 +270,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">市：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">市：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="place_city"
                     value={0}
@@ -298,9 +285,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">病院：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">病院：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="place_hospital"
                     value={0}
@@ -313,9 +300,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">階：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">階：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="place_floor"
                     value={0}
@@ -328,9 +315,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">地方：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">地方：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="place_region"
                     value={0}
@@ -348,20 +335,20 @@ export default function MMSECalculator() {
         </div>
 
         {/* 即時記憶 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">3. 即時記憶 (3点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">3. 即時記憶 (3点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>検者は物品名３個（相互に無関係）を一秒間に一個ずつ言う。</p>
               <p>その後、被験者に繰り返させる。</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="calc-help-text">
                 正答一個につき１点を与える。３例全て言うまで繰り返す。（６回まで）
               </p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品1：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品1：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="recall_1"
                     value={0}
@@ -374,9 +361,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品2：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品2：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="recall_2"
                     value={0}
@@ -389,9 +376,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品3：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品3：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="recall_3"
                     value={0}
@@ -409,19 +396,19 @@ export default function MMSECalculator() {
         </div>
 
         {/* 計算 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">4. 計算 (5点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">4. 計算 (5点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>
                 100から順に７を引く（５回まで）。または「フジノヤマ」を逆唱させる。
               </p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">93：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">93：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="calculation_1"
                     value={0}
@@ -434,9 +421,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">86：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">86：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="calculation_2"
                     value={0}
@@ -449,9 +436,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">79：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">79：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="calculation_3"
                     value={0}
@@ -464,9 +451,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">72：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">72：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="calculation_4"
                     value={0}
@@ -479,9 +466,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">65：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">65：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="calculation_5"
                     value={0}
@@ -499,17 +486,17 @@ export default function MMSECalculator() {
         </div>
 
         {/* 遅延再生 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">5. 遅延再生 (3点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">5. 遅延再生 (3点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>３で提唱した物品名を再度復唱させる</p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品1：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品1：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="delayed_recall_1"
                     value={0}
@@ -522,9 +509,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品2：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品2：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="delayed_recall_2"
                     value={0}
@@ -537,9 +524,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">物品3：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">物品3：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="delayed_recall_3"
                     value={0}
@@ -557,18 +544,18 @@ export default function MMSECalculator() {
         </div>
 
         {/* 物品呼称 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">6. 物品呼称 (2点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">6. 物品呼称 (2点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『（時計を見せながら）これはなんですか』</p>
               <p>『（鉛筆を見せながら）これはなんですか』</p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">時計：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">時計：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="naming_1"
                     value={0}
@@ -581,9 +568,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">鉛筆：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">鉛筆：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="naming_2"
                     value={0}
@@ -601,16 +588,16 @@ export default function MMSECalculator() {
         </div>
 
         {/* 文の復唱 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">7. 文の復唱 (1点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">7. 文の復唱 (1点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>次の文章を繰り返しさせる。</p>
               <p>「みんなで力をあわせて綱を引きます。」</p>
             </div>
-            <div className="flex items-center md:max-w-[200px]">
-              <span className="text-sm text-gray-700 w-20">評価：</span>
-              <div className="flex gap-2">
+            <div className="calc-choice-row">
+              <span className="calc-choice-caption">評価：</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="repeat_sentence"
                   value={0}
@@ -627,19 +614,19 @@ export default function MMSECalculator() {
         </div>
 
         {/* 3段階の命令 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">8. 3段階の命令 (3点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">8. 3段階の命令 (3点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『右手にこの紙を持ってください』</p>
               <p>『それを半分に折りたたんでください』</p>
               <p>『それを私に渡してください』</p>
-              <p className="text-sm text-gray-500 mt-1">（各1点）</p>
+              <p className="calc-help-text">（各1点）</p>
             </div>
-            <div className="flex flex-col gap-2 md:max-w-[200px]">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">紙を持つ：</span>
-                <div className="flex gap-2">
+            <div className="calc-choices calc-choices--stack">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">紙を持つ：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="follow_command_1"
                     value={0}
@@ -652,9 +639,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">折る：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">折る：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="follow_command_2"
                     value={0}
@@ -667,9 +654,9 @@ export default function MMSECalculator() {
                   />
                 </div>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700 w-20">渡す：</span>
-                <div className="flex gap-2">
+              <div className="calc-choice-row">
+                <span className="calc-choice-caption">渡す：</span>
+                <div className="calc-choices">
                   <ScoreButton
                     name="follow_command_3"
                     value={0}
@@ -687,16 +674,16 @@ export default function MMSECalculator() {
         </div>
 
         {/* 書字命令 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">9. 書字命令 (1点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">9. 書字命令 (1点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『次の文章を読んでその指示に従ってください。』</p>
               <p>（文章：「目を閉じなさい」）</p>
             </div>
-            <div className="flex items-center md:max-w-[200px]">
-              <span className="text-sm text-gray-700 w-20">評価：</span>
-              <div className="flex gap-2">
+            <div className="calc-choice-row">
+              <span className="calc-choice-caption">評価：</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="read_follow"
                   value={0}
@@ -713,15 +700,15 @@ export default function MMSECalculator() {
         </div>
 
         {/* 自発書字 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">10. 自発書字 (1点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">10. 自発書字 (1点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『何か文章を書いてください』</p>
             </div>
-            <div className="flex items-center md:max-w-[200px]">
-              <span className="text-sm text-gray-700 w-20">評価：</span>
-              <div className="flex gap-2">
+            <div className="calc-choice-row">
+              <span className="calc-choice-caption">評価：</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="write_sentence"
                   value={0}
@@ -738,15 +725,15 @@ export default function MMSECalculator() {
         </div>
 
         {/* 図形模写 */}
-        <div className="border-b pb-4">
-          <h4 className="font-medium text-lg mb-3">11. 図形模写 (1点)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-gray-700 md:col-span-2">
+        <div className="calc-item">
+          <h4 className="calc-section-title">11. 図形模写 (1点)</h4>
+          <div className="calc-item-grid">
+            <div className="calc-item-label">
               <p>『次の図形を書いてください』</p>
             </div>
-            <div className="flex items-center md:max-w-[200px]">
-              <span className="text-sm text-gray-700 w-20">評価：</span>
-              <div className="flex gap-2">
+            <div className="calc-choice-row">
+              <span className="calc-choice-caption">評価：</span>
+              <div className="calc-choices">
                 <ScoreButton
                   name="copy_figure"
                   value={0}
@@ -765,14 +752,14 @@ export default function MMSECalculator() {
 
       {/* フローティングスコア表示 */}
       <div
-        className={`mt-8 sticky bottom-4 z-10 ${getScoreColorClass()} bg-opacity-90 text-white p-4 rounded-xl shadow-xl mb-6 flex flex-col sm:flex-row sm:justify-between items-center gap-2`}
+        className="calc-bar"
       >
-        <div className="flex items-center text-xl">
-          <span className="font-bold mr-2">合計点:</span>
-          <span className="text-3xl font-extrabold mx-1">{totalScore}</span>
-          <span className="font-medium">/30</span>
+        <div className="calc-bar__main">
+          <span className="calc-bar__label">合計点:</span>
+          <span className="calc-bar__value">{totalScore}</span>
+          <span className="calc-bar__ref">/30</span>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-2">
+        <div className="calc-bar__side">
           <button
             onClick={() => {
               setScores({
@@ -809,174 +796,174 @@ export default function MMSECalculator() {
                 copy_figure: 1,
               });
             }}
-            className="px-3 py-1 bg-white bg-opacity-30 hover:bg-opacity-40 rounded-lg text-sm font-medium transition-colors"
+            className="calc-reset"
           >
             選択をクリア
           </button>
-          <div className="sm:border-l sm:border-white sm:pl-4 font-semibold text-lg">
+          <div className="calc-bar__verdict">
             {getSeverityText()}
           </div>
         </div>
       </div>
 
       {/* カテゴリー別スコアと評価基準 */}
-      <div className="mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-white p-3 rounded-lg shadow-sm border">
-            <h3 className="font-semibold mb-2 text-center">
+      <div className="calc-results">
+        <div className="calc-panels">
+          <div className="calc-panel">
+            <h3 className="calc-panel__title">
               カテゴリー別スコア
             </h3>
-            <div className="grid grid-cols-1 gap-2 text-sm">
+            <div className="calc-rows">
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.timeOrientation, 5)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.timeOrientation, 5)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.timeOrientation, 5)}`}
+                  className="calc-row__name"
                 >
                   時間の見当識:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.timeOrientation, 5)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.timeOrientation}/5
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.placeOrientation, 5)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.placeOrientation, 5)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.placeOrientation, 5)}`}
+                  className="calc-row__name"
                 >
                   場所の見当識:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.placeOrientation, 5)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.placeOrientation}/5
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.memory, 3)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.memory, 3)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.memory, 3)}`}
+                  className="calc-row__name"
                 >
                   即時記憶:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.memory, 3)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.memory}/3
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.attention, 5)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.attention, 5)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.attention, 5)}`}
+                  className="calc-row__name"
                 >
                   計算:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.attention, 5)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.attention}/5
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.recall, 3)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.recall, 3)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.recall, 3)}`}
+                  className="calc-row__name"
                 >
                   遅延再生:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.recall, 3)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.recall}/3
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.naming, 2)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.naming, 2)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.naming, 2)}`}
+                  className="calc-row__name"
                 >
                   物品呼称:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.naming, 2)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.naming}/2
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.repeat, 1)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.repeat, 1)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.repeat, 1)}`}
+                  className="calc-row__name"
                 >
                   文の復唱:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.repeat, 1)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.repeat}/1
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.command, 3)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.command, 3)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.command, 3)}`}
+                  className="calc-row__name"
                 >
                   3段階命令:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.command, 3)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.command}/3
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.read, 1)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.read, 1)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.read, 1)}`}
+                  className="calc-row__name"
                 >
                   読字・理解:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.read, 1)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.read}/1
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.write, 1)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.write, 1)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.write, 1)}`}
+                  className="calc-row__name"
                 >
                   文章作成:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.write, 1)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.write}/1
                 </span>
               </div>
               <div
-                className={`flex justify-between p-1.5 rounded ${getCategoryScoreBgClass(categoryScores.copy, 1)}`}
+                className="calc-row" data-state={getCategoryState(categoryScores.copy, 1)}
               >
                 <span
-                  className={`font-bold ${getCategoryScoreColorClass(categoryScores.copy, 1)}`}
+                  className="calc-row__name"
                 >
                   図形模写:
                 </span>
                 <span
-                  className={`font-medium ${getCategoryScoreColorClass(categoryScores.copy, 1)}`}
+                  className="calc-row__value"
                 >
                   {categoryScores.copy}/1
                 </span>
@@ -984,26 +971,18 @@ export default function MMSECalculator() {
             </div>
           </div>
 
-          <div className="bg-white p-3 rounded-lg shadow-sm border md:col-span-2">
-            <h3 className="font-semibold mb-2 text-center">重症度分類</h3>
-            <div className="grid grid-cols-1 gap-2 text-sm">
+          <div className="calc-panel calc-panel--wide">
+            <h3 className="calc-panel__title">重症度分類</h3>
+            <div className="calc-rows">
               <div
-                className={`p-2 rounded ${
-                  totalScore > 27
-                    ? "bg-blue-100 text-blue-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${totalScore > 27 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">28-30点:</span> 正常
+                <span className="calc-strong">28-30点:</span> 正常
               </div>
               <div
-                className={`p-2 rounded ${
-                  totalScore > 23 && totalScore <= 27
-                    ? "bg-green-100 text-green-800 font-medium"
-                    : "bg-gray-50"
-                }`}
+                className={`calc-card ${totalScore > 23 && totalScore <= 27 ? "is-current" : ""}`}
               >
-                <span className="font-semibold">24-27点:</span>{" "}
+                <span className="calc-strong">24-27点:</span>{" "}
                 軽度認知障害(MCI)の疑い（感度45-60%、特異度65-90%）
               </div>
               <div
@@ -1013,11 +992,11 @@ export default function MMSECalculator() {
                     : "bg-gray-50"
                 }`}
               >
-                <div className="mb-2">
-                  <span className="font-semibold">23点以下:</span>{" "}
+                <div>
+                  <span className="calc-strong">23点以下:</span>{" "}
                   認知症の疑い（感度81％、特異度89%）
                 </div>
-                <div className="space-y-2 pl-4 border-red-100">
+                <div className="calc-substack">
                   <div
                     className={`p-2 rounded ${
                       totalScore >= 20 && totalScore <= 23
@@ -1025,7 +1004,7 @@ export default function MMSECalculator() {
                         : "bg-gray-50"
                     }`}
                   >
-                    <span className="font-semibold">20-23点:</span>{" "}
+                    <span className="calc-strong">20-23点:</span>{" "}
                     軽度認知症の疑い
                   </div>
                   <div
@@ -1035,7 +1014,7 @@ export default function MMSECalculator() {
                         : "bg-gray-50"
                     }`}
                   >
-                    <span className="font-semibold">10-19点:</span>{" "}
+                    <span className="calc-strong">10-19点:</span>{" "}
                     中等度認知症の疑い
                   </div>
                   <div
@@ -1045,7 +1024,7 @@ export default function MMSECalculator() {
                         : "bg-gray-50"
                     }`}
                   >
-                    <span className="font-semibold">0-9点:</span>{" "}
+                    <span className="calc-strong">0-9点:</span>{" "}
                     高度認知症の疑い
                   </div>
                 </div>
@@ -1053,22 +1032,21 @@ export default function MMSECalculator() {
             </div>
           </div>
         </div>
-        <div className="text-sm text-gray-600 mt-4">
-          <p>
-            ※注意事項
-            <li className="ml-3 text-sm text-gray-600">
-              本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
-            </li>
-            <li className="ml-3 text-sm text-gray-600">
-              計算結果や重症度判定はあくまで参考所見であり、医学的な診断を保証するものではありません。
-            </li>
-            <li className="ml-3 text-sm text-gray-600">
-              症状に関してご不安がある場合は、必ず医師や専門の医療機関にご相談ください。
-            </li>
-            <li className="ml-3 text-sm text-gray-600">
-              本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
-            </li>
-          </p>
+        <div className="calc-note">
+          <p>※注意事項</p>
+          <ul>
+            <li>
+                本ツールは、臨床業務で使用されるスコアの計算補助を行うためのものです。
+              </li>
+              <li>
+                計算結果や重症度判定はあくまで参考所見であり、医学的な診断を保証するものではありません。
+              </li>
+              <li>
+                症状に関してご不安がある場合は、必ず医師や専門の医療機関にご相談ください。
+              </li>
+              <li>
+                本ツールの利用により生じた如何なる結果についても、当サイトは責任を負いかねます。
+              </li></ul>
         </div>
       </div>
     </div>

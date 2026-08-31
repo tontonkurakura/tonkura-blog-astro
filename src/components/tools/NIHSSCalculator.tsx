@@ -203,11 +203,7 @@ export default function NIHSSCalculator() {
         value={value}
         data-is-n={isN}
         onClick={handleChange}
-        className={`border rounded px-3 py-1.5 transition-colors ${
-          isActive
-            ? "bg-blue-600 text-white border-blue-600"
-            : "hover:bg-gray-100 border-gray-300"
-        }`}
+        className={`calc-choice ${isActive ? "is-active" : ""}`}
       >
         {label || value}
       </button>
@@ -219,12 +215,12 @@ export default function NIHSSCalculator() {
   const selectedItems = calculateSelectedItems();
 
   // スコアに基づいて色を決定する関数
-  const getScoreColorClass = () => {
-    if (totalScore === 0) return "bg-blue-600";
-    if (totalScore >= 1 && totalScore <= 4) return "bg-green-600";
-    if (totalScore >= 5 && totalScore <= 15) return "bg-yellow-600";
-    if (totalScore >= 16 && totalScore <= 20) return "bg-orange-600";
-    return "bg-red-600";
+  const getScoreLevel = () => {
+    if (totalScore === 0) return "none";
+    if (totalScore <= 4) return "mild";
+    if (totalScore <= 15) return "moderate";
+    if (totalScore <= 20) return "severe";
+    return "critical";
   };
 
   // 重症度のテキストを取得する関数
@@ -236,33 +232,24 @@ export default function NIHSSCalculator() {
     return "重症脳卒中";
   };
 
-  // カテゴリーごとのスコアに基づいて色を決定する関数
-  const getCategoryScoreColorClass = (score: number, maxScore: number) => {
-    if (score === 0) return ""; // 0点の場合は色を付けない
+  // カテゴリーごとのスコアの重みを段階名で返す（配色は calculator.css）
+  const getCategoryState = (score: number, maxScore: number) => {
+    if (score === 0) return "";
     const ratio = score / maxScore;
-    if (ratio <= 0.4) return ""; // 40%以下は無色
-    if (ratio <= 0.7) return "text-orange-600"; // 40-70%はオレンジ
-    return "text-red-600"; // 70%超は赤
-  };
-
-  // カテゴリーごとのスコアに基づいて背景色を決定する関数
-  const getCategoryScoreBgClass = (score: number, maxScore: number) => {
-    if (score === 0) return ""; // 0点の場合は色を付けない
-    const ratio = score / maxScore;
-    if (ratio <= 0.4) return ""; // 40%以下は無色
-    if (ratio <= 0.7) return "bg-orange-50"; // 40-70%はオレンジ
-    return "bg-red-50"; // 70%超は赤
+    if (ratio <= 0.4) return "";
+    if (ratio <= 0.7) return "severe";
+    return "critical";
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 relative">
-      <div className="flex flex-col gap-6">
+    <div className="calc" data-level={getScoreLevel()}>
+      <div className="calc-items">
         {/* 1a. 意識水準 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             1a. 意識水準
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：完全覚醒
                 <br />
                 1：簡単な刺激で覚醒
@@ -273,7 +260,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="consciousness_level"
               value={0}
@@ -299,10 +286,10 @@ export default function NIHSSCalculator() {
 
         {/* 1b. 意識障害―質問 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             1b. 意識障害―質問（今月の月名及び年齢）
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：両方正解
                 <br />
                 1：片方正解
@@ -311,7 +298,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="consciousness_questions"
               value={0}
@@ -332,10 +319,10 @@ export default function NIHSSCalculator() {
 
         {/* 1c. 意識障害―従命 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             1c. 意識障害―従命（開閉眼、「手を握る・開く」）
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：両方可
                 <br />
                 1：片方可
@@ -344,7 +331,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="consciousness_commands"
               value={0}
@@ -365,10 +352,10 @@ export default function NIHSSCalculator() {
 
         {/* 2. 最良の注視 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             2. 最良の注視
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：正常
                 <br />
                 1：部分的注視麻痺
@@ -377,7 +364,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton name="gaze" value={0} currentScore={scores.gaze} />
             <ScoreButton name="gaze" value={1} currentScore={scores.gaze} />
             <ScoreButton name="gaze" value={2} currentScore={scores.gaze} />
@@ -386,10 +373,10 @@ export default function NIHSSCalculator() {
 
         {/* 3. 視野 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             3. 視野
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：視野欠損なし
                 <br />
                 1：部分的半盲
@@ -400,7 +387,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="visual_fields"
               value={0}
@@ -426,10 +413,10 @@ export default function NIHSSCalculator() {
 
         {/* 4. 顔面麻痺 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             4. 顔面麻痺
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：正常
                 <br />
                 1：軽度の麻痺
@@ -440,7 +427,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="facial_palsy"
               value={0}
@@ -466,10 +453,10 @@ export default function NIHSSCalculator() {
 
         {/* 5-1. 上肢の運動（左） */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             5-1. 上肢の運動（左）※仰臥位のときは45度挙上
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：90度を10秒間保持可能（下垂なし）
                 <br />
                 1：90度を保持できるが、10秒以内に下垂
@@ -484,7 +471,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="left_arm_motor"
               value={0}
@@ -522,10 +509,10 @@ export default function NIHSSCalculator() {
 
         {/* 5-2. 上肢の運動（右） */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             5-2. 上肢の運動（右）※仰臥位のときは45度挙上
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：90度を10秒間保持可能（下垂なし）
                 <br />
                 1：90度を保持できるが、10秒以内に下垂
@@ -540,7 +527,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="right_arm_motor"
               value={0}
@@ -578,10 +565,10 @@ export default function NIHSSCalculator() {
 
         {/* 6-1. 下肢の運動（左） */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             6-1. 下肢の運動（左）
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：30度を5秒間保持できる（下垂なし）
                 <br />
                 1：30度を保持できるが、5秒以内に下垂
@@ -596,7 +583,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="left_leg_motor"
               value={0}
@@ -634,10 +621,10 @@ export default function NIHSSCalculator() {
 
         {/* 6-2. 下肢の運動（右） */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             6-2. 下肢の運動（右）
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：30度を5秒間保持できる（下垂なし）
                 <br />
                 1：30度を保持できるが、5秒以内に下垂
@@ -652,7 +639,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="right_leg_motor"
               value={0}
@@ -690,10 +677,10 @@ export default function NIHSSCalculator() {
 
         {/* 7. 運動失調 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             7. 運動失調
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：なし
                 <br />
                 1：1肢
@@ -704,7 +691,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="limb_ataxia"
               value={0}
@@ -732,10 +719,10 @@ export default function NIHSSCalculator() {
 
         {/* 8. 感覚 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             8. 感覚
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：障害なし
                 <br />
                 1：軽度から中等度
@@ -744,7 +731,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="sensory"
               value={0}
@@ -765,10 +752,10 @@ export default function NIHSSCalculator() {
 
         {/* 9. 最良の言語 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             9. 最良の言語
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：失語なし
                 <br />
                 1：軽度から中等度
@@ -779,7 +766,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="language"
               value={0}
@@ -805,10 +792,10 @@ export default function NIHSSCalculator() {
 
         {/* 10. 構音障害 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             10. 構音障害
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：正常
                 <br />
                 1：軽度から中等度
@@ -817,7 +804,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="dysarthria"
               value={0}
@@ -838,10 +825,10 @@ export default function NIHSSCalculator() {
 
         {/* 11. 消去現象と注意障害 */}
         <div>
-          <label className="block mb-2 text-gray-700 font-medium">
+          <label className="calc-label">
             11. 消去現象と注意障害
-            <div className="ml-4 text-gray-700 font-normal">
-              <div className="text-sm text-gray-500 mt-1">
+            <div className="calc-help">
+              <div className="calc-help-text">
                 0：異常なし
                 <br />
                 1：視覚、触覚、聴覚、視空間、または自己身体に対する不注意、あるいは1つの感覚様式で2点同時刺激に対する消去現象
@@ -850,7 +837,7 @@ export default function NIHSSCalculator() {
               </div>
             </div>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className="calc-choices">
             <ScoreButton
               name="neglect"
               value={0}
@@ -872,83 +859,83 @@ export default function NIHSSCalculator() {
 
       {/* フローティングスコア表示 */}
       <div
-        className={`mt-8 sticky bottom-4 z-10 ${getScoreColorClass()} bg-opacity-90 text-white p-4 rounded-xl shadow-xl mb-6 flex flex-col sm:flex-row sm:justify-between items-center gap-2`}
+        className="calc-bar"
       >
-        <div className="flex items-center text-xl">
-          <span className="font-bold mr-2">合計点:</span>
-          <span className="text-3xl font-extrabold mx-1">{totalScore}</span>
-          <span className="font-medium">/42</span>
+        <div className="calc-bar__main">
+          <span className="calc-bar__label">合計点:</span>
+          <span className="calc-bar__value">{totalScore}</span>
+          <span className="calc-bar__ref">/42</span>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-2">
-          <div className="px-3 py-1 bg-white bg-opacity-20 rounded-lg text-sm">
-            <span className="font-medium">{selectedItems}/15 項目選択済み</span>
+        <div className="calc-bar__side">
+          <div className="calc-chip">
+            <span>{selectedItems}/15 項目選択済み</span>
           </div>
           <button
             onClick={handleReset}
-            className="px-3 py-1 bg-white bg-opacity-30 hover:bg-opacity-40 rounded-lg text-sm font-medium transition-colors"
+            className="calc-reset"
           >
             選択をクリア
           </button>
-          <div className="sm:border-l sm:border-white sm:pl-4 font-semibold text-lg">
+          <div className="calc-bar__verdict">
             {getSeverityText()}
           </div>
         </div>
       </div>
 
       {/* カテゴリー別スコアと評価基準 */}
-      <div className="mt-8 space-y-4">
+      <div className="calc-results">
         {/* 重症度分類（上部に配置） */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <h3 className="font-semibold mb-3 text-center">重症度分類</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className="calc-panel">
+          <h3 className="calc-panel__title">重症度分類</h3>
+          <div className="calc-cards">
             <div
-              className={`p-3 rounded ${totalScore === 0 ? "bg-blue-100 text-blue-800 font-medium" : "bg-gray-50"}`}
+              className={`calc-card ${totalScore === 0 ? "is-current" : ""}`}
             >
-              <div className="font-semibold text-sm text-center">
+              <div className="calc-card__title">
                 0点
                 <br />
                 No stroke symptoms
               </div>
-              <div className="text-xs mt-1 text-center">（脳卒中症状なし）</div>
+              <div className="calc-card__text">（脳卒中症状なし）</div>
             </div>
             <div
-              className={`p-3 rounded ${totalScore >= 1 && totalScore <= 4 ? "bg-green-100 text-green-800 font-medium" : "bg-gray-50"}`}
+              className={`calc-card ${totalScore >= 1 && totalScore <= 4 ? "is-current" : ""}`}
             >
-              <div className="font-semibold text-sm text-center">
+              <div className="calc-card__title">
                 1-4点
                 <br />
                 Minor stroke
               </div>
-              <div className="text-xs mt-1 text-center">（軽症脳卒中）</div>
+              <div className="calc-card__text">（軽症脳卒中）</div>
             </div>
             <div
-              className={`p-3 rounded ${totalScore >= 5 && totalScore <= 15 ? "bg-yellow-100 text-yellow-800 font-medium" : "bg-gray-50"}`}
+              className={`calc-card ${totalScore >= 5 && totalScore <= 15 ? "is-current" : ""}`}
             >
-              <div className="font-semibold text-sm text-center">
+              <div className="calc-card__title">
                 5-15点
                 <br />
                 Moderate stroke
               </div>
-              <div className="text-xs mt-1 text-center">（中等度脳卒中）</div>
+              <div className="calc-card__text">（中等度脳卒中）</div>
             </div>
             <div
-              className={`p-3 rounded ${totalScore >= 16 ? "bg-red-100 text-red-800 font-medium" : "bg-gray-50"}`}
+              className={`calc-card ${totalScore >= 16 ? "is-current" : ""}`}
             >
-              <div className="font-semibold text-sm text-center">
+              <div className="calc-card__title">
                 16点以上
                 <br />
                 Severe stroke
               </div>
-              <div className="text-xs mt-1 text-center">（重症脳卒中）</div>
+              <div className="calc-card__text">（重症脳卒中）</div>
             </div>
           </div>
         </div>
 
         {/* カテゴリー別スコア */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <h3 className="font-semibold mb-3 text-center">カテゴリー別スコア</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-1 text-xs divide-x divide-gray-200">
-            <div className="px-6">
+        <div className="calc-panel">
+          <h3 className="calc-panel__title">カテゴリー別スコア</h3>
+          <div className="calc-columns">
+            <div className="calc-column">
               {[
                 { key: "consciousness_level", label: "1a. 意識水準", max: 3 },
                 {
@@ -966,15 +953,15 @@ export default function NIHSSCalculator() {
               ].map((item) => (
                 <div
                   key={item.key}
-                  className={`flex items-center p-1 rounded ${getCategoryScoreBgClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores[item.key as keyof typeof categoryScores], item.max)}
                 >
                   <span
-                    className={`font-medium min-w-[7.5rem] ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__name"
                   >
                     {item.label}
                   </span>
                   <span
-                    className={`ml-auto tabular-nums ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores[item.key as keyof typeof categoryScores]}/
                     {item.max}
@@ -982,7 +969,7 @@ export default function NIHSSCalculator() {
                 </div>
               ))}
             </div>
-            <div className="px-6">
+            <div className="calc-column">
               {[
                 { key: "facial_palsy", label: "4. 顔面麻痺", max: 3 },
                 {
@@ -1008,15 +995,15 @@ export default function NIHSSCalculator() {
               ].map((item) => (
                 <div
                   key={item.key}
-                  className={`flex items-center p-1 rounded ${getCategoryScoreBgClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores[item.key as keyof typeof categoryScores], item.max)}
                 >
                   <span
-                    className={`font-medium min-w-[7.5rem] ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__name"
                   >
                     {item.label}
                   </span>
                   <span
-                    className={`ml-auto tabular-nums ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores[item.key as keyof typeof categoryScores]}/
                     {item.max}
@@ -1024,7 +1011,7 @@ export default function NIHSSCalculator() {
                 </div>
               ))}
             </div>
-            <div className="px-6">
+            <div className="calc-column">
               {[
                 { key: "limb_ataxia", label: "7. 運動失調", max: 2 },
                 { key: "sensory", label: "8. 感覚", max: 2 },
@@ -1034,15 +1021,15 @@ export default function NIHSSCalculator() {
               ].map((item) => (
                 <div
                   key={item.key}
-                  className={`flex items-center p-1 rounded ${getCategoryScoreBgClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                  className="calc-row" data-state={getCategoryState(categoryScores[item.key as keyof typeof categoryScores], item.max)}
                 >
                   <span
-                    className={`font-medium min-w-[7.5rem] ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__name"
                   >
                     {item.label}
                   </span>
                   <span
-                    className={`ml-auto tabular-nums ${getCategoryScoreColorClass(categoryScores[item.key as keyof typeof categoryScores], item.max)}`}
+                    className="calc-row__value"
                   >
                     {categoryScores[item.key as keyof typeof categoryScores]}/
                     {item.max}
