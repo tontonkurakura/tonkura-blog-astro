@@ -182,14 +182,14 @@ const formatDate = (d: Date) =>
               },
               { transform: "none" },
             ],
-            { duration: 170, easing: EASE },
+            { duration: 120, easing: EASE },
           );
           info.animate(
             [
               { opacity: 0, transform: "translateX(0.75rem)" },
               { opacity: 1, transform: "none" },
             ],
-            { duration: 160, delay: 80, easing: EASE, fill: "backwards" },
+            { duration: 120, delay: 50, easing: EASE, fill: "backwards" },
           );
         }
 
@@ -200,9 +200,34 @@ const formatDate = (d: Date) =>
         full.src = b.dataset.full;
       }
 
-      /* 閉じるときは動かさない。すぐ消える。 */
+      /* 閉じ。来た道を戻さず、その場でわずかに縮んで消える。
+         終わりに向けて加速させる（ease-in）と、引き止められずに離れる感じになる。 */
       function close() {
-        if (box.open) box.close();
+        if (!box.open) return;
+        if (!motion) {
+          box.close();
+          return;
+        }
+        box.classList.add("is-closing");
+        const out = { duration: 100, easing: "ease-in", fill: "forwards" };
+        const a = img.animate(
+          [
+            { opacity: 1, transform: "none" },
+            { opacity: 0, transform: "scale(0.96)" },
+          ],
+          out,
+        );
+        const i = info.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: 80,
+          easing: "ease-in",
+          fill: "forwards",
+        });
+        a.finished.then(function () {
+          a.cancel();
+          i.cancel();
+          box.classList.remove("is-closing");
+          box.close();
+        });
       }
 
       document.querySelectorAll(".shot").forEach(function (b) {
@@ -216,6 +241,11 @@ const formatDate = (d: Date) =>
       });
       addEventListener("resize", function () {
         if (box.open && origin) sizeImage(origin);
+      });
+      /* ESC の既定は即座に閉じるので、横取りして同じ閉じ方に寄せる。 */
+      box.addEventListener("cancel", function (e) {
+        e.preventDefault();
+        close();
       });
       box.addEventListener("close", function () {
         img.removeAttribute("src");
@@ -442,8 +472,11 @@ const formatDate = (d: Date) =>
       justify-content: center;
     }
     #lightbox::backdrop {
-      animation: veil 0.13s linear both;
+      animation: veil 0.1s linear both;
       background: rgba(0, 0, 0, 0.96);
+    }
+    #lightbox.is-closing::backdrop {
+      animation: veil 0.11s linear reverse both;
     }
     @keyframes veil {
       from {
