@@ -8,9 +8,9 @@ lastmod: '2026-07-21'
 
 - シヌクレイン
 
-![Pasted image 20250125151443.png](/neurology-media/Pasted image 20250125151443.png)
+![Pasted image 20250125151443.png](/neurology-media/Pasted image 20250125151443.webp)
 
-![Pasted image 20250125151927.png](/neurology-media/Pasted image 20250125151927.png)
+![Pasted image 20250125151927.png](/neurology-media/Pasted image 20250125151927.webp)
 
 ■まとめ
 
@@ -26,7 +26,7 @@ lastmod: '2026-07-21'
 
 - 以上から，2018年のガイドラインではある種のエキスパートオピニオンを含めた以下のようなフローチャートがまとめられた．
 
-![Pasted image 20240804143648.png](/neurology-media/Pasted image 20240804143648.png)
+![Pasted image 20240804143648.png](/neurology-media/Pasted image 20240804143648.webp)
 
 ■PDのメガスタディ
 
@@ -124,7 +124,7 @@ lastmod: '2026-07-21'
 
 - エンタカポン（コムタン®）
 
-![Pasted image 20240804143713.png](/neurology-media/Pasted image 20240804143713.png)
+![Pasted image 20240804143713.png](/neurology-media/Pasted image 20240804143713.webp)
 
 ●非ドパミン系
 

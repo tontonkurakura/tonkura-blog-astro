@@ -50,7 +50,7 @@ last_edited: 2025-02-27T00:00:00.000Z
 • 音の歪みや非流暢性は目立たない
 • 復唱は障害されない
 • 比較的広い範囲で起こる症状であり遺残しやすい
-![Pasted image 20240804145452.png](/neurology-media/Pasted image 20240804145452.png)
+![Pasted image 20240804145452.png](/neurology-media/Pasted image 20240804145452.webp)
 
 ■伝導失語
 • 音韻性錯誤（みかん→みたん）が主体
@@ -83,16 +83,16 @@ last_edited: 2025-02-27T00:00:00.000Z
 • 音節や口形の探索
 などに着目するが，難しいこともある．
 • FTLDにおけるnfvPPA（non-fluent/agrammatic variant PPA）においてAOSを呈することが少なくない．他に，失文法や，文法的に複雑な文の理解障害，単一単語の理解の保存，対象の知識の保存（意味は保たれる）などが認められる．
-![Pasted image 20240804145458.png](/neurology-media/Pasted image 20240804145458.png)
-![Pasted image 20240804145502.png](/neurology-media/Pasted image 20240804145502.png)
+![Pasted image 20240804145458.png](/neurology-media/Pasted image 20240804145458.webp)
+![Pasted image 20240804145502.png](/neurology-media/Pasted image 20240804145502.webp)
 
 ※古典的失語
 ○Broca失語：失構音，伝導失語，失名辞失語いずれも伴う．失構音は中核的症状
 ○Wernicke失語：伝導失語や失名辞失語を認めるが，そこに聴覚や視覚の障害も含むため理解障害を伴う．
 ○超皮質性失語：前頭葉領域の障害では運動/感覚どちらも起こりうる．超皮質性運動性失語については前頭葉内側面でも起こりうる．自発語が乏しいのも運動性の特徴．
-![Pasted image 20240804145506.png](/neurology-media/Pasted image 20240804145506.png)
+![Pasted image 20240804145506.png](/neurology-media/Pasted image 20240804145506.webp)
 
-![Pasted image 20240804145509.png](/neurology-media/Pasted image 20240804145509.png)
+![Pasted image 20240804145509.png](/neurology-media/Pasted image 20240804145509.webp)
 ■Wernicke失語
 • とりつくろうような返答
 • 疑問文に対して形式上は答えることができることもある．

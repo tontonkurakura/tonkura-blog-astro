@@ -13,7 +13,7 @@ lastmod: '2026-07-21'
 - α-synucleinopathy
 - TDP-43 proteinopathy
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/media/Untitled.webp)
 
 #### 神経変性疾患と病理
 

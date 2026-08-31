@@ -39,8 +39,8 @@ lastmod: '2026-07-21'
 - Phase 4：脳幹まで広がる
 - Phase 5：小脳まで広がる
 
-![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/AD（Alzheimer's disease）/media/Untitled 1.png)
+![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/AD（Alzheimer's disease）/media/Untitled 1.webp)
 
 - ABDスコア（**A**β沈着の拡がりのThal phase、**B**raakによるNFTの拡がりのステージ、**C**ERADの神経突起斑の密度のステージ）を用いたNIA-AA基準が重要。
 
-![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/AD（Alzheimer's disease）/media/Untitled 2.png)
+![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/AD（Alzheimer's disease）/media/Untitled 2.webp)

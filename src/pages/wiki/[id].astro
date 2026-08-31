@@ -1,15 +1,18 @@
 ---
 import { getCollection, render } from "astro:content";
 import Base from "../../layouts/Base.astro";
-import { backlinksFor } from "../../lib/wiki";
+import { backlinksFor, TEMPLATE_ID } from "../../lib/wiki";
 import "../../styles/prose.css";
 
 export async function getStaticPaths() {
   const all = await getCollection("wiki");
-  return all.map((entry) => ({
-    params: { id: entry.data.id },
-    props: { entry, all },
-  }));
+  // 見本（q-000）はスキーマ確認のために置いてあるだけで、読み物ではない。
+  return all
+    .filter((entry) => entry.data.id !== TEMPLATE_ID)
+    .map((entry) => ({
+      params: { id: entry.data.id },
+      props: { entry, all },
+    }));
 }
 
 const { entry, all } = Astro.props;

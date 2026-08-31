@@ -6,7 +6,7 @@ lastmod: '2026-07-21'
 
 部位:: Neurons, Glia
 蛋白沈着形式/封入体:: NFTs, Tufted astrocytes
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled.webp)
 
 - マクロでの特徴は
   - 前頭葉穹窿面の萎縮
@@ -21,10 +21,10 @@ lastmod: '2026-07-21'
   - argyrophilic thread (=neuropil thread)
   - coiled body
   - tufted astrocyte (房状アストロサイト)←4R-tau
-      ![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled 1.png)
+      ![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled 1.webp)
       などが沈着する。
 - ADとは少し違う、渦巻き状のNFT（Glubose-shaped NFT）が認められる。
 
-![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled 2.png)
+![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PSP/media/Untitled 2.webp)
 
 - 病理診断としては、病変の分布とタウ陽性構造物の存在、加えて房状アストロサイトの存在により下される。

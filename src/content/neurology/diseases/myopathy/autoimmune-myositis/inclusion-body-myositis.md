@@ -13,7 +13,7 @@ Sporadic Inclusion Body Myositis（sIBM）
 - 左右非対称性の筋力低下と筋萎縮が大腿四頭筋・手指/手首屈筋を中心に見られる．
 - 筋病理が重要であり，骨格筋に縁取り空砲を伴う筋繊維，非壊死線維や筋内鞘への単核球による侵入を認める．
 - 封入体内部には多様な蛋白（ユビキチン，Aβ，エメリン，ラミンA/C，Valocin-containing protein（VCP），ヒストン，TDP-43，p62）などが報告されている．ALSやADとの関連は未だ不明．
-  ![図 1 sl の 代 表 的 病 理 像 ( A ) へ マ ト キ シ リ ン ・ エ オ ジ ン 染 色 、 ( B ) CD8 免 疫 染 色 、 (C) 主 要 組 織 適 合 抗 原 (MHC) ク ラ ス I 染 色 、 (D) ゴ モ リ ト リ ク ロ ー ム 変 法 染 色 。 scale bars= 100 pm(A) 、 50 い m ( B ) 、 200 pm(C) 、 100 pm(D) ](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190034-0.png)  
+  ![図 1 sl の 代 表 的 病 理 像 ( A ) へ マ ト キ シ リ ン ・ エ オ ジ ン 染 色 、 ( B ) CD8 免 疫 染 色 、 (C) 主 要 組 織 適 合 抗 原 (MHC) ク ラ ス I 染 色 、 (D) ゴ モ リ ト リ ク ロ ー ム 変 法 染 色 。 scale bars= 100 pm(A) 、 50 い m ( B ) 、 200 pm(C) 、 100 pm(D) ](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190034-0.webp)  
   ■疫学
 
 - 日本に1000-1500人程度．1.2：1でやや男が多い．
@@ -51,7 +51,7 @@ Sporadic Inclusion Body Myositis（sIBM）
 1975年にBohan, Peterが炎症性筋疾患の診断基準を提唱（このときはIBMの概念がなかった）．  
 1995年にGriggsらがsIBMの診断基準を初めて提唱．  
 2007年にNeedhamらの診断基準とあわせて現在の診断基準が形成．
-![ ](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190034-1.png)
+![ ](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190034-1.webp)
 
 ○Data-derived diagnositc criteria
 

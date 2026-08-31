@@ -22,4 +22,4 @@ lastmod: '2026-07-21'
   - 第3段階では記録の 20-50%を占める
   - 第4段階では記録の 50% 以上を占める。
 
-![Untitled.png](/neurology-media/Examination/EEG/睡眠脳波/media/Untitled.png)
+![Untitled.png](/neurology-media/Examination/EEG/睡眠脳波/media/Untitled.webp)

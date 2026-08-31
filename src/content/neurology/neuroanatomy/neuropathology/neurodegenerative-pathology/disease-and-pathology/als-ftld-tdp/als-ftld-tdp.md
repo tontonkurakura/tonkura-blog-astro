@@ -24,13 +24,13 @@ lastmod: '2026-07-21'
 
      運動ニューロンの胞体内に出現し、HE染色で好酸性、リポフスチンの含有した細胞に多い。Bunina小体は粗面小胞体やゴルジ装置関連の構造物とされる。免疫組織学的には、cystatin C抗体やtransferrin抗体で陽性、ubiquitin抗体やTDP-43抗体で陰性となる。
 
-     ![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/ALS-FTLD-TDP/media/Untitled.png)
+     ![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/ALS-FTLD-TDP/media/Untitled.webp)
 
   2. **skein-like inclusionとround inclusion**
 
      運動ニューロンの法体内に出現する。前者は糸束様、後者は球状の封入体。TDP-43抗体やubiquitin抗体を使用した染色で陽性となる。
 
-     ![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/ALS-FTLD-TDP/media/Untitled 1.png)
+     ![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/ALS-FTLD-TDP/media/Untitled 1.webp)
 
   3. **神経細胞内および核内封入体とグリア細胞質内封入体**
 

@@ -127,8 +127,8 @@ lastmod: '2026-07-21'
 ※多発筋炎　Polymyositis
 
 - 非壊死性筋線維への細胞浸潤（CD8陽性Tリンパ球）が起こっているというのが病理学的定義，だった．
-- 封入体筋炎でも同様の所見が見られるが，縁取り空砲とp62染色が見られる ![Exported image](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190033-0.png)  
-  ![Exported image](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190033-1.png)
+- 封入体筋炎でも同様の所見が見られるが，縁取り空砲とp62染色が見られる ![Exported image](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190033-0.webp)  
+  ![Exported image](/neurology-media/Diseases/筋疾患/自己免疫性筋炎/Exported image 20240803190033-1.webp)
 - Sarcoid myopathy
   - サルコイドーシスの筋症状版。非乾酪性肉芽腫。症状がなければこれではない。
 

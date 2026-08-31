@@ -1,4 +1,4 @@
-import { BaseMetadata, ISODateString, SearchParams } from "./common";
+import type { BaseMetadata, ISODateString, SearchParams } from "./common";
 
 /**
  * 神経学的スケールの共通インターフェース

@@ -19,6 +19,6 @@ lastmod: '2026-07-21'
 - 罹病期間が長くなると、どちらも等しく変性され、MSA SND=OPCA typeとなる。
 - いずれの場合も、自律神経系諸核（胸髄中間質外側核、迷走神経背側核、青斑核、縫線核、仙髄オヌフ核など）は種々の程度に変性する。
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/MSA/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/MSA/media/Untitled.webp)
 
-![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/MSA/media/Untitled 1.png)
+![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/MSA/media/Untitled 1.webp)

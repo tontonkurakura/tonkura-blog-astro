@@ -5,14 +5,17 @@
     "**/*"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    "src/pages/_archive/**"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
   }
 }

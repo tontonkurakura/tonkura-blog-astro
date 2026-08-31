@@ -12,5 +12,5 @@ last_edited: 2025-02-27T00:00:00.000Z
 ---
 
 中心髄節:: C7
-![Pasted image 20240803184813.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184813.png)
-![Pasted image 20240803184826.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184826.png)
+![Pasted image 20240803184813.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184813.webp)
+![Pasted image 20240803184826.png](/neurology-media/Neuroanatomy/筋・神経支配（上肢）/media/Pasted image 20240803184826.webp)

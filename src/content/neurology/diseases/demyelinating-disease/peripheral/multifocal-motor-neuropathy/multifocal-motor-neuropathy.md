@@ -39,7 +39,7 @@ lastmod: '2026-07-21'
    - しかし，ALSでも勿論同様の所見が得られるので疾患特異的ではない．
 
 - **診断基準**
-    ![Untitled.png](/neurology-media/Diseases/脱髄性疾患/末梢性疾患/多巣性運動ニューロパチー/media/Untitled.png)
+    ![Untitled.png](/neurology-media/Diseases/脱髄性疾患/末梢性疾患/多巣性運動ニューロパチー/media/Untitled.webp)
 
 [診断基準](/neurology/diseases/demyelinating-disease/peripheral/multifocal-motor-neuropathy/diagnostic-criteria)
 

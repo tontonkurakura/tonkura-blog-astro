@@ -174,7 +174,7 @@ lastmod: '2026-07-21'
   1.  まずDopamine agonistとL-dopaの服用回数・服用量を増やす（ジスキネジアの副作用に注意）
   2.  次にエンタカポン（コムタン）かゾニサミドの追加（前者は効果が出やすいがジスキネジアも出やすい。後者はその逆）
 
-![Pasted image 20240804143840.png](/neurology-media/Pasted image 20240804143840.png)![Pasted image 20240804143843.png](/neurology-media/Pasted image 20240804143843.png)
+![Pasted image 20240804143840.png](/neurology-media/Pasted image 20240804143840.webp)![Pasted image 20240804143843.png](/neurology-media/Pasted image 20240804143843.webp)
 
 ■ピンク本のまとめ
 

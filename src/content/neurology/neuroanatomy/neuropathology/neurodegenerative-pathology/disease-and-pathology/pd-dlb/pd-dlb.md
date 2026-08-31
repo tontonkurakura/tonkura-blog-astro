@@ -10,7 +10,7 @@ lastmod: '2026-07-21'
 - PDの多くは孤発性だが、5%は遺伝性。1997年に家族性PD患者の原因遺伝子として、α-synucleinが同定された。更に、この家系の患者脳において、レヴィ小体の全てが抗α-synuclein抗体に強陽性を示した。更にDLBにおけるレヴィ小体の主要構成成分もα-synucleinであった。
 - MSAも、当初はOPCA、SND、SDSの3つに分けられていたが、1989年にグリア細胞質内封入体（GCI: Glial cytoplasmic inclusion）が共通して見られる封入体であることが明らかとなり、MSAという包括的な疾患群における異なる表現型として理解されるようになった。最終的に、1998年にこのGCIの主要構成成分がα-synucleinであることが報告され、synucleinopathyとしてまとめられた。
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled.webp)
 
 ## **■ PD**
 
@@ -21,9 +21,9 @@ lastmod: '2026-07-21'
   2. 皮質型レヴィ小体：脳幹型に比べて小さく、形も不整でハローも不明瞭。海馬傍回の皮質深層や扁桃体でよく観察される。
   3. 神経突起内レヴィ小体：神経突起（軸索と樹状突起）内に蓄積した異常α-synucleinを指し、視床下部、迷走神経背側核、交感神経節に好発する。
 
-![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled 1.png)
+![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled 1.webp)
 
-![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled 2.png)
+![Untitled 2.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/PD-DLB/media/Untitled 2.webp)
 
 ## ■ DLB
 

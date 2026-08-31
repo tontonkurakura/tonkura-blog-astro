@@ -18,6 +18,6 @@ lastmod: '2026-07-21'
   - astrocytic plaque
 - 特にastrocytic plaqueは疾患特異的。
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/CBD/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/CBD/media/Untitled.webp)
 
-![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/CBD/media/Untitled 1.png)
+![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/神経変性疾患の病理/神経変性疾患と病理/CBD/media/Untitled 1.webp)

@@ -10,4 +10,4 @@ lastmod: '2026-07-21'
 last_edited: 2025-02-27T00:00:00.000Z
 ---
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/異常構造物/房状アストロサイト/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/異常構造物/房状アストロサイト/media/Untitled.webp)

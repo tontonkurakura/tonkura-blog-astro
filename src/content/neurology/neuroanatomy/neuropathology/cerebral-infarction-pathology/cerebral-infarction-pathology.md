@@ -46,7 +46,7 @@ last_edited: 2023-10-08T00:00:00.000Z
 - 血液脳関門の破綻→血管原性浮腫
 - 脳は軟化し、組織学的には染色性が低下する。
 
-![Untitled.png](/neurology-media/Neuroanatomy/神経病理/脳梗塞の病理/media/Untitled.png)
+![Untitled.png](/neurology-media/Neuroanatomy/神経病理/脳梗塞の病理/media/Untitled.webp)
 
 ### 発症15-24時間
 
@@ -66,7 +66,7 @@ last_edited: 2023-10-08T00:00:00.000Z
 
 - 梗塞巣を取り囲むように、反応性アストロサイトや新生毛細血管が出現する。
 
-![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/脳梗塞の病理/media/Untitled 1.png)
+![Untitled 1.png](/neurology-media/Neuroanatomy/神経病理/脳梗塞の病理/media/Untitled 1.webp)
 
 ## ③慢性期
 

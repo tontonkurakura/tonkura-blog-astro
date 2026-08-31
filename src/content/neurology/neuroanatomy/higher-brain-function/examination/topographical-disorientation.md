@@ -14,10 +14,10 @@ Topographical disorientation
 | 道順障害 | 土地における複数の対象物の位置関係、対象物と自己との位置関係の認知に障害があり、道順を実現できない | 脳梁膨大広域、後帯状皮質、楔前部下部       | 右側、両側が多い |
 | 左もある |
 
-![Pasted image 20240804145737.png](/neurology-media/Pasted image 20240804145737.png)
-![Pasted image 20240804145748.png](/neurology-media/Pasted image 20240804145748.png)
+![Pasted image 20240804145737.png](/neurology-media/Pasted image 20240804145737.webp)
+![Pasted image 20240804145748.png](/neurology-media/Pasted image 20240804145748.webp)
 
-![Pasted image 20240804145751.png](/neurology-media/Pasted image 20240804145751.png)
+![Pasted image 20240804145751.png](/neurology-media/Pasted image 20240804145751.webp)
 
 1. 建物・風景の認知
 

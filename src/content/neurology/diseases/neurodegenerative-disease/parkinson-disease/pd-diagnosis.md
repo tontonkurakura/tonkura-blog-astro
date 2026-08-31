@@ -32,7 +32,7 @@ https://webview.isho.jp/journal/detail/pdf/10.11477/mf.1416101169
 • メタアナリシスによると，PD（1,076例）からほかのパーキンソニズム（779例）を鑑別する際の感度/特異度は 88％/85％と，PD（625例）と変性疾患に伴うパーキンソニズム（MSA，PSP，CBD：220例）を鑑別する際の 感 度/特 異 度 は 早 期 像（82.6％/89.2％），後 期 像（89.7％/82.6％）と報告されている。
 • 京大ではearly 1.92/late 1.68以上がcut off値とされている．
 
-![Pasted image 20240804144044.png](/neurology-media/Pasted image 20240804144044.png)
+![Pasted image 20240804144044.png](/neurology-media/Pasted image 20240804144044.webp)
 
 事前休薬が必要な薬剤
 ＊交感神経の神経伝達物質に関与する薬剤

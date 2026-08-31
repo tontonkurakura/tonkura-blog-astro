@@ -4,7 +4,7 @@ last_edited: 2025-02-27T00:00:00.000Z
 lastmod: '2026-07-21'
 ---
 
-![Pasted image 20240916120456.png](/neurology-media/Pasted image 20240916120456.png)
+![Pasted image 20240916120456.png](/neurology-media/Pasted image 20240916120456.webp)
 
 - STN-DBS（視床下核電気刺激）
   - 薬物減量が可能

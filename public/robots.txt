@@ -1,3 +1,6 @@
-# 当面は検索エンジンに載せない方針。公開時にこのファイルを緩める。
+# 当面は検索エンジンに載せない方針。公開時に Disallow を外す。
 User-agent: *
 Disallow: /
+
+# 公開後に効く。sitemap は @astrojs/sitemap が生成する。
+Sitemap: https://www.tonkura.blog/sitemap-index.xml

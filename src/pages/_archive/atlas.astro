@@ -1,0 +1,298 @@
+---
+import Base from "../../layouts/Base.astro";
+import meta from "../../data/atlas/aal3-meta.json";
+
+const template =
+  "/data/brain/template/tpl-MNI152NLin2009cAsym_res-01_desc-brain_T1w.nii.gz";
+const atlas = "/data/brain/atlas/AAL3/AAL3v1_1mm.nii.gz";
+
+// 凡例（7スーパーグループ）。配色はデータ型・知覚限界・CVD検証から導いたもの。
+const legend = (meta.groupOrder as string[]).map((g) => ({
+  key: g,
+  label: (meta.groupJp as Record<string, string>)[g],
+  color: (meta.palette as Record<string, string>)[g],
+}));
+---
+
+<Base title="Atlas | TonKurA" wide>
+  <div class="head">
+    <h1>Atlas</h1>
+    <p class="note">
+      MNI152 ＋ AAL3（166領域）。配色は解剖グループ別（CVD検証済み7色）、群内は明度で区別。
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="viewer-wrap">
+      <div class="toolbar">
+        <span class="tb-label">3D:</span>
+        <button id="btn-brain" class="toggle" type="button">脳</button>
+        <button id="btn-atlas" class="toggle is-on" type="button">アトラス</button>
+      </div>
+      <div class="viewer">
+        <canvas id="nv" data-template={template} data-atlas={atlas}></canvas>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="legend">
+        {
+          legend.map((g) => (
+            <div class="lg">
+              <span class="sw" style={`background:${g.color}`} />
+              {g.label}
+            </div>
+          ))
+        }
+      </div>
+      <div id="info" class="info">
+        <p class="hint">脳をクリックすると領域情報が出ます。</p>
+      </div>
+    </aside>
+  </div>
+
+  <style>
+    .head {
+      margin-bottom: 1.25rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      letter-spacing: -0.01em;
+      margin: 0 0 0.25rem;
+    }
+    .note {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 60rem) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr) 16rem;
+      }
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+    .tb-label {
+      font-size: var(--step--1);
+      color: var(--fg-muted);
+      margin-right: 0.2rem;
+    }
+    .toggle {
+      font: inherit;
+      font-size: var(--step--1);
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--fg-muted);
+      cursor: pointer;
+    }
+    .toggle:hover {
+      color: var(--fg);
+    }
+    .toggle.is-on {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+    .viewer {
+      height: min(70vh, 680px);
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      /* ドラッグ操作をブラウザのスクロールに奪わせず NiiVue に渡す */
+      touch-action: none;
+      outline: none;
+    }
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: var(--step--1);
+    }
+    .lg {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .sw {
+      width: 0.9rem;
+      height: 0.9rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1px solid color-mix(in srgb, var(--fg) 15%, transparent);
+    }
+    .info {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      min-height: 6rem;
+    }
+    .info .hint {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0;
+    }
+    .info :global(.r-ja) {
+      font-size: var(--step-1);
+      font-weight: 600;
+    }
+    .info :global(.r-en) {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0.1rem 0 0.6rem;
+    }
+    .info :global(.r-row) {
+      font-size: var(--step--1);
+      margin: 0.2rem 0;
+    }
+    .info :global(.r-row b) {
+      color: var(--fg-muted);
+      font-weight: 500;
+      margin-right: 0.4rem;
+    }
+  </style>
+
+  <script>
+    import { Niivue } from "@niivue/niivue";
+
+    const canvas = document.getElementById("nv") as HTMLCanvasElement;
+    const infoEl = document.getElementById("info")!;
+
+    type Meta = Record<
+      string,
+      { ja: string; en: string; group: string; role: string }
+    >;
+
+    async function main() {
+      const [cmapRes, metaRes] = await Promise.all([
+        fetch("/data/atlas/aal3-colormap.json"),
+        fetch("/data/atlas/aal3-meta.json"),
+      ]);
+      const cmap = await cmapRes.json();
+      const meta: Meta = (await metaRes.json()).meta;
+
+      const nv = new Niivue({
+        backColor: [0, 0, 0, 1],
+        show3Dcrosshair: true,
+        multiplanarShowRender: 2, // ALWAYS: 3Dレンダーを常時併置
+      });
+      await nv.attachToCanvas(canvas);
+
+      await nv.loadVolumes([
+        { url: canvas.dataset.template! },
+        { url: canvas.dataset.atlas! },
+      ]);
+
+      // アトラスにグループ別カラーマップ（label colormap）を適用し半透明に。
+      // NiiVue の ColorMap 型は I（各色が対応するラベル値）が必須。
+      // R/G/B/A/labels は配列位置＝ラベル値で並んでいるので I=[0..N]。
+      cmap.I = cmap.R.map((_: number, i: number) => i);
+      nv.volumes[1].setColormapLabel(cmap);
+      // 2Dスライスの色分け＋クリック識別用にボリュームは薄く残す
+      nv.setOpacity(1, 0.35);
+      nv.updateGLVolume();
+      nv.setSliceType(nv.sliceTypeMultiplanar);
+
+      // 3D はなめらかなサーフェスメッシュ（頂点色つき MZ3）で見せる。
+      // 離散ラベルのボリュームを3Dレンダーすると階段状になるため。
+      // 3D: 脳表面メッシュ＋アトラスメッシュ（頂点色つき）。meshes[0]=脳, [1]=アトラス
+      await nv.loadMeshes([
+        { url: "/data/atlas/brain-mesh.mz3" },
+        { url: "/data/atlas/aal3-mesh.mz3" },
+      ]);
+      const brainId = nv.meshes[0].id;
+      const atlasId = nv.meshes[1].id;
+
+      // 2Dスライスにはメッシュ断面を描かない（塗りのボリュームだけ）
+      nv.setMeshThicknessOn2D(0);
+      // つや消し（Matte）に。既定の Phong は光沢で三角面の稜線が際立つため。
+      try {
+        nv.setMeshShader(brainId, "Matte");
+        nv.setMeshShader(atlasId, "Matte");
+      } catch (e) {
+        console.warn("mesh shader:", e);
+      }
+
+      // 既定: アトラス表示・脳非表示
+      const setVisible = (id: number, on: boolean) => {
+        nv.setMeshProperty(id, "visible", on);
+      };
+      setVisible(brainId, false);
+      setVisible(atlasId, true);
+
+      const wire = (btnId: string, meshId: number) => {
+        const btn = document.getElementById(btnId)!;
+        btn.addEventListener("click", () => {
+          const on = !btn.classList.contains("is-on");
+          btn.classList.toggle("is-on", on);
+          setVisible(meshId, on);
+          nv.drawScene();
+        });
+      };
+      wire("btn-brain", brainId);
+      wire("btn-atlas", atlasId);
+
+      // 表示サイズと描画バッファを一致させる（イベント座標のずれ防止）
+      const fit = () => {
+        if (typeof nv.resizeListener === "function") nv.resizeListener();
+        nv.drawScene();
+      };
+      fit();
+      setTimeout(fit, 60);
+      window.addEventListener("resize", fit);
+
+      // クリック位置の label index → 領域情報
+      nv.onLocationChange = (loc: any) => {
+        const v = loc?.values?.[1]?.value;
+        const idx = v == null ? 0 : Math.round(v);
+        const m = meta[String(idx)];
+        if (!m || idx === 0) {
+          infoEl.innerHTML =
+            '<p class="hint">脳をクリックすると領域情報が出ます。</p>';
+          return;
+        }
+        infoEl.innerHTML =
+          `<div class="r-ja">${m.ja}</div>` +
+          `<p class="r-en">${m.en}</p>` +
+          `<div class="r-row"><b>グループ</b>${m.group}</div>` +
+          (m.role ? `<div class="r-row"><b>役割</b>${m.role}</div>` : "");
+      };
+
+      nv.drawScene();
+      // デバッグ用: 状態をコンソールに出す（操作不能の切り分け）
+      console.log(
+        "[atlas] niivue ready. canvas",
+        canvas.width,
+        "x",
+        canvas.height,
+        "volumes",
+        nv.volumes.length,
+      );
+    }
+
+    main().catch((e) => {
+      infoEl.innerHTML = `<p class="hint">読み込みに失敗: ${e.message}</p>`;
+      console.error(e);
+    });
+  </script>
+</Base>
