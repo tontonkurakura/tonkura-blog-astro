@@ -1,128 +1,191 @@
-# 写真の説明を設定するファイル
-# 各写真に対して以下の情報を設定できます：
-# - description: 写真の詳細な説明
+# 写真のメタデータ。並び順はギャラリーの表示順にそのまま使われる。
+# - description: 写真の説明
+# - date: 撮影日。EXIF の DateTimeOriginal から入れた（DateTime は編集日なので使わない）。
+#         トップページの「新しい3枚」はこの日付で選ぶ。
 
 DSC00072.jpg:
   description: Zojo-ji, Tokyo
+  date: 2022-03-14
 DSC00100.jpg:
   description: Tokyo Tower
+  date: 2022-03-14
 DSC00103.jpg:
   description: Ushiku, Ibaraki
+  date: 2017-07-23
 DSC00197.jpg:
   description: Furano, Hokkaido
+  date: 2018-08-14
 DSC00329.jpg:
   description: Biei, Hokkaido
+  date: 2018-08-15
 DSC00351.jpg:
   description: Biei, Hokkaido
+  date: 2018-08-15
 DSC00363.jpg:
   description: Shakotan, Hokkaido
+  date: 2018-08-15
 DSC00498 (3).jpg:
   description: Shakotan, Hokkaido
+  date: 2018-08-16
 DSC00670.jpg:
   description: Inokashira-park, Tokyo
+  date: 2018-10-07
 DSC00675.jpg:
   description: Syowa-memorial-park, Tokyo
+  date: 2018-10-07
 DSC01080.jpg:
   description: Okuno-jima, Hiroshima
+  date: 2019-06-22
 DSC01137.jpg:
   description: Okuno-jima, Hiroshima
+  date: 2019-06-22
 DSC01197.jpg:
   description: Onioshidashi-en, Gunma
+  date: 2019-08-29
 DSC01203.jpg:
   description: Onioshidashi-en, Gunma
+  date: 2019-08-29
 DSC01265.jpg:
   description: Nabega-taki, Gunma
+  date: 2020-01-05
 DSC01376-Enhanced-NR.jpg:
   description: Goshiki-zakura ohashi, Tokyo
+  date: 2024-04-06
 DSC01388-Enhanced-NR.jpg:
   description: Goshiki-zakura ohashi, Tokyo
+  date: 2024-04-06
 DSC01465.jpg:
   description: Roppongi, Tokyo
+  date: 2021-12-21
 DSC01576.jpg:
   description: Tour de Eiffel, Paris
+  date: 2015-08-08
 DSC01597.jpg:
   description: Tour de Eiffel, Paris
+  date: 2015-08-08
 DSC01655.jpg:
   description: Champs-Elysees, Paris
+  date: 2015-08-08
 DSC02114-Enhanced-NR-Edit.jpg:
   description: Hennasaki lighthouse, Miyako, Okinawa
+  date: 2024-06-25
 DSC02191-Enhanced-NR.jpg:
   description: Ndukviav(ヌドクビアブ), Miyako, Okinawa
+  date: 2024-06-27
 DSC02207.jpg:
   description: Crystalbrook Balley, Cairns, Australia
+  date: 2024-07-11
 DSC02229-Enhanced-NR.jpg:
   description: Paronella-park, Cairns, Australia
+  date: 2024-07-12
 DSC02351-Enhanced-NR-Edit.jpg:
   description: Chillagoe, Australia
+  date: 2024-07-13
 DSC03551.jpg:
   description: Westend, London, UK
+  date: 2015-09-11
 DSC03624.jpg:
   description: Liverpool Cathedral, Liverpool, UK
+  date: 2015-09-12
 DSC04738.jpg:
   description: Leeds, UK
+  date: 2015-10-04
 DSC05024.jpg:
   description: citizensM hotel, Glasgow, UK
+  date: 2015-10-18
 DSC05051.jpg:
   description: Glasgow Cathedral, Glasgow, UK
+  date: 2015-10-19
 DSC05210.jpg:
   description: Design Museum, London, UK
+  date: 2015-10-25
 DSC05218.jpg:
   description: Design Museum, London, UK
+  date: 2015-10-25
 DSC05237.jpg:
   description: White Cube, London, UK
+  date: 2015-10-25
 DSC05397.jpg:
   description: Courtauld Gallery, London, UK
+  date: 2015-11-06
 DSC05805.jpg:
   description: Tosayamada, Kochi
+  date: 2015-12-27
 DSC06034.jpg:
   description: Matsushima, Miyagi
+  date: 2016-03-15
 DSC06231.jpg:
   description: Omoide-yokocho, Tokyo
+  date: 2016-05-05
 DSC06919.jpg:
   description: Hachijo-jima, Tokyo
+  date: 2016-07-19
 DSC07199.jpg:
   description: MAOUDC, Tokyo
+  date: 2016-11-12
 DSC07204.jpg:
   description: MAOUDC, Tokyo
+  date: 2016-11-12
 DSC07563.jpg:
   description: Nachi, Wakayama
+  date: 2016-12-28
 DSC07646.jpg:
   description: Shirahama, Wakayama
+  date: 2016-12-28
 DSC07695.jpg:
   description: Shirahama, Wakayama
+  date: 2016-12-28
 DSC07746.jpg:
   description: Sai-jinja, Nara
+  date: 2016-12-29
 DSC07817.jpg:
   description: Meguro-gawa, Tokyo
+  date: 2017-04-06
 DSC07887.jpg:
   description: Shinjuku-Golden Gai, Tokyo
+  date: 2017-04-06
 DSC08142.jpg:
   description: Harbour Bridge, Sidney, Australia
+  date: 2017-04-27
 DSC08150.jpg:
   description: Hyde Park Barracks, Sydney, Australia
+  date: 2017-04-28
 DSC08179.jpg:
   description: Royal Botanic Garden, Sydney, Australia
+  date: 2017-04-28
 DSC08250.jpg:
   description: Mrs Macquarie's Chair, Sydney, Australia
+  date: 2017-04-28
 DSC08282.jpg:
   description: Sydney, Australia
+  date: 2017-04-28
 DSC09251.jpg:
   description: Canberra, Australia
+  date: 2017-05-28
 DSC09372.jpg:
   description: Sydney, Australia
+  date: 2017-06-03
 DSC09427.jpg:
   description: Vivid Sydney, Sydney, Australia
+  date: 2017-06-03
 DSC09654.jpg:
   description: Sydney, Australia
+  date: 2017-06-12
 DSC09931.jpg:
   description: Tasmania, Australia
+  date: 2017-06-25
 DSC02359-Enhanced-NR-Pano-Edit.jpg:
   description: Chillagoe, Australia
+  date: 2024-07-13
 DSC02808.jpg:
   description: Institute of Science Tokyo
+  date: 2025-03-19
 DSC03082.jpg:
   description: Musashi-kokubunji ato, Tokyo
+  date: 2025-04-06
 DSC03093.jpg:
   description: Musashi-kokubunji ato, Tokyo
+  date: 2025-04-06
 DSC03097.jpg:
   description: Musashi-kokubunji park, Tokyo
+  date: 2025-04-06

@@ -18,20 +18,25 @@ const {
   revealHeaderOnScroll = false,
 } = Astro.props;
 
+// 文章4種は入口を Writing にまとめてある（DECISIONS.md）。
+// コレクションは分けたままなので、現在地の判定だけ4つを束ねる。
 const nav = [
-  { href: "/", label: "Home" },
-  { href: "/wiki", label: "Wiki" },
-  { href: "/database", label: "Database" },
-  { href: "/neurology", label: "Notes" },
-  { href: "/blog", label: "Blog" },
-  { href: "/imaging", label: "Imaging" },
-  { href: "/anatomical-atlas", label: "Atlas" },
-  { href: "/tools", label: "Tools" },
-  { href: "/gallery", label: "Gallery" },
+  { href: "/", label: "Home", also: [] as string[] },
+  {
+    href: "/writing",
+    label: "Writing",
+    also: ["/wiki", "/neurology", "/blog", "/imaging"],
+  },
+  { href: "/database", label: "Database", also: [] },
+  { href: "/anatomical-atlas", label: "Atlas", also: [] },
+  { href: "/tools", label: "Tools", also: [] },
+  { href: "/gallery", label: "Gallery", also: [] },
 ];
 const path = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === "/" ? path === "/" : path.startsWith(href);
+const isActive = (item: { href: string; also: string[] }) =>
+  item.href === "/"
+    ? path === "/"
+    : [item.href, ...item.also].some((p) => path.startsWith(p));
 ---
 
 <!doctype html>
@@ -64,7 +69,7 @@ const isActive = (href: string) =>
               .map((item) => (
                 <a
                   href={item.href}
-                  class:list={["nav-link", { active: isActive(item.href) }]}
+                  class:list={["nav-link", { active: isActive(item) }]}
                 >
                   {item.label}
                 </a>

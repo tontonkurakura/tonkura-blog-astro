@@ -1,0 +1,237 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import { getWritingIndex, formatDate, type WritingType } from "../../lib/home";
+
+const items = await getWritingIndex();
+
+const count = (t: WritingType) => items.filter((i) => i.type === t).length;
+
+/** 種別ごとの索引。構造（問いの繋がり、階層、読む順）はそちらが持っている。 */
+const kinds: { type: WritingType; label: string; index: string; note: string }[] =
+  [
+    {
+      type: "Wiki",
+      label: "Wiki",
+      index: "/wiki",
+      note: "勉強会で出た問い。問い同士が繋がっている",
+    },
+    {
+      type: "Notes",
+      label: "Notes",
+      index: "/neurology",
+      note: "神経内科の覚え書き。階層で辿れる",
+    },
+    { type: "Blog", label: "Blog", index: "/blog", note: "考えたことを長めに" },
+    {
+      type: "Imaging",
+      label: "Imaging",
+      index: "/imaging",
+      note: "神経画像解析の方法論。上流から読む順がある",
+    },
+  ];
+---
+
+<Base title="Writing | TonKurA" wide>
+  <PageHeader title="Writing" meta={`全 ${items.length} 本`} />
+
+  <div class="filters" role="group" aria-label="種別で絞り込む">
+    <button type="button" data-kind="all" class="is-on">すべて</button>
+    {
+      /* 0 件の種別は出さない。imaging は下書きだけのとき本番ビルドで 0 になる。 */
+      kinds
+        .filter((k) => count(k.type) > 0)
+        .map((k) => (
+          <button type="button" data-kind={k.type}>
+            {k.label}
+            <span class="n">{count(k.type)}</span>
+          </button>
+        ))
+    }
+  </div>
+
+  <ul class="list" id="writing-list">
+    {
+      items.map((i) => (
+        <li data-kind={i.type}>
+          <a href={i.href}>
+            <time datetime={i.date?.toISOString()}>
+              {i.date ? formatDate(i.date) : ""}
+            </time>
+            <span class="t">{i.title}</span>
+            <span class="s">{i.type}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <section class="indexes">
+    <h2>それぞれの索引</h2>
+    <p class="note">
+      この一覧は日付で並べているだけである。問いの繋がりや階層、読む順は各索引にある。
+    </p>
+    <ul>
+      {
+        kinds.map((k) => (
+          <li>
+            <a href={k.index}>{k.label}</a>
+            <span class="note">{k.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <script is:inline>
+    (function () {
+      const list = document.getElementById("writing-list");
+      const buttons = document.querySelectorAll(".filters button");
+      if (!list || !buttons.length) return;
+      buttons.forEach(function (b) {
+        b.addEventListener("click", function () {
+          buttons.forEach(function (o) {
+            o.classList.toggle("is-on", o === b);
+          });
+          list.dataset.only = b.dataset.kind === "all" ? "" : b.dataset.kind;
+        });
+      });
+    })();
+  </script>
+
+  <style>
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .filters button {
+      align-items: baseline;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--fg-muted);
+      cursor: pointer;
+      display: inline-flex;
+      font: inherit;
+      font-size: var(--step--1);
+      gap: 0.4rem;
+      padding: 0.4rem 0.9rem;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    }
+    .filters button:hover {
+      border-color: var(--fg-muted);
+      color: var(--fg);
+    }
+    .filters button.is-on {
+      background: var(--fg);
+      border-color: var(--fg);
+      color: var(--bg);
+    }
+    .filters .n {
+      font-variant-numeric: tabular-nums;
+      opacity: 0.7;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    /* 絞り込みは表示の切り替えだけで行う。全件が最初から DOM にある。 */
+    .list[data-only="Wiki"] li:not([data-kind="Wiki"]),
+    .list[data-only="Notes"] li:not([data-kind="Notes"]),
+    .list[data-only="Blog"] li:not([data-kind="Blog"]),
+    .list[data-only="Imaging"] li:not([data-kind="Imaging"]) {
+      display: none;
+    }
+    .list li a {
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 5.5rem 1fr auto;
+      margin-inline: -0.75rem;
+      padding: 0.9rem 0.75rem;
+      transition:
+        background 0.18s ease,
+        padding-left 0.18s ease;
+    }
+    .list li a:hover {
+      background: var(--bg-subtle);
+      padding-left: 1.25rem;
+    }
+    .list time {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      font-variant-numeric: tabular-nums;
+    }
+    .list .t {
+      line-height: 1.5;
+    }
+    .list .s {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+    }
+
+    .indexes {
+      border-top: 1px solid var(--border);
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+    }
+    .indexes h2 {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      margin: 0 0 0.75rem;
+      text-transform: uppercase;
+    }
+    .indexes ul {
+      list-style: none;
+      margin: 1rem 0 0;
+      padding: 0;
+    }
+    .indexes li {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      padding: 0.4rem 0;
+    }
+    .indexes li a {
+      font-weight: 600;
+      min-width: 5rem;
+    }
+    .indexes li a:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+    }
+    .note {
+      color: var(--fg-muted);
+      font-size: var(--step--1);
+      margin: 0;
+    }
+
+    @media (max-width: 40rem) {
+      .list li a {
+        gap: 0.3rem 1rem;
+        grid-template-columns: 1fr auto;
+      }
+      .list time {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .list .t {
+        grid-column: 1 / -1;
+      }
+      .list .s {
+        grid-column: 2;
+        grid-row: 2;
+      }
+    }
+  </style>
+</Base>
