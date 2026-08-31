@@ -1,6 +1,6 @@
 # 決定と保留
 
-最終更新: 2026-08-23
+最終更新: 2026-08-31
 
 このリポジトリ（`tonkura-blog-astro`）は、Next.js 版 `~/dev/tonkura-blog` を
 Astro に移し替えたもの。ここには「**なぜそう移行したか**」と「**切替時に決めること**」を残す。
@@ -328,15 +328,15 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
 1. **コンテンツの源を一本化する。** 今は旧リポジトリと Astro 側の二重。
    今後どちらで編集するか決め、他方を従にする（または旧を凍結）。
 2. **noindex を外す。** `robots.txt` と Base.astro の meta。公開の意思が固まってから。
-3. **デプロイ。** GitHub に push → 新しい Vercel プロジェクト（Astro 静的サイトは
-   自動検出、アダプタ不要）。`tonkura.blog` の向け替えは最後。
+3. **デプロイ。** → **2026-08-31 に実施した**（下記「Vercel に載せた」）。
+   残るのは `tonkura.blog` の向け替えで、これは #2 の noindex を外す判断と対になる。
 4. **Sentry を入れるか。** 旧サイトは `@sentry/nextjs` で有効。Astro は `@sentry/astro`。
    今は未配線（DSN 設定が要る）。入れるなら切替時に。
 5. **3Dビューアの別プロジェクト。** アトラス系はここでは扱わない。
    → **2026-08-23、筆者が `~/dev/3D_Brain` の生成物を `public/brain-viewer/` に置き、
    `anatomical-atlas.astro` をプレースホルダから iframe 埋め込みに差し替えた**（`d5865d8`）。
    **上の「ビューア依存ページはプレースホルダ」は、このページについては過去の記述になる。**
-   ビューアの作成自体は別プロジェクトのまま。ここには生成物（11MB）だけが入っている。
+   ビューアの作成自体は別プロジェクトのまま。ここには生成物だけが入っている。
    → **2026-08-23 追記。埋め込んだ直後、ビューアは three.js を jsdelivr から
    読んでいた。**CDN を落として試すと**進捗 0% のまま無言で止まる**。読者からは
    「重いページ」と区別がつかない。three.js を `public/brain-viewer/vendor/three/`
@@ -344,6 +344,39 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
    これで「全コンテンツが自己完結」が再び成り立つ。
    **`public/brain-viewer/` を手で編集しないこと。** 配る側は `~/dev/3D_Brain/viewer/`
    ひとつで、`~/dev/3D_Brain/tools/sync_viewer.sh` が撒く。
+   → **2026-08-24 追記。ビューアを3度撒き直した**（`c6c1673` / `2107010` / `c59f5a3`）。
+   スマートフォン幅への対応が入り、マクロ（脳葉・皮質下核など）のアトラスが加わって
+   既定の表示がマクロになった。資産は 24MB（`brain.glb` 7.2MB / `brain_macro.glb` 6.3MB /
+   `brain_arterial.glb` 3.7MB / 断面 5.4MB / three.js 1.5MB）。
+   **`viewer.html` と資産は同時に撒くこと。** `c6c1673` は `viewer.html` だけを差し替えており、
+   既定がマクロに変わったにもかかわらず `brain_macro.glb` と断面画像が無い。この状態では
+   読み込みが完了しない。資産は次の `2107010` で入っている。
+
+## Vercel に載せた（2026-08-31）
+
+プロジェクトは `tonkura-blog-astro`（team `tonkuras-projects`、Hobby）。GitHub の
+`tontonkurakura/tonkura-blog-astro` に接続してあり、main への push で本番ビルドが走る。
+初回は 35 秒・455 ページで、フレームワークは Astro として自動検出された。
+本番 URL は <https://tonkura-blog-astro.vercel.app>。
+**旧サイト（Vercel プロジェクト `tonkura-blog`、tonkura.blog）は触っていない。**
+
+**Vercel Authentication が有効になっている**（`all_except_custom_domains`）。`.vercel.app`
+の URL は Vercel にログインしていないと 302 で SSO に飛ぶので、スマートフォンで確認する
+ときも一度ログインが要る。カスタムドメインを当てたぶんには効かない設定なので、
+`tonkura.blog` を向けた瞬間に素通しになる。**向け替えは noindex の判断とセットにすること。**
+検索避けは付けたまま（456 の HTML すべてに meta、`robots.txt` は `Disallow: /`）。
+
+**下書きはデプロイされない。** 本番ビルドは `astro build` なので、`draft: true` の
+`imaging` 3本は出力に含まれない。記事の見た目を実機で見たいときは `npm run dev` を使うか、
+Preview 環境にだけ `INCLUDE_DRAFTS=1` を入れる。
+
+**MCP の Vercel コネクタからはプロジェクトを作れなかった。** `create_git_project` が
+403 forbidden を返す（権限はコネクタ側の制約で、アカウントの問題ではない）。ローカルの
+`vercel` CLI は `tontonkurakura` として認証済みで、`vercel project add` →
+`vercel link` → `vercel git connect` の順で通った。
+
+**`vercel link` は `.env.local` に OIDC トークンを落とす。** `.gitignore` に `.vercel` と
+`.env*` を足してある（`6a029c4`）。
 
 ## 積み残し（品質）
 
@@ -357,13 +390,16 @@ Astro 7 の glob ローダーが `generateId` を受け取れる（`glob.d.ts:19
 
 - **458ページ静的生成**（2026-08-23。`npm run build:ci` と `npm run lint:text` は緑）。
   内訳の変化は imaging 記事2本の追加による。全ルート HTTP 200 の確認は 453ページ時点のもの。
+  2026-08-31 の本番ビルドは 455ページ（`npm run build`。下書き3本を除いた数）。
 - 全コンテンツが自己完結（外部パス参照ゼロ）。**`/anatomical-atlas` は 2026-08-23 に
   一度この性質を破っていた**（3D ビューアが three.js を CDN から読んでいた）。
   three.js を同梱して回復。CDN を遮断したヘッドレス Chrome で描画を確認済み。
 - **`/anatomical-atlas` の 3D ビューアはヘッドレス Chrome で描画確認済み**
   （`dist` を配信し、iframe 内で単体表示と同じ絵になること）。
-  ただし**スマートフォン幅（`aspect-ratio: 3/4`）とダークモードは未確認**。
+  **2026-08-24 にスマートフォン対応版へ差し替えた**（`c6c1673`）が、**実機では見ていない**。
+  ダークモードも未確認。
 - **ブラウザでの通し確認（レイアウト・ダークモード・計算機の操作）は未了。**
+  2026-08-31 に Vercel へ載せたので、実機で見る手立てはできた（要 Vercel ログイン）。
 - **`imaging` の2記事はブラウザで一度も見ていない。** 特に引用マーカーの見た目
   （`font-size: 0.78em` / `vertical-align: 0.35em`）は当てずっぽうの値で、実機未確認。
   `npm run dev` → `http://localhost:4321/imaging/what-bold-measures`。

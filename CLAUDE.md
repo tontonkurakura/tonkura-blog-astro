@@ -27,7 +27,7 @@ Astro 4 時代のレガシーパスで、こちらは読まれない。作らな
 
 ### `public/brain-viewer/` は別リポジトリの生成物
 
-`/anatomical-atlas` の 3D ビューア（11MB）は `~/dev/3D_Brain` が作っている。
+`/anatomical-atlas` の 3D ビューア（24MB）は `~/dev/3D_Brain` が作っている。
 **ここでは編集しない。** 直したいときは向こうの `viewer/` を直し、
 `~/dev/3D_Brain/tools/sync_viewer.sh` で撒く。手でコピーすると、
 リポジトリ・配布パッケージ・ここの 3 か所のどれかが必ず古くなる。
