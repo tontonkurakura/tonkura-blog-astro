@@ -16,12 +16,9 @@ const sections = [
 ];
 ---
 
-<Base title="TonKurA" wide>
+<Base title="TonKurA" wide revealHeaderOnScroll>
   <section class="hero">
     <h1>TonKurA</h1>
-    <p class="lead">
-      神経内科と神経画像のノート。臨床で引っかかったことを調べ、書き留めている。
-    </p>
   </section>
 
   <nav class="sections">
@@ -56,14 +53,6 @@ const sections = [
       line-height: 1;
       margin: 0 0 1rem;
     }
-    .lead {
-      color: var(--fg-muted);
-      font-size: var(--step-0);
-      line-height: 1.7;
-      margin: 0;
-      max-width: 32rem;
-    }
-
     /* セクションは囲まない。8つを 4 列 2 段に組んで、折り返しを意図した形にする。 */
     .sections {
       display: grid;

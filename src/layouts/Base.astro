@@ -8,8 +8,15 @@ interface Props {
   description?: string;
   /** 読み幅を広い一覧レイアウトにするか */
   wide?: boolean;
+  /** 最上部ではヘッダーを出さず、下に降りたところで現す（トップページ用） */
+  revealHeaderOnScroll?: boolean;
 }
-const { title, description, wide = false } = Astro.props;
+const {
+  title,
+  description,
+  wide = false,
+  revealHeaderOnScroll = false,
+} = Astro.props;
 
 const nav = [
   { href: "/", label: "Home" },
@@ -47,7 +54,7 @@ const isActive = (href: string) =>
     </script>
   </head>
   <body>
-    <header class="site-header">
+    <header class:list={["site-header", { reveal: revealHeaderOnScroll }]}>
       <div class="bar">
         <a class="brand" href="/">TonKurA</a>
         <nav>
@@ -68,9 +75,26 @@ const isActive = (href: string) =>
       </div>
     </header>
 
+    {revealHeaderOnScroll && <div class="header-sentinel" aria-hidden="true" />}
+
+    {/* reveal が付いているページ（トップ）だけ、下に降りたところでヘッダーを現す。
+        スクロールイベントではなく交差監視にしてある。上下どちらの向きでも同じ判定になり、
+        戻ったときに隠れ直さない、という取りこぼしが起きない。 */}
+    <script is:inline>
+      (function () {
+        const header = document.querySelector(".site-header.reveal");
+        const sentinel = document.querySelector(".header-sentinel");
+        if (!header || !sentinel) return;
+        new IntersectionObserver(function (entries) {
+          header.classList.toggle("is-visible", !entries[0].isIntersecting);
+        }).observe(sentinel);
+      })();
+    </script>
+
     <main class:list={["container", { wide }]}>
       <slot />
     </main>
+
 
     <footer class="site-footer">
       <div class="container wide">
@@ -79,6 +103,38 @@ const isActive = (href: string) =>
     </footer>
 
     <style>
+      /* 交差監視の目印。ここが画面から外れたらヘッダーを現す。流れには影響させない。 */
+      .header-sentinel {
+        height: 160px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        width: 1px;
+      }
+
+      /* トップページ用。最上部では画面の外に置き、流れからも外して余白を残さない。 */
+      .site-header.reveal {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        transform: translateY(-100%);
+        visibility: hidden;
+        transition:
+          transform 0.28s ease,
+          visibility 0.28s;
+      }
+      .site-header.reveal.is-visible {
+        transform: none;
+        visibility: visible;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .site-header.reveal {
+          transition: none;
+        }
+      }
+
       .site-header {
         border-bottom: 1px solid var(--border);
         background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -86,6 +142,9 @@ const isActive = (href: string) =>
         position: sticky;
         top: 0;
         z-index: 10;
+      }
+      body {
+        position: relative;
       }
       .bar {
         max-width: var(--measure-wide);
