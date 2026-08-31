@@ -25,10 +25,13 @@ Astro 4 時代のレガシーパスで、こちらは読まれない。作らな
 | `neurology` | 神経内科ノート（319本。**Obsidian はもう使わない**） | 人 |
 | `imaging` | **神経画像解析の方法論解説。Issue の疑問 1 つ = 記事 1 本** | Claude が下書きし、人が検証して merge |
 
-**読者から見た入口は `/writing` に統一してある。** `wiki` / `neurology` / `blog` / `imaging` は
-コレクションとしては別のまま（URL もスキーマも CI もそれぞれ）だが、ナビには Writing の
-1つしか出さない。`/writing` が4つを日付順に並べ、種別で絞り込める。構造（問いの繋がり、
+**読者から見た入口は `/notes` に統一してある。** `wiki` / `neurology` / `blog` / `imaging` は
+コレクションとしては別のまま（URL もスキーマも CI もそれぞれ）だが、ナビには Notes の
+1つしか出さない。`/notes` が4つを日付順に並べ、種別で絞り込める。構造（問いの繋がり、
 319本の階層、読む順）は各コレクションの索引が持っている。**ナビに4つを戻さないこと。**
+
+種別の表示名は Wiki / Neurology / Blog / Imaging である。`neurology` を Notes と呼ぶと
+入口の名前とぶつかるので、こちらは Neurology と出す。
 
 ### `public/brain-viewer/` は別リポジトリの生成物
 

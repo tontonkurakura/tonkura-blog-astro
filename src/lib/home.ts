@@ -57,7 +57,7 @@ export async function getRecent(limit = 8, perTypeCap = 6): Promise<RecentItem[]
     items.push({
       title: e.data.title,
       href: `/neurology/${e.id}`,
-      section: "Notes",
+      section: "Neurology",
       date,
     });
   }
@@ -98,12 +98,12 @@ export function formatDate(d: Date): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export type WritingType = "Wiki" | "Notes" | "Blog" | "Imaging";
+export type NoteKind = "Wiki" | "Neurology" | "Blog" | "Imaging";
 
-export interface WritingItem {
+export interface NoteItem {
   title: string;
   href: string;
-  type: WritingType;
+  type: NoteKind;
   date: Date | null;
 }
 
@@ -111,7 +111,7 @@ export interface WritingItem {
  * 文章4種を1つの索引にまとめる。コレクションは分けたまま、入口だけ束ねる。
  * 日付を持たない項目は末尾に回す（今のところ該当はない）。
  */
-export async function getWritingIndex(): Promise<WritingItem[]> {
+export async function getNotesIndex(): Promise<NoteItem[]> {
   const [blog, wiki, neurology, imaging] = await Promise.all([
     getCollection("blog"),
     getCollection("wiki"),
@@ -119,7 +119,7 @@ export async function getWritingIndex(): Promise<WritingItem[]> {
     getImagingPosts(),
   ]);
 
-  const items: WritingItem[] = [
+  const items: NoteItem[] = [
     ...blog.map((e) => ({
       title: e.data.title,
       href: `/blog/${e.id}`,
@@ -139,7 +139,7 @@ export async function getWritingIndex(): Promise<WritingItem[]> {
       .map((e) => ({
         title: e.data.title as string,
         href: `/neurology/${e.id}`,
-        type: "Notes" as const,
+        type: "Neurology" as const,
         date: e.data.last_edited ?? null,
       })),
     ...imaging.map((e) => ({

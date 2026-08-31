@@ -1,14 +1,14 @@
 ---
 import Base from "../../layouts/Base.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import { getWritingIndex, formatDate, type WritingType } from "../../lib/home";
+import { getNotesIndex, formatDate, type NoteKind } from "../../lib/home";
 
-const items = await getWritingIndex();
+const items = await getNotesIndex();
 
-const count = (t: WritingType) => items.filter((i) => i.type === t).length;
+const count = (t: NoteKind) => items.filter((i) => i.type === t).length;
 
 /** 種別ごとの索引。構造（問いの繋がり、階層、読む順）はそちらが持っている。 */
-const kinds: { type: WritingType; label: string; index: string; note: string }[] =
+const kinds: { type: NoteKind; label: string; index: string; note: string }[] =
   [
     {
       type: "Wiki",
@@ -17,8 +17,8 @@ const kinds: { type: WritingType; label: string; index: string; note: string }[]
       note: "勉強会で出た問い。問い同士が繋がっている",
     },
     {
-      type: "Notes",
-      label: "Notes",
+      type: "Neurology",
+      label: "Neurology",
       index: "/neurology",
       note: "神経内科の覚え書き。階層で辿れる",
     },
@@ -32,8 +32,8 @@ const kinds: { type: WritingType; label: string; index: string; note: string }[]
   ];
 ---
 
-<Base title="Writing | TonKurA" wide>
-  <PageHeader title="Writing" meta={`全 ${items.length} 本`} />
+<Base title="Notes | TonKurA" wide>
+  <PageHeader title="Notes" meta={`全 ${items.length} 本`} />
 
   <div class="filters" role="group" aria-label="種別で絞り込む">
     <button type="button" data-kind="all" class="is-on">すべて</button>
@@ -50,7 +50,7 @@ const kinds: { type: WritingType; label: string; index: string; note: string }[]
     }
   </div>
 
-  <ul class="list" id="writing-list">
+  <ul class="list" id="notes-list">
     {
       items.map((i) => (
         <li data-kind={i.type}>
@@ -85,7 +85,7 @@ const kinds: { type: WritingType; label: string; index: string; note: string }[]
 
   <script is:inline>
     (function () {
-      const list = document.getElementById("writing-list");
+      const list = document.getElementById("notes-list");
       const buttons = document.querySelectorAll(".filters button");
       if (!list || !buttons.length) return;
       buttons.forEach(function (b) {
@@ -144,7 +144,7 @@ const kinds: { type: WritingType; label: string; index: string; note: string }[]
     }
     /* 絞り込みは表示の切り替えだけで行う。全件が最初から DOM にある。 */
     .list[data-only="Wiki"] li:not([data-kind="Wiki"]),
-    .list[data-only="Notes"] li:not([data-kind="Notes"]),
+    .list[data-only="Neurology"] li:not([data-kind="Neurology"]),
     .list[data-only="Blog"] li:not([data-kind="Blog"]),
     .list[data-only="Imaging"] li:not([data-kind="Imaging"]) {
       display: none;

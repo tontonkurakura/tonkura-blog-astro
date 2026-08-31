@@ -24,13 +24,13 @@ const {
   forceDark = false,
 } = Astro.props;
 
-// 文章4種は入口を Writing にまとめてある（DECISIONS.md）。
+// 文章4種は入口を Notes にまとめてある（DECISIONS.md）。
 // コレクションは分けたままなので、現在地の判定だけ4つを束ねる。
 const nav = [
   { href: "/", label: "Home", also: [] as string[] },
   {
-    href: "/writing",
-    label: "Writing",
+    href: "/notes",
+    label: "Notes",
     also: ["/wiki", "/neurology", "/blog", "/imaging"],
   },
   { href: "/database", label: "Database", also: [] },
