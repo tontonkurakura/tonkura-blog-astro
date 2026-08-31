@@ -379,6 +379,55 @@ Preview 環境にだけ `INCLUDE_DRAFTS=1` を入れる。
 **`vercel link` は `.env.local` に OIDC トークンを落とす。** `.gitignore` に `.vercel` と
 `.env*` を足してある（`6a029c4`）。
 
+## 旧サイトの URL をどう受けるか（2026-08-31）
+
+`tonkura.blog` を新サイトへ向ける前に、旧サイトが今どう応答しているかを確かめた。
+
+**`/neurology` は壊れている。** 一覧も個別ページも、すべてトップへ 307 で飛ぶ
+（`/neurology`、`/neurology/view/Neuroanatomy/高次脳機能/診察/色彩認知障害` などで確認）。
+319本のノートは現在の本番サイトから読めない。向け替えると、ここは復活する。
+
+**逆に後退するページが4つある。** `/functional-atlas`、`/white-matter-atlas`、
+`/neuromuscular`、`/database/brodmann` は旧サイトで 200 を返すが、こちらでは
+まだプレースホルダである。向け替えは、この4ページを一時的に落とすことと引き換えになる。
+
+`vercel.json` に転送を3本置いた。
+
+| 旧 | 新 | 種別 |
+|---|---|---|
+| `/database/higher-brain-function/symptoms/*` | `/database/*` | 308 |
+| `/neurology/view/*` | `/neurology` | 307 |
+| `/daisetsu` | `/` | 308 |
+
+`database` はカテゴリと id がそのままで、前置きの `higher-brain-function/symptoms/` が
+落ちただけなので、ワイルドカード1本で吸収できる。`/daisetsu` は旧サイトでも
+`router.push("/")` でトップへ飛ぶだけのページだった。
+
+**`/neurology/view/*` を 307（一時）にしたのは、記事単位の対応表を後から作る余地を
+残すためである。** 308 はブラウザが恒久的にキャッシュするので、後から個別の転送を
+足しても効かなくなる。対応表そのものは `git show aa60c15 -M10%` の rename 情報から
+319本中 302本まで機械的に取れる。ただし旧 URL は今もトップへ飛んでおり、検索エンジンから
+見て既に生きていない。**いま 300 本の転送を書く価値は低いと判断した。**
+
+**`/blog?tag=` と `/blog?page=` は転送していない。** クエリ文字列を見る転送には `has`
+条件が要るうえ、新サイトのタグは `/blog/tags/` という別の形になっている。
+
+### 切替の手順（決定済み、未実行）
+
+2026-08-31 に方針を決めた。**実機確認を終えてから向け替える。noindex は同時に外す。**
+`tonkura.blog` は現在インデックスされている（`site:` 検索でトップ、`/neuromuscular`、
+neurology の記事がヒットする）ので、noindex を付けたまま向けると検索結果から消える。
+
+順序を逆にしないこと。**先に noindex を外してデプロイし、次にドメインを移す。**
+`.vercel.app` は SSO で守られていてクローラが入れないため、noindex を先に外しても
+その間に拾われることはない。逆順にすると、noindex が付いた状態の `tonkura.blog` を
+クローラが拾う時間ができる。
+
+1. `src/layouts/Base.astro` の `noindex, nofollow` を消し、`public/robots.txt` を緩める
+2. push してデプロイ（この時点ではまだ `.vercel.app` だけ）
+3. `tonkura.blog` を新プロジェクトへ移す（旧プロジェクトから外し、新へ追加）
+4. 転送3本と主要ページを実際の URL で確認する
+
 ## 積み残し（品質）
 
 - ギャラリーは JPG 直配信。`astro:assets` 最適化は upgrade 余地（62枚）。

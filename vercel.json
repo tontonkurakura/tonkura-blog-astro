@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/database/higher-brain-function/symptoms/:path*",
+      "destination": "/database/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/neurology/view/:path*",
+      "destination": "/neurology",
+      "permanent": false
+    },
+    {
+      "source": "/daisetsu",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
+}
