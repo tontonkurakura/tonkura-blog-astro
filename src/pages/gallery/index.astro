@@ -95,13 +95,13 @@ const formatDate = (d: Date) =>
     <div class="frame">
       <img alt="" />
       <dl class="info">
-        <div class="row" data-field="place"><dt>Place</dt><dd></dd></div>
+        <div class="row is-lead" data-field="place"><dd></dd></div>
         <div class="row" data-field="date"><dt>Date</dt><dd></dd></div>
         <div class="row" data-field="camera"><dt>Camera</dt><dd></dd></div>
         <div class="row" data-field="lens"><dt>Lens</dt><dd></dd></div>
         <div class="row" data-field="focal"><dt>Focal length</dt><dd></dd></div>
         <div class="row" data-field="aperture"><dt>Aperture</dt><dd></dd></div>
-        <div class="row" data-field="shutter"><dt>Shutter</dt><dd></dd></div>
+        <div class="row" data-field="shutter"><dt>Shutter speed</dt><dd></dd></div>
         <div class="row" data-field="iso"><dt>ISO</dt><dd></dd></div>
       </dl>
     </div>
@@ -115,7 +115,7 @@ const formatDate = (d: Date) =>
       const img = box.querySelector(".frame img");
       const info = box.querySelector(".info");
       const rows = box.querySelectorAll(".info .row");
-      const EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+      const EASE = "linear";
       const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
       let origin = null;
 
@@ -168,12 +168,12 @@ const formatDate = (d: Date) =>
           img.animate(
             [
               {
-                transformOrigin: "top left",
+                transformOrigin: "center",
                 transform:
                   "translate(" +
-                  (from.left - to.left) +
+                  (from.left + from.width / 2 - (to.left + to.width / 2)) +
                   "px," +
-                  (from.top - to.top) +
+                  (from.top + from.height / 2 - (to.top + to.height / 2)) +
                   "px) scale(" +
                   from.width / to.width +
                   "," +
@@ -182,7 +182,7 @@ const formatDate = (d: Date) =>
               },
               { transform: "none" },
             ],
-            { duration: 340, easing: EASE },
+            { duration: 300, easing: EASE },
           );
           info.animate(
             [
@@ -200,44 +200,9 @@ const formatDate = (d: Date) =>
         full.src = b.dataset.full;
       }
 
-      /* 元の位置へ戻してから閉じる。 */
+      /* 閉じるときは動かさない。すぐ消える。 */
       function close() {
-        if (!box.open) return;
-        const thumb = origin && origin.querySelector("img");
-        const to = thumb && thumb.getBoundingClientRect();
-        if (!motion || !to || to.width === 0) {
-          box.close();
-          return;
-        }
-        const from = img.getBoundingClientRect();
-        info.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: 140,
-          easing: EASE,
-        });
-        const a = img.animate(
-          [
-            { transform: "none" },
-            {
-              transformOrigin: "top left",
-              transform:
-                "translate(" +
-                (to.left - from.left) +
-                "px," +
-                (to.top - from.top) +
-                "px) scale(" +
-                to.width / from.width +
-                "," +
-                to.height / from.height +
-                ")",
-            },
-          ],
-          { duration: 260, easing: EASE },
-        );
-        box.classList.add("is-closing");
-        a.finished.then(function () {
-          box.classList.remove("is-closing");
-          box.close();
-        });
+        if (box.open) box.close();
       }
 
       document.querySelectorAll(".shot").forEach(function (b) {
@@ -248,11 +213,6 @@ const formatDate = (d: Date) =>
       box.querySelector(".close").addEventListener("click", close);
       box.addEventListener("click", function (e) {
         if (!frame.contains(e.target) && e.target !== box.querySelector(".close")) close();
-      });
-      /* ESC は既定で閉じるが、戻る動きを挟みたいので横取りする。 */
-      box.addEventListener("cancel", function (e) {
-        e.preventDefault();
-        close();
       });
       addEventListener("resize", function () {
         if (box.open && origin) sizeImage(origin);
@@ -482,11 +442,8 @@ const formatDate = (d: Date) =>
       justify-content: center;
     }
     #lightbox::backdrop {
-      animation: veil 0.28s ease both;
+      animation: veil 0.22s linear both;
       background: rgba(0, 0, 0, 0.96);
-    }
-    #lightbox.is-closing::backdrop {
-      animation: veil 0.24s ease reverse both;
     }
     @keyframes veil {
       from {
@@ -528,6 +485,11 @@ const formatDate = (d: Date) =>
     }
     .info .row[hidden] {
       display: none;
+    }
+    .info .is-lead dd {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.95rem;
+      margin: 0;
     }
     .info dt {
       color: rgba(255, 255, 255, 0.35);
