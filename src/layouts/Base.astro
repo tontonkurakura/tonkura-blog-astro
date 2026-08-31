@@ -10,12 +10,18 @@ interface Props {
   wide?: boolean;
   /** 最上部ではヘッダーを出さず、下に降りたところで現す（トップページ用） */
   revealHeaderOnScroll?: boolean;
+  /** 本文の枠と余白を外し、ページ側にレイアウトを任せる（全面表示用） */
+  bare?: boolean;
+  /** 読者の設定に関わらず暗い配色で出す（写真を見せるページ用） */
+  forceDark?: boolean;
 }
 const {
   title,
   description,
   wide = false,
   revealHeaderOnScroll = false,
+  bare = false,
+  forceDark = false,
 } = Astro.props;
 
 // 文章4種は入口を Writing にまとめてある（DECISIONS.md）。
@@ -40,7 +46,7 @@ const isActive = (item: { href: string; also: string[] }) =>
 ---
 
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-theme={forceDark ? "dark" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,9 +54,11 @@ const isActive = (item: { href: string; also: string[] }) =>
     {description && <meta name="description" content={description} />}
     {/* 「まだ見つかってほしくない」方針に合わせ、当面は検索除外で立てる */}
     <meta name="robots" content="noindex, nofollow" />
-    {/* テーマのちらつき防止（描画前に data-theme を確定させる） */}
+    {/* テーマのちらつき防止（描画前に data-theme を確定させる）。
+        暗さを固定したページでは読者の設定を当てない。 */}
     <script is:inline>
       (function () {
+        if (document.documentElement.dataset.theme) return;
         const saved = localStorage.getItem("theme");
         if (saved === "light" || saved === "dark") {
           document.documentElement.setAttribute("data-theme", saved);
@@ -76,7 +84,7 @@ const isActive = (item: { href: string; also: string[] }) =>
               ))
           }
         </nav>
-        <ThemeToggle />
+        {!forceDark && <ThemeToggle />}
       </div>
     </header>
 
@@ -96,7 +104,7 @@ const isActive = (item: { href: string; also: string[] }) =>
       })();
     </script>
 
-    <main class:list={["container", { wide }]}>
+    <main class:list={[{ container: !bare, wide: !bare && wide }]}>
       <slot />
     </main>
 

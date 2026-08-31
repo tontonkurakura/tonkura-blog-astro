@@ -1,8 +1,6 @@
-import fs from "node:fs";
-import path from "node:path";
-import yaml from "js-yaml";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getImagingPosts } from "./imaging";
+import { getGalleryPhotos } from "./photos";
 
 export interface RecentItem {
   title: string;
@@ -166,29 +164,15 @@ export interface Photo {
 }
 
 /**
- * 撮影日の新しい順。日付は photos.yaml の date（EXIF の DateTimeOriginal 由来）。
- * 同じ日に撮った分は1枚に絞る。新しい順に素直に採ると、同じ日の同じ被写体が並ぶ。
+ * 撮影日の新しい順。日付は JPEG の EXIF から読む（src/lib/photos.ts）。
+ * 同じ日に撮った分は1枚に絞る。素直に採ると同じ日の同じ被写体が並ぶ。
  */
 export async function getRecentPhotos(limit = 3): Promise<Photo[]> {
-  const meta = (yaml.load(
-    fs.readFileSync(path.resolve("src/data/photos.yaml"), "utf-8"),
-  ) ?? {}) as Record<
-    string,
-    { description?: string; date?: string | Date } | null
-  >;
-  const existing = new Set(fs.readdirSync(path.resolve("public/images")));
-
-  return Object.entries(meta)
-    .filter(([name, v]) => existing.has(name) && v?.date)
-    .map(([name, v]) => ({
-      src: `/images/${encodeURIComponent(name)}`,
-      description: v?.description ?? "",
-      date: new Date(v!.date as string | Date),
-    }))
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .filter((p, i, all) => {
-      const day = (d: Date) => d.toISOString().slice(0, 10);
-      return all.findIndex((o) => day(o.date) === day(p.date)) === i;
-    })
-    .slice(0, limit);
+  const photos = await getGalleryPhotos();
+  const day = (d: Date) => d.toISOString().slice(0, 10);
+  return photos
+    .filter((p): p is typeof p & { date: Date } => Boolean(p.date))
+    .filter((p, i, all) => all.findIndex((o) => day(o.date) === day(p.date)) === i)
+    .slice(0, limit)
+    .map((p) => ({ src: p.src, description: p.description, date: p.date }));
 }
