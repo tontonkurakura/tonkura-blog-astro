@@ -5,111 +5,54 @@ import Base from "../layouts/Base.astro";
    public/brain-viewer/ に置いている。ビューアは自己完結した HTML なので
    iframe で埋める。Astro のビルドは中身に関与しない（静的ファイルとして配信）。
 
-   loading="lazy" が要る。iframe は既定でページを開いた瞬間に読み込みを
-   始めるため、ここまでスクロールしない読者にも十数 MB を送ることになる。 */
+   **このページは見出しも説明も置かない。**ビューアの中に一覧・操作子・
+   ライセンスのモーダルが全部入っているので、外に同じことを書くと二重になる。
+   画面はビューアに使い切る。
+
+   loading は eager にしてある。iframe だけのページなので、遅らせても
+   読者が待つ場所が変わるだけで、送る量は変わらない。 */
 const viewer = "/brain-viewer/viewer.html";
 ---
 
-<Base title="解剖学的アトラス | TonKurA" description="MNI 標準脳を 5 つのアトラス（解剖・血管支配・機能・白質線維）で見る 3D モデル。断面で切ると切り口に MRI が出る。" wide>
-  <div class="head">
-    <h1>解剖学的アトラス</h1>
-    <p class="note">
-      MNI 標準脳を 5 つのアトラスで見る 3D モデル。断面で切ると、切り口に MRI と領域色が出る。
-      皮質は FreeSurfer の表面から、皮質下はラベルボリュームから起こしている。
-    </p>
-    <p class="note">
-      右上で切り替える。<strong>解剖学領域</strong>はマクロ（脳葉など）とミクロ（DKT）の 2 段。
-      ほかに<strong>血管支配領域</strong>（ACA / MCA / PCA / 椎骨脳底）、
-      <strong>機能的領域</strong>（Glasser の 360 区分）、
-      <strong>白質線維</strong>（HCP1065 の 87 本）がある。
-      機能的領域は、解剖の 22 区分と Yeo の 7 ネットワークのどちらでも並べられる。
-      白質線維は既定で 1 本も出ていない。一覧で選ぶと半透明で重なる。
-    </p>
+<Base
+  title="Atlas | TonKurA"
+  description="MNI 標準脳を 5 つのアトラス（解剖・血管支配・機能・トラクトグラフィー）で見る 3D モデル。断面で切ると切り口に MRI が出る。"
+  bare
+>
+  <div class="viewer-full">
+    <iframe src={viewer} title="3D 脳アトラスビューア" allow="fullscreen"></iframe>
   </div>
-
-  <div class="viewer-wrap">
-    <iframe
-      src={viewer}
-      title="3D 脳アトラスビューア"
-      loading="lazy"
-      allow="fullscreen"
-    ></iframe>
-  </div>
-
-  <div class="usage">
-    <h2>操作</h2>
-    <dl>
-      <dt>左ドラッグ</dt><dd>回転</dd>
-      <dt>ホイール</dt><dd>断面を 1 枚めくる（Shift で 10 枚）</dd>
-      <dt>中ボタンドラッグ</dt><dd>拡大縮小（Ctrl + ホイールでも可）</dd>
-      <dt>断面上にカーソル</dt><dd>その位置の領域名を引き出し線で表示</dd>
-      <dt>クリック</dt><dd>その領域を選ぶ。3 つまで。もう一度押すと外れる</dd>
-      <dt>右上の「断面／立体」</dt><dd>断面で切って中を見るか、3D モデルだけを回すか</dd>
-      <dt>白質線維での選択</dt><dd>選んだ線維が出る。87 本を一度に出すと中が見えないため</dd>
-    </dl>
-    <p class="note">
-      断面がモデルに隠れている向きからは領域名を出さない。
-      重ね方の「反転」で手前側を切り替えられる。
-    </p>
-    <p class="hint">
-      <a href={viewer} target="_blank" rel="noopener">別タブで開く</a>
-    </p>
-
-    <h2>出典</h2>
-    <p class="note">
-      血管支配アトラスは
-      <a href="https://github.com/Chin-Fu-Liu/Arterial_Atlas" rel="noopener">JHU Arterial Atlas</a>
-      の Level 1（Liu C-F, et al. <em>Digital 3D Brain MRI Arterial Territories Atlas.</em>
-      Scientific Data 10, 74, 2023 / © 2021 The Johns Hopkins University）を、
-      この標準脳の空間へ移して使っている。派生物にあたる断面画像と 3D モデルは
-      <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>。
-      解剖学領域は FastSurfer の出力（DKT）で、標準脳は公開されている MNI152。
-      脳底動脈は正中の 1 本として扱っている。
-    </p>
-    <p class="note">
-      機能的領域は HCP-MMP1（Glasser MF, et al. <em>A multi-modal parcellation of human
-      cerebral cortex.</em> Nature 536, 171–178, 2016）。fsaverage へ投影した表面版を
-      この標準脳の表面に写しているので、位置合わせの近似が入らない。
-      白質線維は HCP1065 の平均トラクトグラフィー（Yeh F-C, et al. <em>Population-averaged
-      atlas of the macroscale human structural connectome and its network topology.</em>
-      NeuroImage 178, 57–68, 2018）。どちらも標準脳の上の平均であって、個人の
-      機能局在や走行ではない。
-    </p>
-  </div>
-
-  <style>
-    .head { margin-bottom: 1.25rem; }
-    h1 { font-size: var(--step-2); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
-    .note { color: var(--fg-muted); margin: 0; max-width: var(--measure); }
-
-    .viewer-wrap {
-      /* 3D は縦に潰れると使いにくいので、横幅なりに高さを確保する */
-      aspect-ratio: 4 / 3;
-      max-height: 78vh;
-      border: 1px solid var(--border, #2a3450);
-      border-radius: 10px;
-      overflow: hidden;
-      background: #0a0d14;
-    }
-    .viewer-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
-
-    .usage { margin-top: 1.5rem; }
-    .usage h2 { font-size: var(--step-0); margin: 0 0 0.5rem; }
-    dl {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 0.3rem 1rem;
-      margin: 0 0 0.75rem;
-      font-size: var(--step--1);
-    }
-    dt { color: var(--fg-muted); }
-    dd { margin: 0; }
-    .hint { font-size: var(--step--1); margin-top: 0.75rem; }
-
-    @media (max-width: 640px) {
-      .viewer-wrap { aspect-ratio: 3 / 4; }
-      dl { grid-template-columns: 1fr; gap: 0 0; }
-      dt { margin-top: 0.5rem; }
-    }
-  </style>
 </Base>
+
+<style is:global>
+  /* ヘッダー・本文・フッターを縦に積んで、本文に余りを全部渡す。
+     高さを calc で決め打ちにすると、ヘッダーの行数が変わったときに崩れる。 */
+  body:has(.viewer-full) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+  }
+  body:has(.viewer-full) main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+  /* フッターは出さない。1 行のためにビューアを削る理由がない */
+  body:has(.viewer-full) .site-footer {
+    display: none;
+  }
+</style>
+
+<style>
+  .viewer-full {
+    flex: 1;
+    min-height: 0;
+    background: #0a0d14;
+  }
+  .viewer-full iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+</style>

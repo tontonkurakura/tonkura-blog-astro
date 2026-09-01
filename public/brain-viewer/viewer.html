@@ -235,7 +235,7 @@
     <button data-a="dkt">ミクロ</button>
     <button data-a="arterial">血管支配</button>
     <button data-a="glasser">機能</button>
-    <button data-a="tract">線維</button>
+    <button data-a="tract">トラクト</button>
   </div>
   <div id="atlasMsg"></div>
 
@@ -820,7 +820,11 @@ const ATLASES = {
        線維は 3D にだけ出す（labelAtlas）
      - 87 本を一度に出すと中が見えないので、**既定は 0 本**。一覧で選んだものだけ出す
      - 重ねて見るものなので半透明にする。ここだけは transparent を立てる */
-  tract: { name:'白質線維', model:'brain_tract.glb', labelAtlas:'dkt', tracts:true,
+  /* トラクトグラフィーは立体だけ。断面は出さない（線維は断面に色を持たないので、
+     切っても切り口に何も出ず、板が邪魔になるだけ）。背景に解剖のモデルを
+     薄く出して、選んだトラクトを不透明でその上に重ねる。 */
+  tract: { name:'トラクトグラフィー', model:'brain_tract.glb', tracts:true,
+           solidOnly:true, backdrop:'macro', labelAtlas:'dkt',
            groups:['連合線維','投射線維','交連線維','小脳','脳神経'] },
 };
 
@@ -919,6 +923,7 @@ const atlasReady = loadAtlas(state.plane).promise;
 /* モデルはアトラスごとに 1 つ。切り替えたときに初めて読む。
    最初から両方読むと、DKT しか見ない読者にも 3.9MB 余計に送ることになる。 */
 const models = new Map();        // アトラス -> { root, meshByName, mats }
+let modeBeforeSolidOnly = null;  // 立体だけのアトラスへ入る前のモード（出るときに戻す）
 
 /* パネルの基準に使う。アトラスを切り替えると対応が変わるので捨てる。
    useModel より前で宣言すること。あとに置くと初回の useModel が
@@ -942,14 +947,13 @@ async function ensureModel(atlas){
        背面から順に描く。DoubleSide と重なると描画順が乱れて中が透けて見える。
        不透明なうちは transparent を立てないこと。
 
-       白質線維だけは逆で、**重ねて見るものなので正しく透明にする**。
-       depthWrite を切らないと、先に描いた線維が後ろの線維を深度で消してしまい、
-       重なりが見えなくなる。切ると描画順の乱れは残るが、半透明なので目立たない。 */
+       **トラクトは不透明のまま。**透けるのは背景に置く解剖のモデルのほうで、
+       トラクト自身を透かすと、脳の中の走行が薄い色の重なりになって読めない。 */
     o.material = new THREE.MeshStandardMaterial({
       color: src.color ? src.color.clone() : new THREE.Color(0xaabbcc),
       roughness:.85, metalness:0, side:THREE.DoubleSide,
       clippingPlanes: state.clip ? [clip] : [], clipShadows:true,
-      transparent: tr, opacity: tr ? .62 : 1, depthWrite: !tr
+      transparent:false, opacity:1
     });
     // 87 本を一度に出すと中が見えない。選んだものだけ出す
     if (tr) o.visible = false;
@@ -962,6 +966,53 @@ async function ensureModel(atlas){
   return m;
 }
 
+/* ───────── 背景のモデル ─────────
+   トラクトグラフィーでは、解剖のモデルを薄く出したうえに、選んだトラクトを
+   不透明で重ねる。トラクトだけだと脳のどこを通っているのか分からず、
+   逆にトラクトを透かすと走行が薄い色の重なりになって読めない。
+
+   モデルは models に持っているものをそのまま借りる。マテリアルを書き換えるので、
+   **借りるのをやめるときに必ず戻す。**戻さないと、次にそのアトラスを選んだとき
+   脳全体が半透明のままになる。 */
+/* **面の裏表では解決しない。**最初「裏面だけ描けば手前の壁が消える」と考えたが、
+   視点が右にあるとき左半球のトラクトは反対側の半球の壁越しに見ることになる。
+   どちらの面を残しても、間に 1 枚以上入る。
+
+   効くのは累積の不透明度のほう。脳のメッシュは入れ子（皮質・皮質下・小脳）なので
+   視線が何枚も貫き、1 枚あたりが濃いとすぐ不透明になる。`FrontSide` で層の数を
+   半分にしたうえで、1 枚を薄くする。
+
+   **値は実測で決めた。**弓状束を出して見比べたところ、0.42 では完全に隠れ、
+   0.16 では形が読めず、0.10 で束の形がはっきり出た。上げるときは同じ見比べを
+   すること（`window.__ghost({side, opacity})` で差し替えられる）。 */
+const GHOST_OPACITY = 0.10;
+let backdropAtlas = null;
+
+function setBackdrop(atlas){
+  if (backdropAtlas && models.has(backdropAtlas)) {
+    const m = models.get(backdropAtlas);
+    m.mats.forEach(x => {
+      if (!x.userData.ghost) return;
+      x.transparent = false; x.opacity = 1; x.depthWrite = true;
+      x.side = THREE.DoubleSide;          // 借りる前に戻す
+      x.userData.ghost = false; x.needsUpdate = true;
+    });
+    if (backdropAtlas !== state.atlas) m.root.visible = false;
+  }
+  backdropAtlas = null;
+  if (!atlas || !models.has(atlas)) return;
+  const m = models.get(atlas);
+  m.mats.forEach(x => {
+    x.transparent = true; x.opacity = GHOST_OPACITY; x.depthWrite = false;
+    x.side = THREE.FrontSide;             // 視線が貫く層を半分にする
+    x.userData.ghost = true; x.needsUpdate = true;
+  });
+  // 半割や皮質の切り替えで隠れていることがあるので、背景では全部出す
+  m.root.visible = true;
+  m.root.traverse(o => { if (o.isMesh) o.visible = true; });
+  backdropAtlas = atlas;
+}
+
 function useModel(atlas){
   const m = models.get(atlas);
   if (!m) return;
@@ -972,7 +1023,11 @@ function useModel(atlas){
 }
 
 await ensureModel(state.atlas);
+/* ?atlas=tract で開かれることがあるので、初回にも背景を用意する。
+   setAtlas だけに書くと、その経路でだけ背景が出ない。 */
+if (ATLASES[state.atlas].backdrop) await ensureModel(ATLASES[state.atlas].backdrop);
 useModel(state.atlas);
+setBackdrop(ATLASES[state.atlas].backdrop || null);
 
 const box = new THREE.Box3().setFromObject(brain);
 const ctr = box.getCenter(new THREE.Vector3());
@@ -1113,6 +1168,14 @@ cCortexBtn.onclick = ()=>{
    最前面に見えている領域を指す。クリップが無いぶん判定は素直で、
    レイが最初に当たった面がそのまま見えている面になる。 */
 function applyMode(){
+  /* 立体だけのアトラス（トラクトグラフィー）では断面を押せなくする。
+     線維は断面に色を持たないので、切っても切り口に何も出ない。
+     ボタンを消さずに残すのは、なぜ選べないのかが分かるようにするため。 */
+  const only = !!(ATLASES[state.atlas] && ATLASES[state.atlas].solidOnly);
+  if (only) state.mode = 'solid';
+  const sliceBtn = document.querySelector('#mode button[data-m="slice"]');
+  if (sliceBtn) { sliceBtn.disabled = only; sliceBtn.title = only ? 'トラクトグラフィーは立体だけ' : ''; }
+
   const solid = state.mode === 'solid';
   document.querySelectorAll('#mode button').forEach(
     b => b.classList.toggle('on', b.dataset.m === state.mode));
@@ -1377,6 +1440,16 @@ async function setAtlas(a){
   state.atlas = a;
   state.grouping = 0;               // 系統はアトラスごと。持ち越すと範囲外になる
   buildGrouping();
+  /* 立体だけのアトラス（トラクトグラフィー）へ入るときは立体に寄せる。
+     **出るときに戻す。**利用者が選んだのではなくこちらが変えたモードなので、
+     戻さないと「トラクトを見て戻ったら断面が消えていた」になる。
+     利用者が自分で立体にしていた場合は覚えない（戻す先が無い）。 */
+  if (ATLASES[a].solidOnly) {
+    if (state.mode !== 'solid') { modeBeforeSolidOnly = state.mode; state.mode = 'solid'; }
+  } else if (modeBeforeSolidOnly) {
+    state.mode = modeBeforeSolidOnly; modeBeforeSolidOnly = null;
+  }
+  applyMode();
   // 前のアトラスの画素で名前を引かせない。新しい板が届くまで判定を止める
   lblData = null; anchors = new Map();
   buildTree();
@@ -1384,9 +1457,12 @@ async function setAtlas(a){
 
   if (!models.has(a)) { atlasMsg.textContent = 'モデルを読み込み中…'; atlasMsg.classList.add('on'); }
   await ensureModel(a);
+  if (ATLASES[a].backdrop) await ensureModel(ATLASES[a].backdrop);
   useModel(a);
-  /* 表示の状態を新しいモデルに合わせ直す。白質線維は「選択＝表示」なので、
-     前に出していた線維が残ったままにならないようにする。 */
+  setBackdrop(ATLASES[a].backdrop || null);
+  applyMode();                      // 断面の可否はアトラスによって変わる
+  /* 表示の状態を新しいモデルに合わせ直す。トラクトは「選択＝表示」なので、
+     前に出していたものが残ったままにならないようにする。 */
   applyFocus();
   mats.forEach(m => { m.clippingPlanes = state.clip ? [clip] : []; m.needsUpdate = true; });
   atlasMsg.classList.remove('on');
@@ -1536,7 +1612,8 @@ function anchorPointOne(name){
      基準にする。断面の板は解剖のものを借りているので、そこに線維の画素は無く、
      anchors には載らない。載らないまま断面モードの経路を通ると、**選んだのに
      パネルが出ない**（3D には見えているのに名前が出ない）。 */
-  if (ATLASES[state.atlas] && ATLASES[state.atlas].labelAtlas) return meshCenter(name);
+  if (ATLASES[state.atlas] &&
+      (ATLASES[state.atlas].labelAtlas || ATLASES[state.atlas].solidOnly)) return meshCenter(name);
   const a = anchors.get(name);
   return (a && lblData) ? pixelToWorld(a[0], a[1]) : null;
 }
@@ -2122,6 +2199,22 @@ addEventListener('orientationchange', relayout);
 
 /* テストから中の状態を数値で確かめるための口。表示には一切関与しない。
    これが無いと「モデルが本当に切り替わったか」を外から観測できない。 */
+/* 背景の見え方を実機で切り分けるための口。法線の向きを仮定しているので、
+   FrontSide / BackSide / DoubleSide を差し替えて確かめられるようにしておく。 */
+window.__ghost = (opt = {}) => {
+  const m = backdropAtlas && models.get(backdropAtlas);
+  if (!m) return 'no backdrop';
+  const side = { front: THREE.FrontSide, back: THREE.BackSide, both: THREE.DoubleSide }[opt.side];
+  m.mats.forEach(x => {
+    if (!x.userData.ghost) return;
+    if (side !== undefined) x.side = side;
+    if (opt.opacity !== undefined) x.opacity = opt.opacity;
+    if (opt.hide !== undefined) x.visible = !opt.hide;
+    x.needsUpdate = true;
+  });
+  return `${m.mats.length} mats  side=${opt.side || '(据置)'} opacity=${opt.opacity ?? '(据置)'}`;
+};
+
 window.__state = () => ({
   atlas: state.atlas, plane: state.plane, side: state.side, mode: state.mode,
   half: state.half, cortex: state.cortex, overlay: state.overlay, cut: state.cut,
@@ -2132,6 +2225,15 @@ window.__state = () => ({
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
   camDist: +camera.position.distanceTo(controls.target).toFixed(2),
   shown: [...meshByName.values()].filter(o => o.visible).length,
+  /* 背景（トラクトグラフィーで薄く敷く解剖のモデル）。借りたマテリアルを
+     戻し忘れると、次にそのアトラスを選んだとき脳全体が半透明のままになる。
+     戻したことを数で確かめられるようにしておく。 */
+  backdrop: backdropAtlas,
+  backdropGhost: [...models.values()]
+    .reduce((n, m) => n + m.mats.filter(x => x.userData.ghost).length, 0),
+  // 選択中のメッシュが不透明か（トラクトは不透明、背景の脳が透ける側）
+  selOpaque: [...sel].every(n => { const o = meshByName.get(n);
+                                   return !o || o.material.transparent === false; }),
   clip: state.clip, sliceVisible: sliceMesh.visible, world: { ...state.world },
   nodes: meshByName.size, models: [...models.keys()],
   labelSrc: labMat.map && labMat.map.userData.src,   // 実際に貼っている板
