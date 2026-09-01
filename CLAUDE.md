@@ -35,10 +35,14 @@ Astro 4 時代のレガシーパスで、こちらは読まれない。作らな
 
 ### `public/brain-viewer/` は別リポジトリの生成物
 
-`/anatomical-atlas` の 3D ビューア（24MB）は `~/dev/3D_Brain` が作っている。
+`/anatomical-atlas` の 3D ビューア（39MB）は **`~/dev/neuroatlas`** が作っている。
 **ここでは編集しない。** 直したいときは向こうの `viewer/` を直し、
-`~/dev/3D_Brain/tools/sync_viewer.sh` で撒く。手でコピーすると、
+`~/dev/neuroatlas/tools/sync_viewer.sh` で撒く。手でコピーすると、
 リポジトリ・配布パッケージ・ここの 3 か所のどれかが必ず古くなる。
+
+**`~/dev/3D_Brain` ではない。**2026-08-31 に neuroatlas を分岐させ、向こうは
+別の開発者へ渡す参照実装として凍結した。3D_Brain 側の `sync_viewer.sh` からは
+ここが外してある（両方から撒くと、撒いた順で中身が決まる）。
 
 three.js は `vendor/` に同梱してある。**CDN から読む形に戻さないこと**
 （CDN に届かないとき、進捗 0% のまま無言で止まる）。

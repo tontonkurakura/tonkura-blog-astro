@@ -17,6 +17,12 @@
   .lbl{font-size:12px;color:#93a6cf;margin:11px 0 5px}
   .lbl:first-child{margin-top:0}
   .seg{display:flex;gap:6px}
+  /* アトラスが 5 つになって 1 行に入らなくなった。**縮めずに折り返す。**
+     flex:1 のまま詰めると、いちばん長い「血管支配」がボタンの中で 2 行に折れ、
+     そのボタンだけ背が高くなって列が崩れる（実際にそうなった）。
+     幅の基準を 30% にすると 3 + 2 の 2 段に割れ、文字は 1 行のまま残る。 */
+  #atlas{flex-wrap:wrap}
+  #atlas button{flex:1 1 30%}
   .seg button{flex:1;padding:7px 0 6px;border-radius:7px;cursor:pointer;font-size:13px;line-height:1.25;
     border:1px solid #2b3550;background:#18233b;color:#e8eefc}
   .seg button.on{background:#2b6fd6;border-color:#5aa0ff}
@@ -33,7 +39,9 @@
   .posrow{display:flex;align-items:center;gap:7px}
   .posrow input[type=range]{flex:1;width:auto;min-width:0}
   .pend{font-size:11px;color:#93a6cf;flex:none;white-space:nowrap}
-  #failmsg{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;
+  /* z-index は #load(100) より上。下にすると、いちばん知らせたい
+     「読み込みが始まらない」場面で進捗の覆いに隠れて見えない */
+  #failmsg{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:110;
     background:rgba(70,20,25,.95);border:1px solid #a44;border-radius:8px;
     padding:9px 14px;font-size:12px;color:#ffdede;max-width:70vw;line-height:1.6}
   #failmsg span{color:#e8b7b7}
@@ -226,6 +234,8 @@
     <button data-a="macro" class="on">マクロ</button>
     <button data-a="dkt">ミクロ</button>
     <button data-a="arterial">血管支配</button>
+    <button data-a="glasser">機能</button>
+    <button data-a="tract">線維</button>
   </div>
   <div id="atlasMsg"></div>
 
@@ -272,6 +282,8 @@
     <button data-s="L" class="on">左<small>Left</small></button>
     <button data-s="R">右<small>Right</small></button>
   </div>
+  <!-- 大分類の系統。2 つ持つアトラス（機能的領域）でだけ出る -->
+  <div class="seg" id="grouping" style="display:none"></div>
   <div id="tree"></div>
 </div>
 
@@ -305,6 +317,7 @@
       <li><b>診断や臨床判断の材料には使用しないでください。</b>教育と参照を目的としています。</li>
       <li>表示している MRI は、公開されている標準脳（MNI152）です。</li>
       <li>領域の区分は自動処理（FastSurfer）の結果で、個々の症例に当てはまるものではありません。</li>
+      <li>機能的領域（Glasser）は標準脳の表面へ写したもので、個人の機能局在ではありません。</li>
       <li>左右の向きは neurological（画像の左が患者の左）です。</li>
     </ul>
 
@@ -314,6 +327,12 @@
           <td>MNI152（Connectome Workbench 由来の平均脳）<br>各配布元の条件に従います</td></tr>
       <tr><th>解剖学領域</th>
           <td>DKT 分割（FreeSurfer / FastSurfer）。マクロはこれを脳葉などへまとめたもの<br>
+              各配布元の条件に従います</td></tr>
+      <tr><th>機能的領域</th>
+          <td><a href="https://doi.org/10.1038/nature18933" target="_blank"
+                 rel="noopener noreferrer">HCP-MMP1</a>（Glasser 分割・180 領域 × 左右）<br>
+              表面版は <a href="https://doi.org/10.6084/m9.figshare.3498446" target="_blank"
+                 rel="noopener noreferrer">fsaverage への投影</a>（Mills K, 2016）<br>
               各配布元の条件に従います</td></tr>
       <tr><th>血管支配領域</th>
           <td><a href="https://github.com/Chin-Fu-Liu/Arterial_Atlas" target="_blank"
@@ -328,7 +347,9 @@
       血管支配領域の断面画像と 3D モデルは JHU Arterial Atlas から派生したもので、
       CC BY-SA 4.0 が継承されます。<br>
       Liu C-F, et al. <i>Digital 3D Brain MRI Arterial Territories Atlas.</i>
-      Scientific Data 10, 74 (2023). © 2021 The Johns Hopkins University
+      Scientific Data 10, 74 (2023). © 2021 The Johns Hopkins University<br>
+      Glasser MF, et al. <i>A multi-modal parcellation of human cerebral cortex.</i>
+      Nature 536, 171–178 (2016)
     </p>
   </div>
 </div>
@@ -347,6 +368,26 @@
 <!-- three.js は同梱する（vendor/three、0.163.0 を固定）。CDN から読むと、
      CDN に届かないときに進捗が 0% のまま無言で止まる。読者の IP が
      第三者に渡る点と、配布パッケージを開くのに回線が要る点も避けたい。 -->
+<!-- file:// で開かれたときの知らせ。**module ではなく古い形式で書く。**
+     file:// では import が弾かれてモジュールが 1 行も動かないため、
+     モジュールの中に判定を置いても出ない（実際に置いて出ないことを確認した）。
+     症状は「準備中… 0%」のまま無言で止まるという、CDN に届かないときと
+     同じ形になるので、原因を名指ししないと何度でも繰り返す。 -->
+<script>
+if (location.protocol === 'file:') {
+  document.getElementById('lwhat').textContent = 'file:// では開けません';
+  var m = document.createElement('div');
+  m.id = 'failmsg';
+  m.style.display = 'block';
+  m.innerHTML = '<b>file:// では読み込めません</b><br><span>' +
+    'ブラウザが file:// からのデータ取得を遮断するため、断面画像も 3D モデルも届きません。' +
+    'HTTP で配信してから開いてください。<br>' +
+    '例: このフォルダで <code>python3 -m http.server 8791</code> を動かし、' +
+    '<code>http://localhost:8791/viewer.html</code> を開く。</span>';
+  document.body.appendChild(m);
+}
+</script>
+
 <script type="importmap">
 {"imports":{
   "three":"./vendor/three/three.module.js",
@@ -423,13 +464,14 @@ for (const [name, v] of Object.entries(labels)) {
   m.get(k).push(name);
 }
 function regionFromColor(r, g, b, worldX){
-  const m = byColorOf.get(state.atlas);
+  const m = byColorOf.get(labelAtlasOf(state.atlas));
   const cands = m && m.get(colorKey(r, g, b));
   if (!cands) return null;
   if (cands.length === 1) return cands[0];
-  const L = worldX < 0;
-  return cands.find(n => n.startsWith(L ? 'Left-' : 'Right-') ||
-                         n.startsWith(L ? 'ctx-lh-' : 'ctx-rh-')) || cands[0];
+  /* 左右は labels.json の side で決める。キーの頭文字で見ていたときは
+     Glasser-Left-V1 のように前置きが付く命名で黙って外れた。 */
+  const want = worldX < 0 ? 'L' : 'R';
+  return cands.find(n => labels[n] && labels[n].side === want) || cands[0];
 }
 
 /* 初期ロードが終わるまで操作させない。
@@ -438,6 +480,7 @@ function regionFromColor(r, g, b, worldX){
 const loadEl = document.getElementById('load');
 const parts = new Map();                 // key -> { loaded, total }
 let uiReady = false;
+
 
 function setProgress(key, loaded, total, what){
   parts.set(key, { loaded, total });
@@ -581,6 +624,10 @@ function loadTex(url, nearest, key, what, cols, rows){
 
 function labelUrl(plane, atlas){
   const A = meta.planes[plane].atlas;
+  /* 自前の断面を持たないアトラス（白質線維）は解剖のものを借りる。
+     借りる先は ATLASES の labelAtlas で宣言する。ここで黙って dkt に
+     落とすと、資産が欠けているだけの場合まで隠してしまう。 */
+  atlas = labelAtlasOf(atlas);
   if (A.labels && A.labels[atlas]) return A.labels[atlas];
   if (atlas === 'dkt' && A.label) return A.label;      // 旧い metadata との互換
   /* 黙って別のアトラスの画像を出さない。それをやると「切り替えたのに
@@ -722,9 +769,16 @@ const NARROW = matchMedia('(max-width: 640px)');
 
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'macro'), side:'L',
+                grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 half:'both', cortex:true,          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
+
+/* Glasser は皮質だけのアトラスなので、皮質以外は DKT と同じ見出しで並べる。
+   **どちらの系統にも足す。**片方だけだと、切り替えたときに皮質下が黙って消える。
+   白質と脳室系は DKT と同じく一覧に出さない（ホバーでは名前が要るので
+   labels.json には入っている）。 */
+const GLASSER_SUB = ['大脳基底核','視床・間脳','大脳辺縁系','脳幹','小脳'];
 
 /* アトラスの定義。大分類の並び順はここで決める（labels.json の並びは
    生成側の宣言順で、読みたい順とは違う）。model は viewer.html からの相対。 */
@@ -740,7 +794,49 @@ const ATLASES = {
                  '視床・間脳','脳幹','小脳'] },
   arterial: { name:'血管支配領域', model:'brain_arterial.glb',
               groups:['前大脳動脈','中大脳動脈','後大脳動脈','椎骨脳底動脈','脳室'] },
+  /* Glasser（360 領域）。**大分類を 2 つ持つ唯一のアトラス。**資産は 1 つで、
+     切り替えても変わるのは一覧の見出しと並び順だけ（labels.json の group と
+     group_net を見分けるだけ）。色は解剖の 22 区分から作ってあるので、
+     ネットワークで並べると見出しの下に色が混ざる。それは「デフォルトモードは
+     前頭内側と頭頂と側頭に散る」がそのまま見えるということ。 */
+  glasser: { name:'機能的領域', model:'brain_glasser.glb',
+             groupings:[
+               {key:'group', label:'解剖', groups:[
+                 '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
+                 '体性感覚・運動野','中心傍小葉・中部帯状回','運動前野','後弁蓋部',
+                 '早期聴覚野','聴覚連合野','島・前頭弁蓋','内側側頭葉','外側側頭葉',
+                 '側頭頭頂後頭接合部','上頭頂小葉','下頭頂小葉','後部帯状回',
+                 '前部帯状回・内側前頭前野','眼窩・前頭極','下前頭回','背外側前頭前野',
+                 ...GLASSER_SUB]},
+               /* ネットワークの名前は英語のまま。文献でも訳さずに使う呼び名で、
+                  「腹側注意」より Ventral Attention のほうが通じる。 */
+               {key:'group_net', label:'ネットワーク', groups:[
+                 'Visual','Somatomotor','Dorsal Attention','Ventral Attention',
+                 'Limbic','Frontoparietal','Default Mode',
+                 ...GLASSER_SUB]},
+             ] },
+  /* 白質線維。**このアトラスだけ性質が違う。**
+     - 線維束は重なるのでラベルボリュームが無い。断面は解剖（DKT）のものを流用し、
+       線維は 3D にだけ出す（labelAtlas）
+     - 87 本を一度に出すと中が見えないので、**既定は 0 本**。一覧で選んだものだけ出す
+     - 重ねて見るものなので半透明にする。ここだけは transparent を立てる */
+  tract: { name:'白質線維', model:'brain_tract.glb', labelAtlas:'dkt', tracts:true,
+           groups:['連合線維','投射線維','交連線維','小脳','脳神経'] },
 };
+
+/* 断面のラベルと色の逆引きに使うアトラス。自前の断面を持たないもの（白質線維）は
+   解剖のものを借りる。断面にカーソルを置けば、線維ではなく解剖の名前が出る。
+
+   **アロー関数（const）ではなく function で書く。**labelUrl はこれより前の行に
+   あり、const だと宣言の順に縛られる。いまは呼ばれる時点で解決しているが、
+   初期化の順が少し変わるだけで TDZ に落ちて、読み込みが 0% のまま黙って止まる。
+   同じことを一度踏んでいる（DECISIONS の「モジュール内の const」）。 */
+function labelAtlasOf(a){ return (ATLASES[a] && ATLASES[a].labelAtlas) || a; }
+
+/* 大分類の系統。1 つしか持たないアトラスも同じ形にして、一覧の側で分岐しない */
+for (const a of Object.values(ATLASES))
+  if (!a.groupings) a.groupings = [{ key:'group', label:'', groups:a.groups }];
+const grouping = a => ATLASES[a].groupings[state.grouping] || ATLASES[a].groupings[0];
 
 function sliceIndex(plane, v){
   const w = meta.planes[plane].world_coords;
@@ -838,18 +934,25 @@ async function ensureModel(atlas){
     if (ev.lengthComputable) setProgress(`model-${atlas}`, ev.loaded, ev.total, '読み込み中');
   });
   const m = { root: gltf.scene, meshByName: new Map(), mats: [] };
+  const tr = !!(ATLASES[atlas] && ATLASES[atlas].tracts);
   m.root.traverse(o=>{
     if(!o.isMesh) return;
     const src = o.material;
     /* transparent:true にすると three.js は不透明でも半透明キューに回し、
        背面から順に描く。DoubleSide と重なると描画順が乱れて中が透けて見える。
-       不透明なうちは transparent を立てないこと。 */
+       不透明なうちは transparent を立てないこと。
+
+       白質線維だけは逆で、**重ねて見るものなので正しく透明にする**。
+       depthWrite を切らないと、先に描いた線維が後ろの線維を深度で消してしまい、
+       重なりが見えなくなる。切ると描画順の乱れは残るが、半透明なので目立たない。 */
     o.material = new THREE.MeshStandardMaterial({
       color: src.color ? src.color.clone() : new THREE.Color(0xaabbcc),
       roughness:.85, metalness:0, side:THREE.DoubleSide,
       clippingPlanes: state.clip ? [clip] : [], clipShadows:true,
-      transparent:false, opacity:1
+      transparent: tr, opacity: tr ? .62 : 1, depthWrite: !tr
     });
+    // 87 本を一度に出すと中が見えない。選んだものだけ出す
+    if (tr) o.visible = false;
     m.mats.push(o.material);
     if (o.name) m.meshByName.set(o.name, o);
   });
@@ -1067,6 +1170,12 @@ const itemByName = new Map();
 function paint(name){
   const m = meshByName.get(name);
   if (!m) return;
+  // 線維は「出ている＝選ばれている」なので、光らせる必要が無い
+  if (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) {
+    m.material.emissive.setHex(0x000000);
+    m.material.emissiveIntensity = 1;
+    return;
+  }
   if (sel.has(name)) {
     m.material.emissive.copy(m.material.color).multiplyScalar(.55);
   } else {
@@ -1081,6 +1190,13 @@ function paint(name){
 
    元の色は最初の一度だけ控えておく。毎回掛け算すると戻せなくなる。 */
 function applyFocus(){
+  /* 白質線維では、選択は「目立たせる」ではなく「出す」。87 本を一度に出すと
+     中が見えないので既定は 0 本で、選んだものだけを見せる。周りを暗く落とす
+     必要も無い（そもそも出ていない）。 */
+  if (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) {
+    for (const [n, o] of meshByName) o.visible = sel.has(n);
+    return;
+  }
   for (const [n, o] of meshByName) {
     const m = o.material;
     if (!m.userData.base) m.userData.base = m.color.clone();
@@ -1163,24 +1279,45 @@ function selectRegion(name){
 
    3D やホバーのパネルでは `ja`（左右つき）のままにする。あちらは左右が
    画面から自明ではないので、名前で分かる必要がある。 */
+/* 大分類の系統の操作子。系統が 1 つしか無いアトラスでは出さない
+   （出しても押す先が無く、操作子の数だけ増える）。 */
+function buildGrouping(){
+  const el = document.getElementById('grouping');
+  const gs = ATLASES[state.atlas].groupings;
+  if (gs.length < 2) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = '';
+  el.innerHTML = gs.map((g, i) =>
+    `<button data-g="${i}"${i === state.grouping ? ' class="on"' : ''}>${g.label}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      const i = +b.dataset.g;
+      if (i === state.grouping) return;
+      state.grouping = i;
+      buildGrouping(); buildTree();
+    };
+  });
+}
+
 function buildTree(){
   const tree = document.getElementById('tree');
   tree.innerHTML = '';
   itemByName.clear();
   const buckets = new Map();
   const seenGroup = new Set();
+  const gk = grouping(state.atlas).key;
   for (const [name, v] of Object.entries(labels)) {
-    if (!v.group || (v.atlas || 'dkt') !== state.atlas) continue;
+    if (!v[gk] || (v.atlas || 'dkt') !== state.atlas) continue;
     if (v.side && v.side !== state.side) continue;
     // 実体が 1 つのものは 1 行だけ出す。左右どちらを押しても両方が入る
     if (v.merge) {
       if (seenGroup.has(groupKey(name))) continue;
       seenGroup.add(groupKey(name));
     }
-    if (!buckets.has(v.group)) buckets.set(v.group, []);
-    buckets.get(v.group).push([name, v]);
+    if (!buckets.has(v[gk])) buckets.set(v[gk], []);
+    buckets.get(v[gk]).push([name, v]);
   }
-  const order = ATLASES[state.atlas].groups.filter(g => buckets.has(g));
+  const order = grouping(state.atlas).groups.filter(g => buckets.has(g));
   for (const g of order) {
     const items = buckets.get(g);
     const d = document.createElement('div');
@@ -1209,6 +1346,7 @@ function buildTree(){
     el.disabled = !!o && !o.visible;
   }
 }
+buildGrouping();
 buildTree();
 
 /* 左右の切り替え。一覧を作り直すだけで、選択も断面も動かさない。
@@ -1237,6 +1375,8 @@ async function setAtlas(a){
 
   clearSelection(); setHover(null);
   state.atlas = a;
+  state.grouping = 0;               // 系統はアトラスごと。持ち越すと範囲外になる
+  buildGrouping();
   // 前のアトラスの画素で名前を引かせない。新しい板が届くまで判定を止める
   lblData = null; anchors = new Map();
   buildTree();
@@ -1245,6 +1385,9 @@ async function setAtlas(a){
   if (!models.has(a)) { atlasMsg.textContent = 'モデルを読み込み中…'; atlasMsg.classList.add('on'); }
   await ensureModel(a);
   useModel(a);
+  /* 表示の状態を新しいモデルに合わせ直す。白質線維は「選択＝表示」なので、
+     前に出していた線維が残ったままにならないようにする。 */
+  applyFocus();
   mats.forEach(m => { m.clippingPlanes = state.clip ? [clip] : []; m.needsUpdate = true; });
   atlasMsg.classList.remove('on');
   btns.forEach(x => x.classList.remove('busy'));
@@ -1389,6 +1532,11 @@ function meshCenter(name){
 
 function anchorPointOne(name){
   if (state.mode === 'solid') return meshCenter(name);
+  /* 自前の断面を持たないアトラス（白質線維）は、断面モードでもメッシュの中心を
+     基準にする。断面の板は解剖のものを借りているので、そこに線維の画素は無く、
+     anchors には載らない。載らないまま断面モードの経路を通ると、**選んだのに
+     パネルが出ない**（3D には見えているのに名前が出ない）。 */
+  if (ATLASES[state.atlas] && ATLASES[state.atlas].labelAtlas) return meshCenter(name);
   const a = anchors.get(name);
   return (a && lblData) ? pixelToWorld(a[0], a[1]) : null;
 }
