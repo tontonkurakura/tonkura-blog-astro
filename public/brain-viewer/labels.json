@@ -11961,7 +11961,23 @@
       246
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-TE1p",
+      "Glasser-Left-PHT",
+      "Glasser-Left-PH",
+      "Glasser-Left-PGi",
+      "Glasser-Left-PFm",
+      "Glasser-Left-TPOJ2",
+      "Glasser-Left-PGs",
+      "Glasser-Left-FST",
+      "Glasser-Left-STSvp",
+      "Glasser-Left-TPOJ1",
+      "Glasser-Left-PSL",
+      "Glasser-Left-STV",
+      "Glasser-Left-STSdp",
+      "Glasser-Left-MST"
+    ]
   },
   "Tract-PAT_R": {
     "ja": "右頭頂斜走束",
@@ -11976,7 +11992,26 @@
       246
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-TPOJ3",
+      "Glasser-Right-TPOJ2",
+      "Glasser-Right-TPOJ1",
+      "Glasser-Right-TE1p",
+      "Glasser-Right-STV",
+      "Glasser-Right-PHT",
+      "Glasser-Right-PGp",
+      "Glasser-Right-PGi",
+      "Glasser-Right-PFm",
+      "Glasser-Right-MST",
+      "Glasser-Right-FST",
+      "Glasser-Right-PH",
+      "Glasser-Right-PGs",
+      "Glasser-Right-MT",
+      "Glasser-Right-LO3",
+      "Glasser-Right-STSvp",
+      "Glasser-Right-PSL"
+    ]
   },
   "Tract-SLF1_L": {
     "ja": "左上縦束1",

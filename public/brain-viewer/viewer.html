@@ -123,9 +123,18 @@
   .tip .ja .sw{width:14px;height:14px;border-radius:4px}
   .tip .en{font-size:13px;color:#9ab0df;margin-top:3px}
   .tip .gp{font-size:12px;color:#8b9dc0;margin-top:7px}
+  /* 繋ぐ皮質領域。数が多いので折り返し、高さを抑えて溢れたら中でスクロールする。
+     パネルは脳の上に並ぶので、伸びると脳を覆う。 */
+  /* **幅を明示する。**パネルの幅は中身のいちばん長い行で決まるので、名前を
+     並べただけだと横に伸びきり、帯に収まらず「詰めた表示」に落ちて名前ごと
+     消える（実際にそうなった）。折り返す幅をここで決める。 */
+  .tip .cn{font-size:11px;color:#9ab0df;margin-top:7px;line-height:1.5;
+    white-space:normal;max-width:230px;max-height:66px;overflow:auto}
+  .tip .cn b{display:block;color:#8b9dc0;font-weight:600;margin-bottom:2px}
   /* 選択のパネルは領域ごとに 1 枚で、脳の上に横へ並べる。並びきらないときは
      この順で削る: 英語名と大分類を落とす -> 名前を小さくする。 */
-  .tip.c1 .en,.tip.c1 .gp,.tip.c2 .en,.tip.c2 .gp{display:none}
+  .tip.c1 .en,.tip.c1 .gp,.tip.c1 .cn,
+  .tip.c2 .en,.tip.c2 .gp,.tip.c2 .cn{display:none}
   .tip.c2{white-space:normal}          /* ここまで詰めたら、長い名前は折り返す */
   .tip.c2 .ja{font-size:15px;gap:7px}
   .tip.c2 .ja .sw{width:11px;height:11px}
@@ -271,6 +280,10 @@
     <button data-h="R">右<small>Right</small></button>
   </div>
   <div class="seg" id="cCortexRow"><button id="cCortex" class="on">皮質を表示</button></div>
+  <!-- 繋ぐ皮質領域の名前。トラクトグラフィーでだけ出る -->
+  <div class="seg" id="cConnRow" style="display:none">
+    <button id="cConn" class="on">繋ぐ領域の名前</button>
+  </div>
   </div>
 </div>
 
@@ -770,6 +783,7 @@ const NARROW = matchMedia('(max-width: 640px)');
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'macro'), side:'L',
                 grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
+                conn:true,                         // 繋ぐ領域の名前をパネルに出すか
                 half:'both', cortex:true,          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
@@ -994,6 +1008,7 @@ const CONNECT_OPACITY = 0.50;    // 繋ぎ先の皮質。地の 0.10 とトラ�
    そのまま薄くすると色のまだらになり、トラクトと繋ぎ先のコントラストを食う。
    色が付いているのは「選んだトラクト」と「その繋ぎ先」だけ、という状態にする。 */
 const GHOST_COLOR = 0xaebdd6;
+const tmpCol = new THREE.Color(), tmpHSL = { h: 0, s: 0, l: 0 };
 let backdropAtlas = null;
 
 function setBackdrop(atlas){
@@ -1044,7 +1059,13 @@ function paintConnections(){
     if (!x.userData.base) x.userData.base = x.color.clone();
     const c = want.get(name);
     if (c) {
-      x.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255);
+      /* **トラクトと同じ色にしない。**同じ色だと、皮質の斑とトラクト本体が
+         一続きに見えて、線維がどこを走っているのか読めない。色相を半周（180°）
+         回して明るくする。どのトラクトの繋ぎ先かは色相の対応で追える。 */
+      tmpCol.setRGB(c[0] / 255, c[1] / 255, c[2] / 255).getHSL(tmpHSL);
+      x.color.setHSL((tmpHSL.h + 0.5) % 1,
+                     Math.min(1, tmpHSL.s * 1.05),
+                     Math.min(0.76, tmpHSL.l + 0.18));
       /* **繋ぎ先は不透明にしない。**皮質は白質より手前にあるので、不透明に
          すると中を走るトラクトが隠れる。トラクト本体（不透明）と地の脳（0.10）の
          中間の濃さにして、繋ぎ先だと分かりつつトラクトが透けて見えるようにする。 */
@@ -1232,6 +1253,9 @@ function applyMode(){
   /* 血管支配アトラスに「皮質」という区分は無いので、その切り替えは出さない */
   document.getElementById('cCortexRow').style.display =
     (solid && !!CORTICAL[state.atlas]) ? '' : 'none';
+  /* 繋ぐ領域を持つのはトラクトグラフィーだけ */
+  document.getElementById('cConnRow').style.display =
+    (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) ? '' : 'none';
   sliceMesh.visible = !solid && uiReady && !!lblData;
 
   // クリップは断面モードの操作子にだけ従う。既に読んだモデルにも掛け直す
@@ -1250,6 +1274,17 @@ document.querySelectorAll('#mode button').forEach(b=>{
                     state.mode = b.dataset.m; applyMode(); };
 });
 document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
+
+/* 繋ぐ領域の名前を出すかどうか。名前だけの切り替えで、3D の色付けは常に出す
+   （色が付いているのに名前が無い、の逆はあってよいが、色まで消すと
+   「繋ぐ領域を出す」という機能そのものが消えて見える）。 */
+const cConnBtn = document.getElementById('cConn');
+cConnBtn.onclick = () => {
+  state.conn = !state.conn;
+  cConnBtn.classList.toggle('on', state.conn);
+  invalidatePanels();
+  layoutCallouts();
+};
 
 /* ───────────── 左の領域リスト ─────────────
    大分類 -> 小区分。選ぶとその領域を強調し、その領域の代表スライスへ移動する。
@@ -1767,15 +1802,35 @@ function rowHTML(name){
   const v = labels[name];
   if (!v) return '';
   const c = v.color ? `rgb(${v.color.join(',')})` : '#888';
+  /* 繋ぐ皮質領域の名前。Glasser の略号のまま並べる（V1・44 など、文献でも
+     訳さずに使う）。**多いので折り返して高さを抑える。**弓状束で 27 領域あり、
+     全部を 1 行ずつ出すとパネルが脳を覆う。 */
+  let cn = '';
+  if (state.conn && v.connects && v.connects.length) {
+    const names = v.connects.map(r => (labels[r] && labels[r].ja_short) || r).join('・');
+    cn = `<div class="cn"><b>繋ぐ領域 ${v.connects.length}</b>${names}</div>`;
+  }
   return `<div class="srow" data-name="${name}">` +
          `<div class="ja"><span class="sw" style="background:${c}"></span>${v.ja}</div>` +
          `<div class="en">${v.en}</div>` +
          (v.group ? `<div class="gp">${v.group}</div>` : '') +
+         cn +
          `</div>`;
 }
 
 function fillTip(el, name){
   if (labels[name]) el.innerHTML = rowHTML(name);
+}
+
+/* パネルの中身は「名前が変わったときだけ」書き換える作りなので、中身の**形**が
+   変わったとき（繋ぐ領域の名前を出す・出さない）は印を消して作り直させる。
+   消さないと、切り替えても中身が古いまま残る。
+
+   **アロー関数（const）ではなく function で書く。**呼ぶ側（操作子の設定）は
+   selPanels の宣言より前の行にある。 */
+function invalidatePanels(){
+  for (const el of selPanels) el.dataset.name = '';
+  tipH.dataset.name = '';
 }
 
 function setLine(ls, x1, y1, x2, y2){
@@ -2277,6 +2332,20 @@ window.__state = () => ({
      戻し忘れると、次にそのアトラスを選んだとき脳全体が半透明のままになる。
      戻したことを数で確かめられるようにしておく。 */
   backdrop: backdropAtlas,
+  /* 繋ぎ先の色が、トラクト本体の色と違っていること。同じ色だと皮質の斑と
+     束が一続きに見えて、線維の走行が読めない（実際にそう見えた）。 */
+  connectDistinct: (() => {
+    const bd = backdropAtlas && models.get(backdropAtlas);
+    if (!bd) return true;
+    const mine = new Set([...sel].map(n => (labels[n].color || []).join(',')));
+    for (const [, o] of bd.meshByName) {
+      if (o.material.opacity <= GHOST_OPACITY + 1e-6) continue;
+      const c = o.material.color;
+      const k = [c.r, c.g, c.b].map(v => Math.round(v * 255)).join(',');
+      if (mine.has(k)) return false;
+    }
+    return true;
+  })(),
   // 繋ぎ先として濃く塗っている領域の数（選んだトラクトの合計、重複は 1 つ）
   connected: (() => {
     const bd = backdropAtlas && models.get(backdropAtlas);
