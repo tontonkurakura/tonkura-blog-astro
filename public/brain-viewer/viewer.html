@@ -823,8 +823,11 @@ const ATLASES = {
   /* トラクトグラフィーは立体だけ。断面は出さない（線維は断面に色を持たないので、
      切っても切り口に何も出ず、板が邪魔になるだけ）。背景に解剖のモデルを
      薄く出して、選んだトラクトを不透明でその上に重ねる。 */
+  /* 背景は Glasser にする。**マクロではない。**繋がる皮質領域を光らせるとき、
+     背景と光らせる面が同じメッシュでないと、同じ場所に 2 枚の面が重なって
+     描画順が定まらない。同じモデルの中で「薄いか濃いか」を切り替えれば起きない。 */
   tract: { name:'トラクトグラフィー', model:'brain_tract.glb', tracts:true,
-           solidOnly:true, backdrop:'macro', labelAtlas:'dkt',
+           solidOnly:true, backdrop:'glasser', labelAtlas:'dkt',
            groups:['連合線維','投射線維','交連線維','小脳','脳神経'] },
 };
 
@@ -986,6 +989,11 @@ async function ensureModel(atlas){
    0.16 では形が読めず、0.10 で束の形がはっきり出た。上げるときは同じ見比べを
    すること（`window.__ghost({side, opacity})` で差し替えられる）。 */
 const GHOST_OPACITY = 0.10;
+const CONNECT_OPACITY = 0.50;    // 繋ぎ先の皮質。地の 0.10 とトラクトの 1.0 の中間
+/* **地の脳は色を捨てて灰色にする。**背景に使う Glasser は 360 色を持っているので、
+   そのまま薄くすると色のまだらになり、トラクトと繋ぎ先のコントラストを食う。
+   色が付いているのは「選んだトラクト」と「その繋ぎ先」だけ、という状態にする。 */
+const GHOST_COLOR = 0xaebdd6;
 let backdropAtlas = null;
 
 function setBackdrop(atlas){
@@ -995,6 +1003,7 @@ function setBackdrop(atlas){
       if (!x.userData.ghost) return;
       x.transparent = false; x.opacity = 1; x.depthWrite = true;
       x.side = THREE.DoubleSide;          // 借りる前に戻す
+      if (x.userData.base) x.color.copy(x.userData.base);   // 色も戻す
       x.userData.ghost = false; x.needsUpdate = true;
     });
     if (backdropAtlas !== state.atlas) m.root.visible = false;
@@ -1003,6 +1012,8 @@ function setBackdrop(atlas){
   if (!atlas || !models.has(atlas)) return;
   const m = models.get(atlas);
   m.mats.forEach(x => {
+    if (!x.userData.base) x.userData.base = x.color.clone();
+    x.color.setHex(GHOST_COLOR);
     x.transparent = true; x.opacity = GHOST_OPACITY; x.depthWrite = false;
     x.side = THREE.FrontSide;             // 視線が貫く層を半分にする
     x.userData.ghost = true; x.needsUpdate = true;
@@ -1011,6 +1022,42 @@ function setBackdrop(atlas){
   m.root.visible = true;
   m.root.traverse(o => { if (o.isMesh) o.visible = true; });
   backdropAtlas = atlas;
+}
+
+/* 選んだトラクトが繋ぐ皮質領域を、そのトラクトの色で濃く塗る。
+   背景の中の一部を濃くするだけなので、面が重ならない。
+
+   色をトラクトに合わせるのは、3 本まで選べるから。領域の元の色で塗ると、
+   どのトラクトの繋ぎ先なのかが分からない。2 本が同じ領域へ繋ぐときは、
+   先に選んだほうの色にする（`sel` は押した順に入っている）。 */
+function paintConnections(){
+  const bd = backdropAtlas && models.get(backdropAtlas);
+  if (!bd) return;
+  const want = new Map();
+  for (const n of sel) {
+    const v = labels[n];
+    if (!v || !v.connects) continue;
+    for (const r of v.connects) if (!want.has(r)) want.set(r, v.color);
+  }
+  for (const [name, o] of bd.meshByName) {
+    const x = o.material;
+    if (!x.userData.base) x.userData.base = x.color.clone();
+    const c = want.get(name);
+    if (c) {
+      x.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255);
+      /* **繋ぎ先は不透明にしない。**皮質は白質より手前にあるので、不透明に
+         すると中を走るトラクトが隠れる。トラクト本体（不透明）と地の脳（0.10）の
+         中間の濃さにして、繋ぎ先だと分かりつつトラクトが透けて見えるようにする。 */
+      x.transparent = true; x.opacity = CONNECT_OPACITY; x.depthWrite = false;
+      x.side = THREE.FrontSide;
+    } else {
+      x.color.setHex(GHOST_COLOR);
+      x.transparent = true; x.opacity = GHOST_OPACITY; x.depthWrite = false;
+      x.side = THREE.FrontSide;
+    }
+    x.needsUpdate = true;
+  }
+  return want.size;
 }
 
 function useModel(atlas){
@@ -1258,6 +1305,7 @@ function applyFocus(){
      必要も無い（そもそも出ていない）。 */
   if (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) {
     for (const [n, o] of meshByName) o.visible = sel.has(n);
+    paintConnections();
     return;
   }
   for (const [n, o] of meshByName) {
@@ -2229,6 +2277,14 @@ window.__state = () => ({
      戻し忘れると、次にそのアトラスを選んだとき脳全体が半透明のままになる。
      戻したことを数で確かめられるようにしておく。 */
   backdrop: backdropAtlas,
+  // 繋ぎ先として濃く塗っている領域の数（選んだトラクトの合計、重複は 1 つ）
+  connected: (() => {
+    const bd = backdropAtlas && models.get(backdropAtlas);
+    if (!bd) return 0;
+    let n = 0;
+    for (const [, o] of bd.meshByName) if (o.material.opacity > GHOST_OPACITY + 1e-6) n++;
+    return n;
+  })(),
   backdropGhost: [...models.values()]
     .reduce((n, m) => n + m.mats.filter(x => x.userData.ghost).length, 0),
   // 選択中のメッシュが不透明か（トラクトは不透明、背景の脳が透ける側）

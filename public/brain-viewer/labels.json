@@ -11296,7 +11296,36 @@
       130
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-TE1p",
+      "Glasser-Left-STSvp",
+      "Glasser-Left-A4",
+      "Glasser-Left-6r",
+      "Glasser-Left-44",
+      "Glasser-Left-TE1m",
+      "Glasser-Left-RI",
+      "Glasser-Left-PHT",
+      "Glasser-Left-PBelt",
+      "Glasser-Left-IFJa",
+      "Glasser-Left-43",
+      "Glasser-Left-6v",
+      "Glasser-Left-STV",
+      "Glasser-Left-PSL",
+      "Glasser-Left-PFcm",
+      "Glasser-Left-FOP4",
+      "Glasser-Left-A5",
+      "Glasser-Left-TE2a",
+      "Glasser-Left-PH",
+      "Glasser-Left-LBelt",
+      "Glasser-Left-4",
+      "Glasser-Left-TE1a",
+      "Glasser-Left-IFSp",
+      "Glasser-Left-FOP1",
+      "Glasser-Left-STSdp",
+      "Glasser-Left-8C",
+      "Glasser-Left-PF"
+    ]
   },
   "Tract-AF_R": {
     "ja": "右弓状束",
@@ -11311,7 +11340,20 @@
       130
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PHT",
+      "Glasser-Right-TPOJ2",
+      "Glasser-Right-44",
+      "Glasser-Right-TE1p",
+      "Glasser-Right-FST",
+      "Glasser-Right-p9-46v",
+      "Glasser-Right-6r",
+      "Glasser-Right-IFSp",
+      "Glasser-Right-IFJa",
+      "Glasser-Right-8C",
+      "Glasser-Right-PH"
+    ]
   },
   "Tract-C_FPH_L": {
     "ja": "左帯状束 前頭-海馬傍回",
@@ -11326,7 +11368,17 @@
       169
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-RSC",
+      "Glasser-Left-PreS",
+      "Glasser-Left-EC",
+      "Glasser-Left-PHA1",
+      "Glasser-Left-a32pr",
+      "Glasser-Left-PeEc",
+      "Glasser-Left-9m",
+      "Glasser-Left-8BM"
+    ]
   },
   "Tract-C_FPH_R": {
     "ja": "右帯状束 前頭-海馬傍回",
@@ -11341,7 +11393,14 @@
       169
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-RSC",
+      "Glasser-Right-PreS",
+      "Glasser-Right-v23ab",
+      "Glasser-Right-d32",
+      "Glasser-Right-POS1"
+    ]
   },
   "Tract-C_FP_L": {
     "ja": "左帯状束 前頭-頭頂",
@@ -11356,7 +11415,27 @@
       213
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-v23ab",
+      "Glasser-Left-p32pr",
+      "Glasser-Left-d32",
+      "Glasser-Left-a32pr",
+      "Glasser-Left-a24pr",
+      "Glasser-Left-7m",
+      "Glasser-Left-31pv",
+      "Glasser-Left-31pd",
+      "Glasser-Left-9m",
+      "Glasser-Left-POS2",
+      "Glasser-Left-p24pr",
+      "Glasser-Left-POS1",
+      "Glasser-Left-23c",
+      "Glasser-Left-p24",
+      "Glasser-Left-24dv",
+      "Glasser-Left-RSC",
+      "Glasser-Left-8BM",
+      "Glasser-Left-31a"
+    ]
   },
   "Tract-C_FP_R": {
     "ja": "右帯状束 前頭-頭頂",
@@ -11371,7 +11450,31 @@
       213
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-v23ab",
+      "Glasser-Right-p32pr",
+      "Glasser-Right-p24pr",
+      "Glasser-Right-p24",
+      "Glasser-Right-d32",
+      "Glasser-Right-d23ab",
+      "Glasser-Right-a32pr",
+      "Glasser-Right-a24pr",
+      "Glasser-Right-a24",
+      "Glasser-Right-RSC",
+      "Glasser-Right-POS1",
+      "Glasser-Right-7m",
+      "Glasser-Right-33pr",
+      "Glasser-Right-31pv",
+      "Glasser-Right-31pd",
+      "Glasser-Right-31a",
+      "Glasser-Right-23d",
+      "Glasser-Right-23c",
+      "Glasser-Right-9m",
+      "Glasser-Right-PCV",
+      "Glasser-Right-POS2",
+      "Glasser-Right-8BM"
+    ]
   },
   "Tract-C_PHP_L": {
     "ja": "左帯状束 海馬傍回-頭頂",
@@ -11386,7 +11489,18 @@
       151
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-RSC",
+      "Glasser-Left-PreS",
+      "Glasser-Left-PeEc",
+      "Glasser-Left-POS2",
+      "Glasser-Left-PHA1",
+      "Glasser-Left-EC",
+      "Glasser-Left-V2",
+      "Glasser-Left-DVT",
+      "Glasser-Left-7Pm"
+    ]
   },
   "Tract-C_PHP_R": {
     "ja": "右帯状束 海馬傍回-頭頂",
@@ -11401,7 +11515,20 @@
       151
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PreS",
+      "Glasser-Right-PeEc",
+      "Glasser-Right-POS2",
+      "Glasser-Right-POS1",
+      "Glasser-Right-PHA1",
+      "Glasser-Right-DVT",
+      "Glasser-Right-V2",
+      "Glasser-Right-7m",
+      "Glasser-Right-PHA2",
+      "Glasser-Right-ProS",
+      "Glasser-Right-RSC"
+    ]
   },
   "Tract-C_PH_L": {
     "ja": "左帯状束 海馬傍回",
@@ -11416,7 +11543,16 @@
       199
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-PreS",
+      "Glasser-Left-PeEc",
+      "Glasser-Left-PHA1",
+      "Glasser-Left-EC",
+      "Glasser-Left-V2",
+      "Glasser-Left-RSC",
+      "Glasser-Left-PHA2"
+    ]
   },
   "Tract-C_PH_R": {
     "ja": "右帯状束 海馬傍回",
@@ -11431,7 +11567,14 @@
       199
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PreS",
+      "Glasser-Right-PeEc",
+      "Glasser-Right-PHA1",
+      "Glasser-Right-EC",
+      "Glasser-Right-RSC"
+    ]
   },
   "Tract-C_PO_L": {
     "ja": "左帯状束 傍嗅皮質",
@@ -11446,7 +11589,20 @@
       246
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-p24pr",
+      "Glasser-Left-p24",
+      "Glasser-Left-a24pr",
+      "Glasser-Left-RSC",
+      "Glasser-Left-33pr",
+      "Glasser-Left-23d",
+      "Glasser-Left-d23ab",
+      "Glasser-Left-25",
+      "Glasser-Left-a24",
+      "Glasser-Left-31pv",
+      "Glasser-Left-a32pr"
+    ]
   },
   "Tract-C_PO_R": {
     "ja": "右帯状束 傍嗅皮質",
@@ -11461,7 +11617,22 @@
       246
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-v23ab",
+      "Glasser-Right-p24",
+      "Glasser-Right-a24",
+      "Glasser-Right-RSC",
+      "Glasser-Right-33pr",
+      "Glasser-Right-a24pr",
+      "Glasser-Right-d23ab",
+      "Glasser-Right-31pv",
+      "Glasser-Right-25",
+      "Glasser-Right-POS1",
+      "Glasser-Right-7m",
+      "Glasser-Right-23d",
+      "Glasser-Right-31pd"
+    ]
   },
   "Tract-EMC_L": {
     "ja": "左外包",
@@ -11506,7 +11677,23 @@
       243
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-SFL",
+      "Glasser-Left-FOP4",
+      "Glasser-Left-6v",
+      "Glasser-Left-6r",
+      "Glasser-Left-6ma",
+      "Glasser-Left-44",
+      "Glasser-Left-6a",
+      "Glasser-Left-s6-8",
+      "Glasser-Left-IFJa",
+      "Glasser-Left-8BL",
+      "Glasser-Left-IFSp",
+      "Glasser-Left-45",
+      "Glasser-Left-SCEF",
+      "Glasser-Left-43"
+    ]
   },
   "Tract-FAT_R": {
     "ja": "右前頭斜走束",
@@ -11521,7 +11708,20 @@
       243
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-s6-8",
+      "Glasser-Right-6r",
+      "Glasser-Right-6ma",
+      "Glasser-Right-44",
+      "Glasser-Right-SFL",
+      "Glasser-Right-6a",
+      "Glasser-Right-6v",
+      "Glasser-Right-IFJa",
+      "Glasser-Right-8BL",
+      "Glasser-Right-i6-8",
+      "Glasser-Right-43"
+    ]
   },
   "Tract-IFOF_L": {
     "ja": "左下前頭後頭束",
@@ -11536,7 +11736,31 @@
       246
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-a47r",
+      "Glasser-Left-a10p",
+      "Glasser-Left-V3",
+      "Glasser-Left-V2",
+      "Glasser-Left-V1",
+      "Glasser-Left-FOP5",
+      "Glasser-Left-AVI",
+      "Glasser-Left-47l",
+      "Glasser-Left-45",
+      "Glasser-Left-11l",
+      "Glasser-Left-p47r",
+      "Glasser-Left-V3A",
+      "Glasser-Left-V4",
+      "Glasser-Left-IFSa",
+      "Glasser-Left-47s",
+      "Glasser-Left-47m",
+      "Glasser-Left-V6",
+      "Glasser-Left-10pp",
+      "Glasser-Left-p10p",
+      "Glasser-Left-V6A",
+      "Glasser-Left-AAIC",
+      "Glasser-Left-PoI1"
+    ]
   },
   "Tract-IFOF_R": {
     "ja": "右下前頭後頭束",
@@ -11551,7 +11775,33 @@
       246
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-a47r",
+      "Glasser-Right-a10p",
+      "Glasser-Right-V4",
+      "Glasser-Right-V3A",
+      "Glasser-Right-V3",
+      "Glasser-Right-V2",
+      "Glasser-Right-V1",
+      "Glasser-Right-PoI1",
+      "Glasser-Right-AVI",
+      "Glasser-Right-47l",
+      "Glasser-Right-p47r",
+      "Glasser-Right-47s",
+      "Glasser-Right-11l",
+      "Glasser-Right-FOP5",
+      "Glasser-Right-p10p",
+      "Glasser-Right-V7",
+      "Glasser-Right-V6A",
+      "Glasser-Right-47m",
+      "Glasser-Right-10pp",
+      "Glasser-Right-45",
+      "Glasser-Right-V6",
+      "Glasser-Right-AAIC",
+      "Glasser-Right-IFSa",
+      "Glasser-Right-PI"
+    ]
   },
   "Tract-ILF_L": {
     "ja": "左下縦束",
@@ -11566,7 +11816,35 @@
       240
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-V4",
+      "Glasser-Left-V3",
+      "Glasser-Left-V2",
+      "Glasser-Left-V1",
+      "Glasser-Left-TGd",
+      "Glasser-Left-TA2",
+      "Glasser-Left-STSda",
+      "Glasser-Left-STGa",
+      "Glasser-Left-PoI1",
+      "Glasser-Left-PI",
+      "Glasser-Left-A5",
+      "Glasser-Left-52",
+      "Glasser-Left-V7",
+      "Glasser-Left-V6A",
+      "Glasser-Left-V3A",
+      "Glasser-Left-TF",
+      "Glasser-Left-TE1a",
+      "Glasser-Left-STSva",
+      "Glasser-Left-V6",
+      "Glasser-Left-PHA3",
+      "Glasser-Left-MBelt",
+      "Glasser-Left-A4",
+      "Glasser-Left-PeEc",
+      "Glasser-Left-TGv",
+      "Glasser-Left-V8",
+      "Glasser-Left-TE2a"
+    ]
   },
   "Tract-ILF_R": {
     "ja": "右下縦束",
@@ -11581,7 +11859,37 @@
       240
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-V7",
+      "Glasser-Right-V4",
+      "Glasser-Right-V3A",
+      "Glasser-Right-V3",
+      "Glasser-Right-V2",
+      "Glasser-Right-V1",
+      "Glasser-Right-TGd",
+      "Glasser-Right-TF",
+      "Glasser-Right-STSda",
+      "Glasser-Right-STGa",
+      "Glasser-Right-PeEc",
+      "Glasser-Right-PI",
+      "Glasser-Right-V6A",
+      "Glasser-Right-V6",
+      "Glasser-Right-TGv",
+      "Glasser-Right-TE1a",
+      "Glasser-Right-TA2",
+      "Glasser-Right-PGp",
+      "Glasser-Right-A5",
+      "Glasser-Right-TE2a",
+      "Glasser-Right-STSva",
+      "Glasser-Right-PoI1",
+      "Glasser-Right-Pir",
+      "Glasser-Right-PHA3",
+      "Glasser-Right-V3B",
+      "Glasser-Right-52",
+      "Glasser-Right-A4",
+      "Glasser-Right-IP0"
+    ]
   },
   "Tract-MdLF_L": {
     "ja": "左中縦束",
@@ -11596,7 +11904,19 @@
       243
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-MBelt",
+      "Glasser-Left-VIP",
+      "Glasser-Left-TA2",
+      "Glasser-Left-PBelt",
+      "Glasser-Left-A4",
+      "Glasser-Left-52",
+      "Glasser-Left-A5",
+      "Glasser-Left-LBelt",
+      "Glasser-Left-A1",
+      "Glasser-Left-PI"
+    ]
   },
   "Tract-MdLF_R": {
     "ja": "右中縦束",
@@ -11611,7 +11931,22 @@
       243
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PBelt",
+      "Glasser-Right-MBelt",
+      "Glasser-Right-LBelt",
+      "Glasser-Right-A4",
+      "Glasser-Right-A1",
+      "Glasser-Right-VIP",
+      "Glasser-Right-LIPv",
+      "Glasser-Right-7AL",
+      "Glasser-Right-MIP",
+      "Glasser-Right-52",
+      "Glasser-Right-7PC",
+      "Glasser-Right-TA2",
+      "Glasser-Right-A5"
+    ]
   },
   "Tract-PAT_L": {
     "ja": "左頭頂斜走束",
@@ -11656,7 +11991,26 @@
       217
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-p32pr",
+      "Glasser-Left-SCEF",
+      "Glasser-Left-PCV",
+      "Glasser-Left-5mv",
+      "Glasser-Left-31a",
+      "Glasser-Left-24dv",
+      "Glasser-Left-24dd",
+      "Glasser-Left-23c",
+      "Glasser-Left-p24pr",
+      "Glasser-Left-a24pr",
+      "Glasser-Left-5m",
+      "Glasser-Left-7Am",
+      "Glasser-Left-31pd",
+      "Glasser-Left-7m",
+      "Glasser-Left-SFL",
+      "Glasser-Left-8BM",
+      "Glasser-Left-7Pm"
+    ]
   },
   "Tract-SLF1_R": {
     "ja": "右上縦束1",
@@ -11671,7 +12025,21 @@
       217
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-p32pr",
+      "Glasser-Right-SCEF",
+      "Glasser-Right-PCV",
+      "Glasser-Right-5mv",
+      "Glasser-Right-24dv",
+      "Glasser-Right-24dd",
+      "Glasser-Right-23c",
+      "Glasser-Right-p24pr",
+      "Glasser-Right-5m",
+      "Glasser-Right-31a",
+      "Glasser-Right-8BM",
+      "Glasser-Right-23d"
+    ]
   },
   "Tract-SLF2_L": {
     "ja": "左上縦束2",
@@ -11686,7 +12054,26 @@
       243
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-PFm",
+      "Glasser-Left-IP2",
+      "Glasser-Left-FEF",
+      "Glasser-Left-8Av",
+      "Glasser-Left-6d",
+      "Glasser-Left-55b",
+      "Glasser-Left-4",
+      "Glasser-Left-3b",
+      "Glasser-Left-3a",
+      "Glasser-Left-2",
+      "Glasser-Left-1",
+      "Glasser-Left-PEF",
+      "Glasser-Left-AIP",
+      "Glasser-Left-8C",
+      "Glasser-Left-7PC",
+      "Glasser-Left-6v",
+      "Glasser-Left-i6-8"
+    ]
   },
   "Tract-SLF2_R": {
     "ja": "右上縦束2",
@@ -11701,7 +12088,31 @@
       243
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PFm",
+      "Glasser-Right-IP2",
+      "Glasser-Right-55b",
+      "Glasser-Right-4",
+      "Glasser-Right-PGs",
+      "Glasser-Right-FEF",
+      "Glasser-Right-8Av",
+      "Glasser-Right-7PC",
+      "Glasser-Right-6v",
+      "Glasser-Right-i6-8",
+      "Glasser-Right-6d",
+      "Glasser-Right-AIP",
+      "Glasser-Right-8C",
+      "Glasser-Right-44",
+      "Glasser-Right-3b",
+      "Glasser-Right-1",
+      "Glasser-Right-p9-46v",
+      "Glasser-Right-6a",
+      "Glasser-Right-PGi",
+      "Glasser-Right-IP1",
+      "Glasser-Right-IFSp",
+      "Glasser-Right-IFJa"
+    ]
   },
   "Tract-SLF3_L": {
     "ja": "左上縦束3",
@@ -11716,7 +12127,23 @@
       246
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-PFop",
+      "Glasser-Left-PF",
+      "Glasser-Left-OP4",
+      "Glasser-Left-43",
+      "Glasser-Left-PFcm",
+      "Glasser-Left-6v",
+      "Glasser-Left-6r",
+      "Glasser-Left-4",
+      "Glasser-Left-3a",
+      "Glasser-Left-PFm",
+      "Glasser-Left-OP1",
+      "Glasser-Left-1",
+      "Glasser-Left-3b",
+      "Glasser-Left-PFt"
+    ]
   },
   "Tract-SLF3_R": {
     "ja": "右上縦束3",
@@ -11731,7 +12158,26 @@
       246
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-PFt",
+      "Glasser-Right-PFm",
+      "Glasser-Right-PF",
+      "Glasser-Right-OP4",
+      "Glasser-Right-IP2",
+      "Glasser-Right-6v",
+      "Glasser-Right-6r",
+      "Glasser-Right-43",
+      "Glasser-Right-4",
+      "Glasser-Right-3a",
+      "Glasser-Right-44",
+      "Glasser-Right-2",
+      "Glasser-Right-1",
+      "Glasser-Right-PFop",
+      "Glasser-Right-AIP",
+      "Glasser-Right-3b",
+      "Glasser-Right-FOP1"
+    ]
   },
   "Tract-UF_L": {
     "ja": "左鉤状束",
@@ -11746,7 +12192,21 @@
       169
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-TGd",
+      "Glasser-Left-STGa",
+      "Glasser-Left-Pir",
+      "Glasser-Left-47s",
+      "Glasser-Left-AAIC",
+      "Glasser-Left-pOFC",
+      "Glasser-Left-PI",
+      "Glasser-Left-11l",
+      "Glasser-Left-PoI1",
+      "Glasser-Left-PeEc",
+      "Glasser-Left-13l",
+      "Glasser-Left-10pp"
+    ]
   },
   "Tract-UF_R": {
     "ja": "右鉤状束",
@@ -11761,7 +12221,15 @@
       169
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-TGd",
+      "Glasser-Right-Pir",
+      "Glasser-Right-STGa",
+      "Glasser-Right-PoI1",
+      "Glasser-Right-47s",
+      "Glasser-Right-10pp"
+    ]
   },
   "Tract-VOF_L": {
     "ja": "左垂直後頭束",
@@ -11776,7 +12244,20 @@
       189
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-V4",
+      "Glasser-Left-V3CD",
+      "Glasser-Left-V3B",
+      "Glasser-Left-LO2",
+      "Glasser-Left-LO1",
+      "Glasser-Left-V3",
+      "Glasser-Left-PGp",
+      "Glasser-Left-V3A",
+      "Glasser-Left-V7",
+      "Glasser-Left-IP0",
+      "Glasser-Left-PIT"
+    ]
   },
   "Tract-VOF_R": {
     "ja": "右垂直後頭束",
@@ -11791,7 +12272,20 @@
       189
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-V4",
+      "Glasser-Right-V3CD",
+      "Glasser-Right-LO1",
+      "Glasser-Right-V3",
+      "Glasser-Right-LO2",
+      "Glasser-Right-V7",
+      "Glasser-Right-V3B",
+      "Glasser-Right-V3A",
+      "Glasser-Right-PIT",
+      "Glasser-Right-IP0",
+      "Glasser-Right-PGp"
+    ]
   },
   "Tract-AR_L": {
     "ja": "左聴放線",
@@ -11836,7 +12330,12 @@
       26
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-6r",
+      "Glasser-Left-6v",
+      "Glasser-Left-43"
+    ]
   },
   "Tract-CBT_R": {
     "ja": "右皮質延髄路",
@@ -11851,7 +12350,12 @@
       26
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-6v",
+      "Glasser-Right-6r",
+      "Glasser-Right-43"
+    ]
   },
   "Tract-CPT_F_L": {
     "ja": "左皮質橋路 前頭",
@@ -11956,7 +12460,24 @@
       34
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-p10p",
+      "Glasser-Left-a9-46v",
+      "Glasser-Left-a47r",
+      "Glasser-Left-a10p",
+      "Glasser-Left-47l",
+      "Glasser-Left-10pp",
+      "Glasser-Left-p47r",
+      "Glasser-Left-45",
+      "Glasser-Left-10d",
+      "Glasser-Left-9a",
+      "Glasser-Left-11l",
+      "Glasser-Left-10v",
+      "Glasser-Left-9-46d",
+      "Glasser-Left-IFSa",
+      "Glasser-Left-9p"
+    ]
   },
   "Tract-CS_A_R": {
     "ja": "右皮質線条体路 前部",
@@ -11971,7 +12492,27 @@
       34
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-p47r",
+      "Glasser-Right-p10p",
+      "Glasser-Right-a47r",
+      "Glasser-Right-a10p",
+      "Glasser-Right-9a",
+      "Glasser-Right-45",
+      "Glasser-Right-10pp",
+      "Glasser-Right-IFSa",
+      "Glasser-Right-10d",
+      "Glasser-Right-9p",
+      "Glasser-Right-9-46d",
+      "Glasser-Right-47l",
+      "Glasser-Right-11l",
+      "Glasser-Right-a9-46v",
+      "Glasser-Right-FOP5",
+      "Glasser-Right-8BL",
+      "Glasser-Right-10v",
+      "Glasser-Right-9m"
+    ]
   },
   "Tract-CS_S_L": {
     "ja": "左皮質線条体路 上部",
@@ -11986,7 +12527,26 @@
       44
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-SFL",
+      "Glasser-Left-6mp",
+      "Glasser-Left-6ma",
+      "Glasser-Left-6d",
+      "Glasser-Left-4",
+      "Glasser-Left-3b",
+      "Glasser-Left-1",
+      "Glasser-Left-8BL",
+      "Glasser-Left-6a",
+      "Glasser-Left-3a",
+      "Glasser-Left-2",
+      "Glasser-Left-8Av",
+      "Glasser-Left-PoI2",
+      "Glasser-Left-SCEF",
+      "Glasser-Left-55b",
+      "Glasser-Left-i6-8",
+      "Glasser-Left-FEF"
+    ]
   },
   "Tract-CS_S_R": {
     "ja": "右皮質線条体路 上部",
@@ -12001,7 +12561,33 @@
       44
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-SFL",
+      "Glasser-Right-8BL",
+      "Glasser-Right-6ma",
+      "Glasser-Right-4",
+      "Glasser-Right-3b",
+      "Glasser-Right-2",
+      "Glasser-Right-1",
+      "Glasser-Right-6r",
+      "Glasser-Right-6mp",
+      "Glasser-Right-6d",
+      "Glasser-Right-43",
+      "Glasser-Right-s6-8",
+      "Glasser-Right-PoI2",
+      "Glasser-Right-MI",
+      "Glasser-Right-FOP1",
+      "Glasser-Right-6a",
+      "Glasser-Right-3a",
+      "Glasser-Right-FOP3",
+      "Glasser-Right-7PC",
+      "Glasser-Right-FOP4",
+      "Glasser-Right-7AL",
+      "Glasser-Right-FOP2",
+      "Glasser-Right-44",
+      "Glasser-Right-SCEF"
+    ]
   },
   "Tract-CS_P_L": {
     "ja": "左皮質線条体路 後部",
@@ -12016,7 +12602,18 @@
       26
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-VIP",
+      "Glasser-Left-V1",
+      "Glasser-Left-V2",
+      "Glasser-Left-7AL",
+      "Glasser-Left-7PL",
+      "Glasser-Left-V3",
+      "Glasser-Left-DVT",
+      "Glasser-Left-IPS1",
+      "Glasser-Left-7Am"
+    ]
   },
   "Tract-CS_P_R": {
     "ja": "右皮質線条体路 後部",
@@ -12031,7 +12628,23 @@
       26
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-V6A",
+      "Glasser-Right-V6",
+      "Glasser-Right-V3A",
+      "Glasser-Right-V3",
+      "Glasser-Right-VIP",
+      "Glasser-Right-MIP",
+      "Glasser-Right-7AL",
+      "Glasser-Right-V2",
+      "Glasser-Right-V1",
+      "Glasser-Right-IPS1",
+      "Glasser-Right-DVT",
+      "Glasser-Right-7PL",
+      "Glasser-Right-LIPv",
+      "Glasser-Right-7Am"
+    ]
   },
   "Tract-CST_L": {
     "ja": "左錐体路",
@@ -12046,7 +12659,16 @@
       35
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-6mp",
+      "Glasser-Left-6d",
+      "Glasser-Left-4",
+      "Glasser-Left-6ma",
+      "Glasser-Left-3a",
+      "Glasser-Left-3b",
+      "Glasser-Left-1"
+    ]
   },
   "Tract-CST_R": {
     "ja": "右錐体路",
@@ -12061,7 +12683,15 @@
       35
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-6mp",
+      "Glasser-Right-4",
+      "Glasser-Right-6d",
+      "Glasser-Right-3a",
+      "Glasser-Right-6ma",
+      "Glasser-Right-3b"
+    ]
   },
   "Tract-DRTT_L": {
     "ja": "左歯状核赤核視床路",
@@ -12166,7 +12796,12 @@
       44
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-V2",
+      "Glasser-Left-V1",
+      "Glasser-Left-V3"
+    ]
   },
   "Tract-OR_R": {
     "ja": "右視放線",
@@ -12181,7 +12816,12 @@
       44
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-V2",
+      "Glasser-Right-V1",
+      "Glasser-Right-V3"
+    ]
   },
   "Tract-RST_L": {
     "ja": "左網様体脊髄路",
@@ -12226,7 +12866,22 @@
       35
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-a47r",
+      "Glasser-Left-a10p",
+      "Glasser-Left-p10p",
+      "Glasser-Left-9a",
+      "Glasser-Left-10d",
+      "Glasser-Left-p47r",
+      "Glasser-Left-a9-46v",
+      "Glasser-Left-9p",
+      "Glasser-Left-8BL",
+      "Glasser-Left-10pp",
+      "Glasser-Left-45",
+      "Glasser-Left-47l",
+      "Glasser-Left-9m"
+    ]
   },
   "Tract-TR_A_R": {
     "ja": "右視床放線 前部",
@@ -12241,7 +12896,22 @@
       35
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-p10p",
+      "Glasser-Right-p47r",
+      "Glasser-Right-a47r",
+      "Glasser-Right-a10p",
+      "Glasser-Right-9a",
+      "Glasser-Right-8BL",
+      "Glasser-Right-a9-46v",
+      "Glasser-Right-IFSa",
+      "Glasser-Right-9p",
+      "Glasser-Right-9-46d",
+      "Glasser-Right-10d",
+      "Glasser-Right-9m",
+      "Glasser-Right-45"
+    ]
   },
   "Tract-TR_P_L": {
     "ja": "左視床放線 後部",
@@ -12256,7 +12926,22 @@
       45
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-7PL",
+      "Glasser-Left-V6",
+      "Glasser-Left-DVT",
+      "Glasser-Left-7Am",
+      "Glasser-Left-7AL",
+      "Glasser-Left-VIP",
+      "Glasser-Left-V6A",
+      "Glasser-Left-V3A",
+      "Glasser-Left-POS2",
+      "Glasser-Left-V3",
+      "Glasser-Left-IPS1",
+      "Glasser-Left-5L",
+      "Glasser-Left-7Pm"
+    ]
   },
   "Tract-TR_P_R": {
     "ja": "右視床放線 後部",
@@ -12271,7 +12956,20 @@
       45
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-V3A",
+      "Glasser-Right-7Am",
+      "Glasser-Right-VIP",
+      "Glasser-Right-7PL",
+      "Glasser-Right-MIP",
+      "Glasser-Right-7AL",
+      "Glasser-Right-V6",
+      "Glasser-Right-V3",
+      "Glasser-Right-V6A",
+      "Glasser-Right-5L",
+      "Glasser-Right-7Pm"
+    ]
   },
   "Tract-TR_S_L": {
     "ja": "左視床放線 上部",
@@ -12286,7 +12984,19 @@
       49
     ],
     "atlas": "tract",
-    "side": "L"
+    "side": "L",
+    "connects": [
+      "Glasser-Left-SFL",
+      "Glasser-Left-6ma",
+      "Glasser-Left-4",
+      "Glasser-Left-SCEF",
+      "Glasser-Left-8BL",
+      "Glasser-Left-6mp",
+      "Glasser-Left-3a",
+      "Glasser-Left-3b",
+      "Glasser-Left-6d",
+      "Glasser-Left-1"
+    ]
   },
   "Tract-TR_S_R": {
     "ja": "右視床放線 上部",
@@ -12301,7 +13011,24 @@
       49
     ],
     "atlas": "tract",
-    "side": "R"
+    "side": "R",
+    "connects": [
+      "Glasser-Right-SFL",
+      "Glasser-Right-8BL",
+      "Glasser-Right-6mp",
+      "Glasser-Right-6ma",
+      "Glasser-Right-4",
+      "Glasser-Right-3a",
+      "Glasser-Right-SCEF",
+      "Glasser-Right-s6-8",
+      "Glasser-Right-3b",
+      "Glasser-Right-6d",
+      "Glasser-Right-6v",
+      "Glasser-Right-6r",
+      "Glasser-Right-1",
+      "Glasser-Right-5L",
+      "Glasser-Right-43"
+    ]
   },
   "Tract-AC": {
     "ja": "前交連",
