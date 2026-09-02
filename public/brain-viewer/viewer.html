@@ -552,6 +552,8 @@ camera.up.set(0,0,1);                      // ← RAS は Z が上。頂点は�
 camera.position.set(320, -290, 210);
 scene.add(camera);
 const controls = new OrbitControls(camera, renderer.domElement);
+/* 回している最中に触られたら、そこで止める。動かし続けると操作と喧嘩する。 */
+controls.addEventListener('start', () => { camTween = null; });
 controls.enableDamping = true;
 controls.enableZoom = false;         // ホイールは断面めくりに使うので自前で扱う
 controls.enabled = false;            // ロード完了まで操作させない
@@ -1343,11 +1345,29 @@ function applyFocus(){
     paintConnections();
     return;
   }
+  /* 選んだものを目立たせるには、そこを明るくするより周りを落とすほうが効く。
+     ただし**立体モードでは、落とすだけでは足りない。**脳溝の内側や内側面の領域は
+     手前の領域に隠れて、暗く落としても引き出し線の先に何も見えない（実測した）。
+     周りを半透明にして、選んだ領域を透かして見せる。
+
+     断面モードでは掛けない。あちらは切り口に色が出るので、この問題が起きない。 */
+  const ghost = sel.size > 0 && state.mode === 'solid';
   for (const [n, o] of meshByName) {
     const m = o.material;
     if (!m.userData.base) m.userData.base = m.color.clone();
     m.color.copy(m.userData.base);
-    if (sel.size && !sel.has(n)) m.color.multiplyScalar(.3);
+    const off = sel.size && !sel.has(n);
+    if (off) m.color.multiplyScalar(ghost ? .75 : .3);
+    /* 透かすときは色を落としすぎない。不透明度で既に暗くなるので、
+       両方掛けると輪郭まで消えて脳の形が分からなくなる。 */
+    /* **FrontSide にする。**皮質・皮質下・小脳は入れ子なので、DoubleSide のまま
+       だと視線が何枚もの面を貫き、1 枚が薄くても累積して不透明になる。
+       トラクトの背景で同じことを踏んでいる（DECISIONS 36）。 */
+    m.transparent = !!(off && ghost);
+    m.opacity = (off && ghost) ? FOCUS_GHOST : 1;
+    m.depthWrite = !(off && ghost);
+    m.side = (off && ghost) ? THREE.FrontSide : THREE.DoubleSide;
+    m.needsUpdate = true;
   }
 }
 
@@ -1357,6 +1377,11 @@ clearBtn.onclick = () => clearSelection();
 /* パネルを脳の上に横へ並べる都合で、選べるのは 3 つまで。4 つ目を押すと
    いちばん古いものが外れる。押しても何も起きないより、何が起きたか見えるほうがよい。 */
 const MAX_SEL = 3;
+
+/* 立体モードで何かを選んでいるとき、選んでいない領域の不透明度。
+   トラクトの背景（0.10）より濃くする。あちらは輪郭が分かればよいが、
+   こちらは周りの領域の区切りも見えていてほしい。値は実測で決める。 */
+const FOCUS_GHOST = 0.10;
 
 /* 1 つ足す / 外す。色は選択の有無で決まるので、変わった 1 つだけでなく
    選択中すべてを塗り直す（周りを落とす倍率が集合の大きさで変わる）。 */
@@ -1399,11 +1424,70 @@ function syncSelUI(){
   clearBtn.textContent = n > 1 ? `選択を解除 (${n})` : '選択を解除';
 }
 
+/* ───────── 選んだ領域を正面へ回す ─────────
+   立体モードでは、選んでも手前の領域に隠れて見えないことがある。周りを透かした
+   うえで、その領域が正面に来るところまでカメラを回す。
+
+   **足したときだけ動かす。**外したときに動かすと、消したはずのものに画面が
+   引っ張られる（代表スライスへ飛ぶ規則と同じ）。距離は変えない——ズームまで
+   動かすと現在地を見失う。回している間に触られたら、そこで止める。 */
+const CAM_MS = 620;
+let camTween = null;
+
+/* その領域が「正面」になる向き（world）。法線の平均を使い、縮退したら
+   モデルの中心から領域の中心へ向かう向きに落とす。
+
+   縮退するのは脳溝に埋まった領域で、両岸の法線が打ち消し合うため。実際に
+   起きるので、落とし先が要る。 */
+function regionFacing(name){
+  const o = meshByName.get(name);
+  if (!o) return null;
+  const nrm = o.geometry.getAttribute('normal');
+  o.updateMatrixWorld(true);
+  if (nrm) {
+    const acc = new THREE.Vector3(), v = new THREE.Vector3();
+    for (let i = 0; i < nrm.count; i++) acc.add(v.fromBufferAttribute(nrm, i));
+    acc.divideScalar(nrm.count);
+    if (acc.length() > 0.25) {
+      return acc.applyMatrix3(new THREE.Matrix3().getNormalMatrix(o.matrixWorld))
+                .normalize();
+    }
+  }
+  const c = meshCenter(name);
+  if (!c) return null;
+  if (!modelBox) modelBox = new THREE.Box3().setFromObject(brain);
+  const d = c.clone().sub(modelBox.getCenter(new THREE.Vector3()));
+  return d.lengthSq() > 1 ? d.normalize() : null;
+}
+
+function faceRegion(name){
+  if (state.mode !== 'solid') return;
+  const dir = regionFacing(name);
+  if (!dir) return;
+  const from = camera.position.clone().sub(controls.target);
+  if (from.lengthSq() < 1) return;
+  const a = from.clone().normalize();
+  if (a.angleTo(dir) < 0.12) return;        // ほぼ正面。動かすほうが目障り
+  camTween = { a, b: dir, r: from.length(), t0: performance.now() };
+}
+
+function stepCamTween(){
+  if (!camTween) return;
+  const t = Math.min(1, (performance.now() - camTween.t0) / CAM_MS);
+  const k = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // ease-in-out
+  const q = new THREE.Quaternion().setFromUnitVectors(camTween.a, camTween.b);
+  const step = new THREE.Quaternion().identity().slerp(q, k);
+  camera.position.copy(controls.target)
+    .add(camTween.a.clone().applyQuaternion(step).multiplyScalar(camTween.r));
+  if (t >= 1) camTween = null;
+}
+
 /* 一覧から選ぶ。足したときだけ代表スライスへ飛ぶ。外したときに飛ぶと、
    消したはずのものに画面が引っ張られる。 */
 function selectRegion(name){
   const on = !sel.has(name);
   setSel(name, on);
+  if (on) faceRegion(name);
   if (!on || state.mode === 'solid') return;  // 断面が無いので飛び先も無い
   const s = labels[name] && labels[name].slice;
   if (!s) return;                       // 代表スライス未収録なら強調だけ
@@ -2210,7 +2294,11 @@ renderer.domElement.addEventListener('pointerup', (e)=>{
   tap = null;
   if (!quick || pinch !== null) return;
   const n = pickAt(x, y);
-  if (n) setSel(n, !sel.has(n)); else clearSelection();   // 何も無い所を叩くと全部外す
+  if (n) {
+    const on = !sel.has(n);
+    setSel(n, on);
+    if (on) faceRegion(n);          // 一覧から選んだときと同じにする
+  } else clearSelection();                               // 何も無い所を叩くと全部外す
 });
 renderer.domElement.addEventListener('pointercancel', ()=>{ tap = null; });
 
@@ -2326,6 +2414,19 @@ window.__state = () => ({
   // 選択中のアンカー（world RAS mm）。正中かどうかを画面ではなく座標で確かめる口
   anchorWorld: selected && anchorPoint(selected)
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
+  /* カメラの向き（単位ベクトル）と、回している最中かどうか。
+     「選んだ領域が正面に来たか」を画面ではなく数値で確かめる口。 */
+  camDir: camera.position.clone().sub(controls.target).normalize().toArray()
+            .map(v => Math.round(v * 1000) / 1000),
+  camMoving: !!camTween,
+  facing: (() => {
+    const d = selected && regionFacing(selected);
+    return d ? d.toArray().map(v => Math.round(v * 1000) / 1000) : null;
+  })(),
+  /* 選んでいない領域のうち、透かしているものの数。立体モードで選択中だけ立つ。
+     断面モードでは切り口に色が出るので掛けない。 */
+  focusGhost: meshByName
+    ? [...meshByName].filter(([n, o]) => !sel.has(n) && o.material.opacity < 1).length : 0,
   camDist: +camera.position.distanceTo(controls.target).toFixed(2),
   shown: [...meshByName.values()].filter(o => o.visible).length,
   /* 背景（トラクトグラフィーで薄く敷く解剖のモデル）。借りたマテリアルを
@@ -2379,6 +2480,7 @@ atlasReady.then(()=>{
 });
 (function loop(){
   requestAnimationFrame(loop);
+  stepCamTween();
   controls.update();
   updateHover();
   layoutCallouts();
