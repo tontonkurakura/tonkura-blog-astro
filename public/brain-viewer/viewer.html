@@ -280,6 +280,11 @@
     <button data-h="R">右<small>Right</small></button>
   </div>
   <div class="seg" id="cCortexRow"><button id="cCortex" class="on">皮質を表示</button></div>
+  <!-- 選んでいない領域の濃さ。選択中だけ効くので、選んでいなければ押せない -->
+  <div id="ghostBlock">
+    <div class="lbl row"><span>選択中の周りの濃さ</span><span class="val" id="gv">20%</span></div>
+    <input type="range" id="ghost" min="5" max="60" step="1" value="20">
+  </div>
   <!-- 繋ぐ皮質領域の名前。トラクトグラフィーでだけ出る -->
   <div class="seg" id="cConnRow" style="display:none">
     <button id="cConn" class="on">繋ぐ領域の名前</button>
@@ -552,8 +557,6 @@ camera.up.set(0,0,1);                      // ← RAS は Z が上。頂点は�
 camera.position.set(320, -290, 210);
 scene.add(camera);
 const controls = new OrbitControls(camera, renderer.domElement);
-/* 回している最中に触られたら、そこで止める。動かし続けると操作と喧嘩する。 */
-controls.addEventListener('start', () => { camTween = null; });
 controls.enableDamping = true;
 controls.enableZoom = false;         // ホイールは断面めくりに使うので自前で扱う
 controls.enabled = false;            // ロード完了まで操作させない
@@ -782,10 +785,20 @@ let brain = null;                // 今のアトラスのルート
 const TOUCH  = matchMedia('(hover: none)');
 const NARROW = matchMedia('(max-width: 640px)');
 
+/* 立体モードで何かを選んでいるとき、選んでいない領域の不透明度。**利用者が
+   動かせる**（`#ghost`）ので、ここにあるのは初期値だけ。透かしすぎると周りの
+   区切りが読めず、濃すぎると選んだ領域が隠れる。どちらが要るかは見る場所に
+   よって変わるので、固定の正解が無い。
+
+   トラクトの背景（0.10）とは別に持つ。あちらは輪郭が分かればよく、濃くすると
+   トラクトが隠れることを実測してある（DECISIONS 36）。 */
+const FOCUS_GHOST_DEFAULT = 0.20;
+
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'macro'), side:'L',
                 grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 conn:true,                         // 繋ぐ領域の名前をパネルに出すか
+                ghost:FOCUS_GHOST_DEFAULT,         // 選択中、選んでいない領域の不透明度
                 half:'both', cortex:true,          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
@@ -1256,8 +1269,12 @@ function applyMode(){
   document.getElementById('cCortexRow').style.display =
     (solid && !!CORTICAL[state.atlas]) ? '' : 'none';
   /* 繋ぐ領域を持つのはトラクトグラフィーだけ */
-  document.getElementById('cConnRow').style.display =
-    (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) ? '' : 'none';
+  const isTract = !!(ATLASES[state.atlas] && ATLASES[state.atlas].tracts);
+  document.getElementById('cConnRow').style.display = isTract ? '' : 'none';
+  /* 濃さの操作子は「選択中に周りを透かす」ためのもの。トラクトグラフィーは
+     背景が別の仕組みなので効かない。効かない操作子は出さない。 */
+  document.getElementById('ghostBlock').style.display = (solid && !isTract) ? '' : 'none';
+  syncGhostUI();
   sliceMesh.visible = !solid && uiReady && !!lblData;
 
   // クリップは断面モードの操作子にだけ従う。既に読んだモデルにも掛け直す
@@ -1268,6 +1285,9 @@ function applyMode(){
     m.mats.forEach(x => { x.clippingPlanes = state.clip ? [clip] : []; x.needsUpdate = true; });
 
   applyVisibility();
+  /* 透かすのは立体モードだけなので、モードが変わったら塗り直す。
+     ここを呼ばないと、断面モードへ移っても半透明のまま残る。 */
+  applyFocus();
   setHover(null);
   layoutCallouts();
 }
@@ -1276,6 +1296,16 @@ document.querySelectorAll('#mode button').forEach(b=>{
                     state.mode = b.dataset.m; applyMode(); };
 });
 document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
+
+/* 選択中、選んでいない領域の濃さ。**固定の正解が無い**ので動かせるようにした。
+   薄くすれば脳溝の内側や内側面の領域が見え、濃くすれば周りの区切りが読める。
+   選んでいなければ効かないので、そのときは押せなくする。 */
+const ghostEl = document.getElementById('ghost');
+ghostEl.oninput = () => {
+  state.ghost = +ghostEl.value / 100;
+  document.getElementById('gv').textContent = ghostEl.value + '%';
+  applyFocus();
+};
 
 /* 繋ぐ領域の名前を出すかどうか。名前だけの切り替えで、3D の色付けは常に出す
    （色が付いているのに名前が無い、の逆はあってよいが、色まで消すと
@@ -1364,7 +1394,7 @@ function applyFocus(){
        だと視線が何枚もの面を貫き、1 枚が薄くても累積して不透明になる。
        トラクトの背景で同じことを踏んでいる（DECISIONS 36）。 */
     m.transparent = !!(off && ghost);
-    m.opacity = (off && ghost) ? FOCUS_GHOST : 1;
+    m.opacity = (off && ghost) ? state.ghost : 1;
     m.depthWrite = !(off && ghost);
     m.side = (off && ghost) ? THREE.FrontSide : THREE.DoubleSide;
     m.needsUpdate = true;
@@ -1378,10 +1408,6 @@ clearBtn.onclick = () => clearSelection();
    いちばん古いものが外れる。押しても何も起きないより、何が起きたか見えるほうがよい。 */
 const MAX_SEL = 3;
 
-/* 立体モードで何かを選んでいるとき、選んでいない領域の不透明度。
-   トラクトの背景（0.10）より濃くする。あちらは輪郭が分かればよいが、
-   こちらは周りの領域の区切りも見えていてほしい。値は実測で決める。 */
-const FOCUS_GHOST = 0.10;
 
 /* 1 つ足す / 外す。色は選択の有無で決まるので、変わった 1 つだけでなく
    選択中すべてを塗り直す（周りを落とす倍率が集合の大きさで変わる）。 */
@@ -1417,69 +1443,20 @@ function clearSelection(){
   syncSelUI();
 }
 
+/* 濃さの操作子は選択中だけ効く。選んでいなければ押せなくする。
+   **要素はその場で引く。**この関数は applyMode から呼ばれ、applyMode は
+   モジュールの初期化で走る。const で持つと宣言の順に縛られる。 */
+function syncGhostUI(){
+  const el = document.getElementById('ghost');
+  if (el) el.disabled = sel.size === 0;
+}
+
 function syncSelUI(){
+  syncGhostUI();
   for (const [n, el] of itemByName) el.classList.toggle('on', sel.has(n));
   clearBtn.classList.toggle('on', sel.size > 0);
   const n = selGroups().length;
   clearBtn.textContent = n > 1 ? `選択を解除 (${n})` : '選択を解除';
-}
-
-/* ───────── 選んだ領域を正面へ回す ─────────
-   立体モードでは、選んでも手前の領域に隠れて見えないことがある。周りを透かした
-   うえで、その領域が正面に来るところまでカメラを回す。
-
-   **足したときだけ動かす。**外したときに動かすと、消したはずのものに画面が
-   引っ張られる（代表スライスへ飛ぶ規則と同じ）。距離は変えない——ズームまで
-   動かすと現在地を見失う。回している間に触られたら、そこで止める。 */
-const CAM_MS = 620;
-let camTween = null;
-
-/* その領域が「正面」になる向き（world）。法線の平均を使い、縮退したら
-   モデルの中心から領域の中心へ向かう向きに落とす。
-
-   縮退するのは脳溝に埋まった領域で、両岸の法線が打ち消し合うため。実際に
-   起きるので、落とし先が要る。 */
-function regionFacing(name){
-  const o = meshByName.get(name);
-  if (!o) return null;
-  const nrm = o.geometry.getAttribute('normal');
-  o.updateMatrixWorld(true);
-  if (nrm) {
-    const acc = new THREE.Vector3(), v = new THREE.Vector3();
-    for (let i = 0; i < nrm.count; i++) acc.add(v.fromBufferAttribute(nrm, i));
-    acc.divideScalar(nrm.count);
-    if (acc.length() > 0.25) {
-      return acc.applyMatrix3(new THREE.Matrix3().getNormalMatrix(o.matrixWorld))
-                .normalize();
-    }
-  }
-  const c = meshCenter(name);
-  if (!c) return null;
-  if (!modelBox) modelBox = new THREE.Box3().setFromObject(brain);
-  const d = c.clone().sub(modelBox.getCenter(new THREE.Vector3()));
-  return d.lengthSq() > 1 ? d.normalize() : null;
-}
-
-function faceRegion(name){
-  if (state.mode !== 'solid') return;
-  const dir = regionFacing(name);
-  if (!dir) return;
-  const from = camera.position.clone().sub(controls.target);
-  if (from.lengthSq() < 1) return;
-  const a = from.clone().normalize();
-  if (a.angleTo(dir) < 0.12) return;        // ほぼ正面。動かすほうが目障り
-  camTween = { a, b: dir, r: from.length(), t0: performance.now() };
-}
-
-function stepCamTween(){
-  if (!camTween) return;
-  const t = Math.min(1, (performance.now() - camTween.t0) / CAM_MS);
-  const k = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // ease-in-out
-  const q = new THREE.Quaternion().setFromUnitVectors(camTween.a, camTween.b);
-  const step = new THREE.Quaternion().identity().slerp(q, k);
-  camera.position.copy(controls.target)
-    .add(camTween.a.clone().applyQuaternion(step).multiplyScalar(camTween.r));
-  if (t >= 1) camTween = null;
 }
 
 /* 一覧から選ぶ。足したときだけ代表スライスへ飛ぶ。外したときに飛ぶと、
@@ -1487,7 +1464,6 @@ function stepCamTween(){
 function selectRegion(name){
   const on = !sel.has(name);
   setSel(name, on);
-  if (on) faceRegion(name);
   if (!on || state.mode === 'solid') return;  // 断面が無いので飛び先も無い
   const s = labels[name] && labels[name].slice;
   if (!s) return;                       // 代表スライス未収録なら強調だけ
@@ -2294,11 +2270,7 @@ renderer.domElement.addEventListener('pointerup', (e)=>{
   tap = null;
   if (!quick || pinch !== null) return;
   const n = pickAt(x, y);
-  if (n) {
-    const on = !sel.has(n);
-    setSel(n, on);
-    if (on) faceRegion(n);          // 一覧から選んだときと同じにする
-  } else clearSelection();                               // 何も無い所を叩くと全部外す
+  if (n) setSel(n, !sel.has(n)); else clearSelection();   // 何も無い所を叩くと全部外す
 });
 renderer.domElement.addEventListener('pointercancel', ()=>{ tap = null; });
 
@@ -2414,15 +2386,7 @@ window.__state = () => ({
   // 選択中のアンカー（world RAS mm）。正中かどうかを画面ではなく座標で確かめる口
   anchorWorld: selected && anchorPoint(selected)
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
-  /* カメラの向き（単位ベクトル）と、回している最中かどうか。
-     「選んだ領域が正面に来たか」を画面ではなく数値で確かめる口。 */
-  camDir: camera.position.clone().sub(controls.target).normalize().toArray()
-            .map(v => Math.round(v * 1000) / 1000),
-  camMoving: !!camTween,
-  facing: (() => {
-    const d = selected && regionFacing(selected);
-    return d ? d.toArray().map(v => Math.round(v * 1000) / 1000) : null;
-  })(),
+  ghost: state.ghost,
   /* 選んでいない領域のうち、透かしているものの数。立体モードで選択中だけ立つ。
      断面モードでは切り口に色が出るので掛けない。 */
   focusGhost: meshByName
@@ -2480,7 +2444,6 @@ atlasReady.then(()=>{
 });
 (function loop(){
   requestAnimationFrame(loop);
-  stepCamTween();
   controls.update();
   updateHover();
   layoutCallouts();
