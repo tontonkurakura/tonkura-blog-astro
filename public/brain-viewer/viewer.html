@@ -787,16 +787,14 @@ let brain = null;                // 今のアトラスのルート
 const TOUCH  = matchMedia('(hover: none)');
 const NARROW = matchMedia('(max-width: 640px)');
 
-/* 「選択していない領域」の不透明度。**利用者が動かせる**（`#ghost`）ので、
-   ここにあるのは初期値だけ。透かしすぎると周りの区切りが読めず、濃すぎると
-   見たいものが隠れる。どちらが要るかは見る場所によって変わり、固定の正解が無い。
+/* 選んでいない領域の不透明度。**機能的領域（Glasser）でだけ効く。**
+   360 区分は細かく、脳溝の内側や内側面の領域が手前に隠れて見えないため。
+   他のアトラスは区分が大きく、選んだものが隠れることがまず無いので掛けない
+   （掛けると、必要のない場面で脳が薄くなるだけになる）。
 
-   **文脈ごとに値を覚える。**役割が 2 つあり、実測した良い値が違う:
-     other … 選んだ領域を周りごしに見る（0.20）
-     tract … トラクトを脳ごしに見る（0.10。濃くすると束が隠れる。DECISIONS 36）
-   1 本のスライダーで両方を動かすが、切り替えるとその文脈の値に戻る。
-   片方に寄せると、もう片方が必ず悪くなる。 */
-const GHOST_DEFAULTS = { other: 0.20, tract: 0.10 };
+   透かしすぎると周りの区切りが読めず、濃すぎると選んだ領域が隠れる。固定の
+   正解が無いので `#ghost` で 0〜100% を動かせる。ここにあるのは初期値。 */
+const GHOST_DEFAULT = 0.20;
 /* **面の裏表では解決しない。**最初「裏面だけ描けば手前の壁が消える」と考えたが、
    視点が右にあるとき左半球のトラクトは反対側の半球の壁越しに見ることになる。
    どちらの面を残しても、間に 1 枚以上入る。
@@ -810,17 +808,16 @@ const GHOST_DEFAULTS = { other: 0.20, tract: 0.10 };
 /* これ以下は「消す」として扱う。0 に張り付いたまま `Raycaster` に拾わせない */
 const GHOST_HIDE = 0.02;
 
-/* いまの文脈のキー。トラクトグラフィーだけ別扱い */
-function ghostKey(){
-  return (ATLASES[state.atlas] && ATLASES[state.atlas].tracts) ? 'tract' : 'other';
+/* 透かしが効くアトラスか。効かないところでは操作子も出さない */
+function ghostAtlas(){
+  return !!(ATLASES[state.atlas] && ATLASES[state.atlas].focusGhost);
 }
-function ghostNow(){ return state.ghostBy[ghostKey()]; }
 
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'macro'), side:'L',
                 grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 conn:true,                         // 繋ぐ領域の名前をパネルに出すか
-                ghostBy:{ ...GHOST_DEFAULTS },     // 選択していない領域の不透明度（文脈ごと）
+                ghost:GHOST_DEFAULT,               // 選択していない領域の不透明度
                 half:'both', cortex:true,          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
@@ -850,7 +847,9 @@ const ATLASES = {
      group_net を見分けるだけ）。色は解剖の 22 区分から作ってあるので、
      ネットワークで並べると見出しの下に色が混ざる。それは「デフォルトモードは
      前頭内側と頭頂と側頭に散る」がそのまま見えるということ。 */
-  glasser: { name:'機能的領域', model:'brain_glasser.glb',
+  /* **透かしが効くのはここだけ。**360 区分は細かく、脳溝の内側や内側面の領域が
+     手前に隠れて見えない。区分の大きい他のアトラスでは起きないので掛けない。 */
+  glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true,
              groupings:[
                {key:'group', label:'解剖', groups:[
                  '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
@@ -1033,6 +1032,10 @@ const CONNECT_OPACITY = 0.50;    // 繋ぎ先の皮質。地の 0.10 とトラ�
    そのまま薄くすると色のまだらになり、トラクトと繋ぎ先のコントラストを食う。
    色が付いているのは「選んだトラクト」と「その繋ぎ先」だけ、という状態にする。 */
 const GHOST_COLOR = 0xaebdd6;
+/* トラクトの背景。**こちらは動かさない。**弓状束を出して見比べて決めた値で、
+   0.42 では束が完全に隠れ、0.16 では形が読めず、0.10 で形がはっきり出た。
+   選択の透かし（`state.ghost`）とは役割が違うので、同じつまみに繋がない。 */
+const GHOST_OPACITY = 0.10;
 const tmpCol = new THREE.Color(), tmpHSL = { h: 0, s: 0, l: 0 };
 let backdropAtlas = null;
 
@@ -1054,7 +1057,7 @@ function setBackdrop(atlas){
   m.mats.forEach(x => {
     if (!x.userData.base) x.userData.base = x.color.clone();
     x.color.setHex(GHOST_COLOR);
-    x.transparent = true; x.opacity = ghostNow(); x.depthWrite = false;
+    x.transparent = true; x.opacity = GHOST_OPACITY; x.depthWrite = false;
     x.side = THREE.FrontSide;             // 視線が貫く層を半分にする
     x.userData.ghost = true; x.needsUpdate = true;
   });
@@ -1098,7 +1101,7 @@ function paintConnections(){
       x.side = THREE.FrontSide;
     } else {
       x.color.setHex(GHOST_COLOR);
-      x.transparent = true; x.opacity = ghostNow(); x.depthWrite = false;
+      x.transparent = true; x.opacity = GHOST_OPACITY; x.depthWrite = false;
       x.side = THREE.FrontSide;
     }
     x.needsUpdate = true;
@@ -1225,7 +1228,7 @@ function applyVisibility(){
       if (!state.cortex && ctx && ctx.test(name)) vis = false;
       /* 濃さ 0% は「消す」。opacity を 0 にしただけでは `Raycaster` が拾い、
          見えない領域の名前がホバーで出る（隠したら pick 側でも除外する規則）。 */
-      if (sel.size && !sel.has(name) && ghostNow() <= GHOST_HIDE) vis = false;
+      if (ghostAtlas() && sel.size && !sel.has(name) && state.ghost <= GHOST_HIDE) vis = false;
     }
     o.visible = vis;
   }
@@ -1312,11 +1315,9 @@ document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(
    選んでいなければ効かないので、そのときは押せなくする。 */
 const ghostEl = document.getElementById('ghost');
 ghostEl.oninput = () => {
-  state.ghostBy[ghostKey()] = +ghostEl.value / 100;
+  state.ghost = +ghostEl.value / 100;
   document.getElementById('gv').textContent = ghostEl.value + '%';
   applyFocus();
-  setBackdrop(backdropAtlas);      // トラクトの背景にも効かせる
-  paintConnections();
 };
 
 /* 繋ぐ領域の名前を出すかどうか。名前だけの切り替えで、3D の色付けは常に出す
@@ -1394,7 +1395,7 @@ function applyFocus(){
 
      断面モードでは掛けない。あちらは切り口に色が出るので、この問題が起きない。 */
   /* 濃さ 100% は透かさない（元の「暗く落とすだけ」に戻る）。0% は消す。 */
-  const ghost = sel.size > 0 && state.mode === 'solid' && ghostNow() < 1;
+  const ghost = ghostAtlas() && sel.size > 0 && state.mode === 'solid' && state.ghost < 1;
   for (const [n, o] of meshByName) {
     const m = o.material;
     if (!m.userData.base) m.userData.base = m.color.clone();
@@ -1407,7 +1408,7 @@ function applyFocus(){
        だと視線が何枚もの面を貫き、1 枚が薄くても累積して不透明になる。
        トラクトの背景で同じことを踏んでいる（DECISIONS 36）。 */
     m.transparent = !!(off && ghost);
-    m.opacity = (off && ghost) ? ghostNow() : 1;
+    m.opacity = (off && ghost) ? state.ghost : 1;
     m.depthWrite = !(off && ghost);
     m.side = (off && ghost) ? THREE.FrontSide : THREE.DoubleSide;
     m.needsUpdate = true;
@@ -1457,15 +1458,17 @@ function clearSelection(){
   syncSelUI();
 }
 
-/* 濃さの操作子。**常に押せる**（見る前に決めておける）。文脈ごとに値が違うので、
-   アトラスを切り替えたらつまみの位置も合わせ直す。
+/* 濃さの操作子。**透かしが効くアトラス（機能的領域）でだけ出す。**
+   効かないところに出すと、動かしても何も起きない操作子になる。
 
    **要素はその場で引く。**この関数は applyMode から呼ばれ、applyMode は
    モジュールの初期化で走る。const で持つと宣言の順に縛られる。 */
 function syncGhostUI(){
+  const blk = document.getElementById('ghostBlock');
+  if (blk) blk.style.display = ghostAtlas() ? '' : 'none';
   const el = document.getElementById('ghost');
   if (!el) return;
-  const pct = Math.round(ghostNow() * 100);
+  const pct = Math.round(state.ghost * 100);
   if (+el.value !== pct) el.value = String(pct);
   document.getElementById('gv').textContent = pct + '%';
 }
@@ -2405,7 +2408,7 @@ window.__state = () => ({
   // 選択中のアンカー（world RAS mm）。正中かどうかを画面ではなく座標で確かめる口
   anchorWorld: selected && anchorPoint(selected)
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
-  ghost: ghostNow(),
+  ghost: state.ghost,
   /* 選んでいない領域のうち、透かしているものの数。立体モードで選択中だけ立つ。
      断面モードでは切り口に色が出るので掛けない。 */
   focusGhost: meshByName
@@ -2423,7 +2426,7 @@ window.__state = () => ({
     if (!bd) return true;
     const mine = new Set([...sel].map(n => (labels[n].color || []).join(',')));
     for (const [, o] of bd.meshByName) {
-      if (o.material.opacity <= ghostNow() + 1e-6) continue;
+      if (o.material.opacity <= GHOST_OPACITY + 1e-6) continue;
       const c = o.material.color;
       const k = [c.r, c.g, c.b].map(v => Math.round(v * 255)).join(',');
       if (mine.has(k)) return false;
@@ -2435,7 +2438,7 @@ window.__state = () => ({
     const bd = backdropAtlas && models.get(backdropAtlas);
     if (!bd) return 0;
     let n = 0;
-    for (const [, o] of bd.meshByName) if (o.material.opacity > ghostNow() + 1e-6) n++;
+    for (const [, o] of bd.meshByName) if (o.material.opacity > GHOST_OPACITY + 1e-6) n++;
     return n;
   })(),
   backdropGhost: [...models.values()]
