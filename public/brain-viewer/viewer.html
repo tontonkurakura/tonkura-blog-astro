@@ -287,6 +287,10 @@
     <button data-h="R">右<small>Right</small></button>
   </div>
   <div class="seg" id="cCortexRow"><button id="cCortex" class="on">皮質を表示</button></div>
+  <!-- 皮質のみ。白質・深部・脳室・脳幹・小脳を隠す。機能的領域でだけ出る -->
+  <div class="seg" id="cOnlyRow" style="display:none">
+    <button id="cOnly">皮質のみ</button>
+  </div>
   <!-- 繋ぐ皮質領域の名前。トラクトグラフィーでだけ出る -->
   <div class="seg" id="cConnRow" style="display:none">
     <button id="cConn" class="on">繋ぐ領域の名前</button>
@@ -818,6 +822,7 @@ const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice')
                 grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 conn:true,                         // 繋ぐ領域の名前をパネルに出すか
                 ghost:GHOST_DEFAULT,               // 選択していない領域の不透明度
+                cortexOnly:false,                  // 皮質だけ出す（白質・深部を隠す）
                 half:'both', cortex:true,          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
@@ -827,6 +832,11 @@ const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice')
    白質と脳室系は DKT と同じく一覧に出さない（ホバーでは名前が要るので
    labels.json には入っている）。 */
 const GLASSER_SUB = ['大脳基底核','視床・間脳','大脳辺縁系','脳幹','小脳'];
+
+/* 「皮質のみ」で隠す対象。**Glasser では大分類で機械的に分けられる**——22 の
+   cortices が皮質で、それ以外は DKT から借りてきた皮質下だから。
+   DKT やマクロでは大脳辺縁系に皮質と深部が混ざるので、同じ手が使えない。 */
+const GLASSER_NONCTX = new Set([...GLASSER_SUB, '白質', '脳室系']);
 
 /* アトラスの定義。大分類の並び順はここで決める（labels.json の並びは
    生成側の宣言順で、読みたい順とは違う）。model は viewer.html からの相対。 */
@@ -849,7 +859,7 @@ const ATLASES = {
      前頭内側と頭頂と側頭に散る」がそのまま見えるということ。 */
   /* **透かしが効くのはここだけ。**360 区分は細かく、脳溝の内側や内側面の領域が
      手前に隠れて見えない。区分の大きい他のアトラスでは起きないので掛けない。 */
-  glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true,
+  glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true, cortexOnly:true,
              groupings:[
                {key:'group', label:'解剖', groups:[
                  '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
@@ -1226,6 +1236,11 @@ function applyVisibility(){
       if (state.half !== 'both' && v && v.side && v.side !== state.half) vis = false;
       const ctx = CORTICAL[state.atlas];
       if (!state.cortex && ctx && ctx.test(name)) vis = false;
+      /* 皮質のみ。**遮っているのは隣の皮質ではなく白質と深部だった**（実測）。
+         左半球だけにしたうえで白質・深部を消すと、内側面は 5%→81%、島は
+         0%→71% まで見えるようになる。透明度を使わずに済む。 */
+      if (state.cortexOnly && ATLASES[state.atlas] && ATLASES[state.atlas].cortexOnly
+          && v && GLASSER_NONCTX.has(v.group)) vis = false;
       /* 濃さ 0% は「消す」。opacity を 0 にしただけでは `Raycaster` が拾い、
          見えない領域の名前がホバーで出る（隠したら pick 側でも除外する規則）。 */
       if (ghostAtlas() && sel.size && !sel.has(name) && state.ghost <= GHOST_HIDE) vis = false;
@@ -1287,6 +1302,10 @@ function applyMode(){
   /* 繋ぐ領域を持つのはトラクトグラフィーだけ */
   const isTract = !!(ATLASES[state.atlas] && ATLASES[state.atlas].tracts);
   document.getElementById('cConnRow').style.display = isTract ? '' : 'none';
+  /* 皮質のみ。大分類で皮質と皮質下を機械的に分けられるアトラスでだけ出す */
+  document.getElementById('cOnlyRow').style.display =
+    (solid && ATLASES[state.atlas] && ATLASES[state.atlas].cortexOnly) ? '' : 'none';
+  document.getElementById('cOnly').classList.toggle('on', state.cortexOnly);
   syncGhostUI();
   sliceMesh.visible = !solid && uiReady && !!lblData;
 
@@ -1309,6 +1328,15 @@ document.querySelectorAll('#mode button').forEach(b=>{
                     state.mode = b.dataset.m; applyMode(); };
 });
 document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
+
+/* 皮質のみ。白質と深部を消すと、内側面や島の領域が不透明のまま見えるようになる
+   （遮っているのは隣の皮質ではなくそちらだった）。 */
+document.getElementById('cOnly').onclick = () => {
+  state.cortexOnly = !state.cortexOnly;
+  document.getElementById('cOnly').classList.toggle('on', state.cortexOnly);
+  applyVisibility();
+  layoutCallouts();
+};
 
 /* 選択中、選んでいない領域の濃さ。**固定の正解が無い**ので動かせるようにした。
    薄くすれば脳溝の内側や内側面の領域が見え、濃くすれば周りの区切りが読める。
@@ -2400,6 +2428,52 @@ window.__ghost = (opt = {}) => {
   return `${m.mats.length} mats  side=${opt.side || '(据置)'} opacity=${opt.opacity ?? '(据置)'}`;
 };
 
+/* 実測用の口 */
+window.__labels = () => labels;
+window.__meshes = () => meshByName;
+
+/* 実測用の口: 視点を world の向きで置く（測定の条件を揃えるため） */
+window.__lookFrom = (d) => {
+  const v = new THREE.Vector3(...d).normalize()
+    .multiplyScalar(camera.position.distanceTo(controls.target));
+  camera.position.copy(controls.target).add(v);
+  controls.update();
+  return camera.position.toArray().map(x => Math.round(x));
+};
+
+/* 実測用の口: ある領域を、いまの視点から遮っているメッシュを数える。
+   「周りを全部透かす」以外の手が成り立つかは、この数で決まる。 */
+window.__occluders = (name, samples = 60) => {
+  const o = meshByName.get(name);
+  if (!o) return null;
+  o.updateMatrixWorld(true);
+  const pos = o.geometry.getAttribute('position');
+  const step = Math.max(1, Math.floor(pos.count / samples));
+  const hits = new Map();
+  const v = new THREE.Vector3(), dir = new THREE.Vector3();
+  let seen = 0, vis = 0;
+  for (let i = 0; i < pos.count; i += step) {
+    v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
+    dir.copy(v).sub(camera.position).normalize();
+    ray.set(camera.position, dir);
+    const list = ray.intersectObject(brain, true);
+    seen++;
+    let blocked = false;
+    for (const h of list) {
+      if (h.object === o) break;                 // 目的の領域に届いた
+      if (!h.object.visible || !h.object.name) continue;
+      hits.set(h.object.name, (hits.get(h.object.name) || 0) + 1);
+      blocked = true;
+    }
+    if (!blocked) vis++;                         // この点は素通しで見えている
+  }
+  const arr = [...hits].sort((a, b) => b[1] - a[1]);
+  return { samples: seen, occluders: arr.length, visible: +(vis / seen).toFixed(3),
+           top: arr.slice(0, 8).map(([n, c]) => [n.replace('Glasser-', ''), c]),
+           // 全サンプルを遮っているもの（完全に隠している）
+           full: arr.filter(([, c]) => c === seen).length };
+};
+
 window.__state = () => ({
   atlas: state.atlas, plane: state.plane, side: state.side, mode: state.mode,
   half: state.half, cortex: state.cortex, overlay: state.overlay, cut: state.cut,
@@ -2409,6 +2483,7 @@ window.__state = () => ({
   anchorWorld: selected && anchorPoint(selected)
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
   ghost: state.ghost,
+  cortexOnly: state.cortexOnly,
   /* 選んでいない領域のうち、透かしているものの数。立体モードで選択中だけ立つ。
      断面モードでは切り口に色が出るので掛けない。 */
   focusGhost: meshByName
