@@ -828,7 +828,6 @@ function ghostAtlas(){
 
 const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice'),
                 atlas: (Q.get('atlas')||'macro'), side:'L',
-                grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 conn:true,                         // 繋ぐ領域の名前をパネルに出すか
                 ghost:GHOST_DEFAULT,               // 選択していない領域の不透明度
                 half:'both', scope:'all',          // 立体モードの見せ方
@@ -867,22 +866,25 @@ const ATLASES = {
      前頭内側と頭頂と側頭に散る」がそのまま見えるということ。 */
   /* **透かしが効くのはここだけ。**360 区分は細かく、脳溝の内側や内側面の領域が
      手前に隠れて見えない。区分の大きい他のアトラスでは起きないので掛けない。 */
+  /* 機能的領域は 2 つの実体を持つ。**「系統」の切り替えは、並べ替えではなく
+     アトラスそのものの入れ替え。**ネットワークは Glasser を Yeo 7 へ畳んだ別の
+     モデル・別の断面画像で、DMN なら DMN が 1 つの塊・1 つの色で出る。
+     畳まずに色だけ揃えると、塊の内側に 360 区分の境界が残る（マクロと同じ理屈）。 */
   glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true,
-             groupings:[
-               {key:'group', label:'解剖', groups:[
-                 '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
-                 '体性感覚・運動野','中心傍小葉・中部帯状回','運動前野','後弁蓋部',
-                 '早期聴覚野','聴覚連合野','島・前頭弁蓋','内側側頭葉','外側側頭葉',
-                 '側頭頭頂後頭接合部','上頭頂小葉','下頭頂小葉','後部帯状回',
-                 '前部帯状回・内側前頭前野','眼窩・前頭極','下前頭回','背外側前頭前野',
-                 ...GLASSER_SUB]},
-               /* ネットワークの名前は英語のまま。文献でも訳さずに使う呼び名で、
-                  「腹側注意」より Ventral Attention のほうが通じる。 */
-               {key:'group_net', label:'ネットワーク', groups:[
-                 'Visual','Somatomotor','Dorsal Attention','Ventral Attention',
-                 'Limbic','Frontoparietal','Default Mode',
-                 ...GLASSER_SUB]},
-             ] },
+             pair:'network', pairLabel:['解剖','ネットワーク'],
+             groups:[
+               '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
+               '体性感覚・運動野','中心傍小葉・中部帯状回','運動前野','後弁蓋部',
+               '早期聴覚野','聴覚連合野','島・前頭弁蓋','内側側頭葉','外側側頭葉',
+               '側頭頭頂後頭接合部','上頭頂小葉','下頭頂小葉','後部帯状回',
+               '前部帯状回・内側前頭前野','眼窩・前頭極','下前頭回','背外側前頭前野',
+               ...GLASSER_SUB] },
+  /* ネットワーク。アトラスのボタンには出さない（機能的領域の「系統」から入る）。
+     配色は Yeo 2011 の慣例に合わせてあるので、色だけで読める。 */
+  network: { name:'機能的領域（ネットワーク）', model:'brain_network.glb',
+             hidden:true, focusGhost:true,
+             pair:'glasser', pairLabel:['解剖','ネットワーク'], pairOn:1,
+             groups:['ネットワーク', ...GLASSER_SUB] },
   /* 白質線維。**このアトラスだけ性質が違う。**
      - 線維束は重なるのでラベルボリュームが無い。断面は解剖（DKT）のものを流用し、
        線維は 3D にだけ出す（labelAtlas）
@@ -908,10 +910,9 @@ const ATLASES = {
    同じことを一度踏んでいる（DECISIONS の「モジュール内の const」）。 */
 function labelAtlasOf(a){ return (ATLASES[a] && ATLASES[a].labelAtlas) || a; }
 
-/* 大分類の系統。1 つしか持たないアトラスも同じ形にして、一覧の側で分岐しない */
-for (const a of Object.values(ATLASES))
-  if (!a.groupings) a.groupings = [{ key:'group', label:'', groups:a.groups }];
-const grouping = a => ATLASES[a].groupings[state.grouping] || ATLASES[a].groupings[0];
+/* 対になるアトラス（機能的領域 ⇄ ネットワーク）。**並べ替えではなく入れ替え。**
+   実体が別（別のモデル・別の断面画像）なので、setAtlas に任せる。 */
+function pairOf(a){ return ATLASES[a] && ATLASES[a].pair; }
 
 function sliceIndex(plane, v){
   const w = meta.planes[plane].world_coords;
@@ -1558,23 +1559,18 @@ function selectRegion(name){
 
    3D やホバーのパネルでは `ja`（左右つき）のままにする。あちらは左右が
    画面から自明ではないので、名前で分かる必要がある。 */
-/* 大分類の系統の操作子。系統が 1 つしか無いアトラスでは出さない
-   （出しても押す先が無く、操作子の数だけ増える）。 */
+/* 対になるアトラスの切り替え（機能的領域の「解剖 ⇄ ネットワーク」）。
+   対を持たないアトラスでは出さない。押すとアトラスごと入れ替わる。 */
 function buildGrouping(){
   const el = document.getElementById('grouping');
-  const gs = ATLASES[state.atlas].groupings;
-  if (gs.length < 2) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const A = ATLASES[state.atlas];
+  if (!A || !A.pair) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const on = A.pairOn || 0;
   el.style.display = '';
-  el.innerHTML = gs.map((g, i) =>
-    `<button data-g="${i}"${i === state.grouping ? ' class="on"' : ''}>${g.label}</button>`
-  ).join('');
+  el.innerHTML = A.pairLabel.map((t, i) =>
+    `<button data-p="${i}"${i === on ? ' class="on"' : ''}>${t}</button>`).join('');
   el.querySelectorAll('button').forEach(b => {
-    b.onclick = () => {
-      const i = +b.dataset.g;
-      if (i === state.grouping) return;
-      state.grouping = i;
-      buildGrouping(); buildTree();
-    };
+    b.onclick = () => { if (+b.dataset.p !== on) setAtlas(A.pair); };
   });
 }
 
@@ -1584,19 +1580,18 @@ function buildTree(){
   itemByName.clear();
   const buckets = new Map();
   const seenGroup = new Set();
-  const gk = grouping(state.atlas).key;
   for (const [name, v] of Object.entries(labels)) {
-    if (!v[gk] || (v.atlas || 'dkt') !== state.atlas) continue;
+    if (!v.group || (v.atlas || 'dkt') !== state.atlas) continue;
     if (v.side && v.side !== state.side) continue;
     // 実体が 1 つのものは 1 行だけ出す。左右どちらを押しても両方が入る
     if (v.merge) {
       if (seenGroup.has(groupKey(name))) continue;
       seenGroup.add(groupKey(name));
     }
-    if (!buckets.has(v[gk])) buckets.set(v[gk], []);
-    buckets.get(v[gk]).push([name, v]);
+    if (!buckets.has(v.group)) buckets.set(v.group, []);
+    buckets.get(v.group).push([name, v]);
   }
-  const order = grouping(state.atlas).groups.filter(g => buckets.has(g));
+  const order = ATLASES[state.atlas].groups.filter(g => buckets.has(g));
   for (const g of order) {
     const items = buckets.get(g);
     const d = document.createElement('div');
@@ -1650,11 +1645,11 @@ async function setAtlas(a){
   if (switching || a === state.atlas || !ATLASES[a]) return;
   switching = true;
   const btns = [...document.querySelectorAll('#atlas button')];
-  btns.forEach(x => { x.classList.toggle('on', x.dataset.a === a); x.classList.add('busy'); });
+  btns.forEach(x => x.classList.add('busy'));
 
   clearSelection(); setHover(null);
   state.atlas = a;
-  state.grouping = 0;               // 系統はアトラスごと。持ち越すと範囲外になる
+  syncAtlasUI();
   buildGrouping();
   /* 立体だけのアトラス（トラクトグラフィー）へ入るときは立体に寄せる。
      **出るときに戻す。**利用者が選んだのではなくこちらが変えたモードなので、
@@ -1687,9 +1682,17 @@ async function setAtlas(a){
 }
 
 document.querySelectorAll('#atlas button').forEach(b => {
-  b.classList.toggle('on', b.dataset.a === state.atlas);
   b.onclick = () => setAtlas(b.dataset.a);
 });
+/* 対の片方（ネットワーク）にいるときも、アトラスの行では「機能」を光らせる。
+   ボタンが無いアトラスに居ることになるので、対の相手で照らす。 */
+function syncAtlasUI(){
+  const cur = ATLASES[state.atlas] && ATLASES[state.atlas].hidden
+    ? ATLASES[state.atlas].pair : state.atlas;
+  document.querySelectorAll('#atlas button').forEach(
+    b => b.classList.toggle('on', b.dataset.a === cur));
+}
+syncAtlasUI();
 
 /* ライセンスと注意事項。モーダルは Escape と外側の押下でも閉じる。
    Escape は開いているときだけモーダルに使う（普段は選択の解除）。 */

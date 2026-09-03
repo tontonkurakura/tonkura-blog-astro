@@ -3077,6 +3077,941 @@
       "z": -15.35
     }
   },
+  "Network-Left-visual": {
+    "ja": "左Visual",
+    "ja_short": "Visual",
+    "en": "Left Visual",
+    "en_short": "Visual",
+    "side": "L",
+    "base": "visual",
+    "group": "ネットワーク",
+    "color": [
+      120,
+      18,
+      134
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -22.3,
+      "y": -77.58,
+      "z": 0.87
+    }
+  },
+  "Network-Right-visual": {
+    "ja": "右Visual",
+    "ja_short": "Visual",
+    "en": "Right Visual",
+    "en_short": "Visual",
+    "side": "R",
+    "base": "visual",
+    "group": "ネットワーク",
+    "color": [
+      120,
+      18,
+      134
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 23.43,
+      "y": -77.58,
+      "z": 0.87
+    }
+  },
+  "Network-Left-somatomotor": {
+    "ja": "左Somatomotor",
+    "ja_short": "Somatomotor",
+    "en": "Left Somatomotor",
+    "en_short": "Somatomotor",
+    "side": "L",
+    "base": "somatomotor",
+    "group": "ネットワーク",
+    "color": [
+      70,
+      130,
+      180
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -42.95,
+      "y": -18.95,
+      "z": 42.91
+    }
+  },
+  "Network-Right-somatomotor": {
+    "ja": "右Somatomotor",
+    "ja_short": "Somatomotor",
+    "en": "Right Somatomotor",
+    "en_short": "Somatomotor",
+    "side": "R",
+    "base": "somatomotor",
+    "group": "ネットワーク",
+    "color": [
+      70,
+      130,
+      180
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 43.34,
+      "y": -18.95,
+      "z": 42.91
+    }
+  },
+  "Network-Left-dorsal": {
+    "ja": "左Dorsal Attention",
+    "ja_short": "Dorsal Attention",
+    "en": "Left Dorsal Attention",
+    "en_short": "Dorsal Attention",
+    "side": "L",
+    "base": "dorsal",
+    "group": "ネットワーク",
+    "color": [
+      0,
+      118,
+      14
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -36.31,
+      "y": -55.82,
+      "z": 40.33
+    }
+  },
+  "Network-Right-dorsal": {
+    "ja": "右Dorsal Attention",
+    "ja_short": "Dorsal Attention",
+    "en": "Right Dorsal Attention",
+    "en_short": "Dorsal Attention",
+    "side": "R",
+    "base": "dorsal",
+    "group": "ネットワーク",
+    "color": [
+      0,
+      118,
+      14
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 40.39,
+      "y": -55.82,
+      "z": 40.33
+    }
+  },
+  "Network-Left-ventral": {
+    "ja": "左Ventral Attention",
+    "ja_short": "Ventral Attention",
+    "en": "Left Ventral Attention",
+    "en_short": "Ventral Attention",
+    "side": "L",
+    "base": "ventral",
+    "group": "ネットワーク",
+    "color": [
+      196,
+      58,
+      250
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -40.0,
+      "y": -0.88,
+      "z": 27.43
+    }
+  },
+  "Network-Right-ventral": {
+    "ja": "右Ventral Attention",
+    "ja_short": "Ventral Attention",
+    "en": "Right Ventral Attention",
+    "en_short": "Ventral Attention",
+    "side": "R",
+    "base": "ventral",
+    "group": "ネットワーク",
+    "color": [
+      196,
+      58,
+      250
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 40.39,
+      "y": -0.88,
+      "z": 27.43
+    }
+  },
+  "Network-Left-limbic": {
+    "ja": "左Limbic",
+    "ja_short": "Limbic",
+    "en": "Left Limbic",
+    "en_short": "Limbic",
+    "side": "L",
+    "base": "limbic",
+    "group": "ネットワーク",
+    "color": [
+      220,
+      248,
+      164
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -33.36,
+      "y": 7.97,
+      "z": -28.62
+    }
+  },
+  "Network-Right-limbic": {
+    "ja": "右Limbic",
+    "ja_short": "Limbic",
+    "en": "Right Limbic",
+    "en_short": "Limbic",
+    "side": "R",
+    "base": "limbic",
+    "group": "ネットワーク",
+    "color": [
+      220,
+      248,
+      164
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 31.54,
+      "y": 7.97,
+      "z": -28.62
+    }
+  },
+  "Network-Left-frontoparietal": {
+    "ja": "左Frontoparietal",
+    "ja_short": "Frontoparietal",
+    "en": "Left Frontoparietal",
+    "en_short": "Frontoparietal",
+    "side": "L",
+    "base": "frontoparietal",
+    "group": "ネットワーク",
+    "color": [
+      230,
+      148,
+      34
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -38.52,
+      "y": 28.62,
+      "z": 26.69
+    }
+  },
+  "Network-Right-frontoparietal": {
+    "ja": "右Frontoparietal",
+    "ja_short": "Frontoparietal",
+    "en": "Right Frontoparietal",
+    "en_short": "Frontoparietal",
+    "side": "R",
+    "base": "frontoparietal",
+    "group": "ネットワーク",
+    "color": [
+      230,
+      148,
+      34
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 35.96,
+      "y": 28.62,
+      "z": 26.69
+    }
+  },
+  "Network-Left-default": {
+    "ja": "左Default Mode",
+    "ja_short": "Default Mode",
+    "en": "Left Default Mode",
+    "en_short": "Default Mode",
+    "side": "L",
+    "base": "default",
+    "group": "ネットワーク",
+    "color": [
+      205,
+      62,
+      78
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -21.56,
+      "y": 13.13,
+      "z": 16.73
+    }
+  },
+  "Network-Right-default": {
+    "ja": "右Default Mode",
+    "ja_short": "Default Mode",
+    "en": "Right Default Mode",
+    "en_short": "Default Mode",
+    "side": "R",
+    "base": "default",
+    "group": "ネットワーク",
+    "color": [
+      205,
+      62,
+      78
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 30.8,
+      "y": 13.13,
+      "z": 16.73
+    }
+  },
+  "Network-Left-Cerebral-White-Matter": {
+    "ja": "左大脳白質",
+    "ja_short": "大脳白質",
+    "en": "Left Cerebral White Matter",
+    "en_short": "Cerebral White Matter",
+    "base": "Cerebral-White-Matter",
+    "side": "L",
+    "group": "白質",
+    "color": [
+      245,
+      245,
+      245
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -27.46,
+      "y": -18.95,
+      "z": 19.31
+    }
+  },
+  "Network-Left-Lateral-Ventricle": {
+    "ja": "左側脳室",
+    "ja_short": "側脳室",
+    "en": "Left Lateral Ventricle",
+    "en_short": "Lateral Ventricle",
+    "base": "Lateral-Ventricle",
+    "side": "L",
+    "group": "脳室系",
+    "color": [
+      120,
+      18,
+      134
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -12.71,
+      "y": -13.79,
+      "z": 14.89
+    }
+  },
+  "Network-Left-Inf-Lat-Vent": {
+    "ja": "左側脳室下角",
+    "ja_short": "側脳室下角",
+    "en": "Left Inferior Lateral Ventricle",
+    "en_short": "Inferior Lateral Ventricle",
+    "base": "Inf-Lat-Vent",
+    "side": "L",
+    "group": "脳室系",
+    "color": [
+      196,
+      58,
+      250
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -34.84,
+      "y": -11.95,
+      "z": -17.2
+    }
+  },
+  "Network-Left-Cerebellum-White-Matter": {
+    "ja": "左小脳白質",
+    "ja_short": "小脳白質",
+    "en": "Left Cerebellum White Matter",
+    "en_short": "Cerebellum White Matter",
+    "base": "Cerebellum-White-Matter",
+    "side": "L",
+    "group": "小脳",
+    "color": [
+      220,
+      248,
+      164
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -17.14,
+      "y": -55.09,
+      "z": -34.89
+    }
+  },
+  "Network-Left-Cerebellum-Cortex": {
+    "ja": "左小脳皮質",
+    "ja_short": "小脳皮質",
+    "en": "Left Cerebellum Cortex",
+    "en_short": "Cerebellum Cortex",
+    "base": "Cerebellum-Cortex",
+    "side": "L",
+    "group": "小脳",
+    "color": [
+      230,
+      148,
+      34
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -24.51,
+      "y": -62.46,
+      "z": -37.11
+    }
+  },
+  "Network-Left-Thalamus": {
+    "ja": "左視床",
+    "ja_short": "視床",
+    "en": "Left Thalamus",
+    "en_short": "Thalamus",
+    "base": "Thalamus",
+    "side": "L",
+    "group": "視床・間脳",
+    "color": [
+      0,
+      118,
+      14
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -11.97,
+      "y": -18.21,
+      "z": 6.04
+    }
+  },
+  "Network-Left-Caudate": {
+    "ja": "左尾状核",
+    "ja_short": "尾状核",
+    "en": "Left Caudate",
+    "en_short": "Caudate",
+    "base": "Caudate",
+    "side": "L",
+    "group": "大脳基底核",
+    "color": [
+      122,
+      186,
+      220
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -13.45,
+      "y": 12.39,
+      "z": 9.73
+    }
+  },
+  "Network-Left-Putamen": {
+    "ja": "左被殻",
+    "ja_short": "被殻",
+    "en": "Left Putamen",
+    "en_short": "Putamen",
+    "base": "Putamen",
+    "side": "L",
+    "group": "大脳基底核",
+    "color": [
+      236,
+      13,
+      176
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -26.72,
+      "y": 2.81,
+      "z": -0.6
+    }
+  },
+  "Network-Left-Pallidum": {
+    "ja": "左淡蒼球",
+    "ja_short": "淡蒼球",
+    "en": "Left Pallidum",
+    "en_short": "Pallidum",
+    "base": "Pallidum",
+    "side": "L",
+    "group": "大脳基底核",
+    "color": [
+      12,
+      48,
+      255
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -20.82,
+      "y": -3.46,
+      "z": -2.07
+    }
+  },
+  "Network-3rd-Ventricle": {
+    "ja": "第三脳室",
+    "ja_short": "第三脳室",
+    "en": "Third Ventricle",
+    "en_short": "Third Ventricle",
+    "base": "3rd-Ventricle",
+    "group": "脳室系",
+    "color": [
+      204,
+      182,
+      142
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -0.17,
+      "y": -9.73,
+      "z": -3.55
+    }
+  },
+  "Network-4th-Ventricle": {
+    "ja": "第四脳室",
+    "ja_short": "第四脳室",
+    "en": "Fourth Ventricle",
+    "en_short": "Fourth Ventricle",
+    "base": "4th-Ventricle",
+    "group": "脳室系",
+    "color": [
+      42,
+      204,
+      164
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -0.17,
+      "y": -45.13,
+      "z": -33.79
+    }
+  },
+  "Network-Brain-Stem": {
+    "ja": "脳幹",
+    "ja_short": "脳幹",
+    "en": "Brain Stem",
+    "en_short": "Brain Stem",
+    "base": "Brain-Stem",
+    "group": "脳幹",
+    "color": [
+      119,
+      159,
+      176
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -0.17,
+      "y": -30.38,
+      "z": -33.05
+    }
+  },
+  "Network-Left-Hippocampus": {
+    "ja": "左海馬",
+    "ja_short": "海馬",
+    "en": "Left Hippocampus",
+    "en_short": "Hippocampus",
+    "base": "Hippocampus",
+    "side": "L",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      216,
+      20
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -25.99,
+      "y": -20.05,
+      "z": -15.35
+    }
+  },
+  "Network-Left-Amygdala": {
+    "ja": "左扁桃体",
+    "ja_short": "扁桃体",
+    "en": "Left Amygdala",
+    "en_short": "Amygdala",
+    "base": "Amygdala",
+    "side": "L",
+    "group": "大脳辺縁系",
+    "color": [
+      103,
+      255,
+      255
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -23.77,
+      "y": -3.83,
+      "z": -20.14
+    }
+  },
+  "Network-CSF": {
+    "ja": "脳脊髄液",
+    "ja_short": "脳脊髄液",
+    "en": "Cerebrospinal Fluid",
+    "en_short": "Cerebrospinal Fluid",
+    "base": "CSF",
+    "group": "脳室系",
+    "color": [
+      60,
+      60,
+      60
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -0.17,
+      "y": -22.27,
+      "z": 9.73
+    }
+  },
+  "Network-Left-Accumbens-area": {
+    "ja": "左側坐核",
+    "ja_short": "側坐核",
+    "en": "Left Accumbens Area",
+    "en_short": "Accumbens Area",
+    "base": "Accumbens-area",
+    "side": "L",
+    "group": "大脳基底核",
+    "color": [
+      255,
+      165,
+      0
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -9.02,
+      "y": 10.55,
+      "z": -8.34
+    }
+  },
+  "Network-Left-VentralDC": {
+    "ja": "左腹側間脳",
+    "ja_short": "腹側間脳",
+    "en": "Left Ventral Diencephalon",
+    "en_short": "Ventral Diencephalon",
+    "base": "VentralDC",
+    "side": "L",
+    "group": "視床・間脳",
+    "color": [
+      145,
+      42,
+      42
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -9.02,
+      "y": -16.0,
+      "z": -10.19
+    }
+  },
+  "Network-Left-choroid-plexus": {
+    "ja": "左脈絡叢",
+    "ja_short": "脈絡叢",
+    "en": "Left Choroid Plexus",
+    "en_short": "Choroid Plexus",
+    "base": "choroid-plexus",
+    "side": "L",
+    "group": "脳室系",
+    "color": [
+      0,
+      200,
+      200
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -23.04,
+      "y": -34.8,
+      "z": 11.2
+    }
+  },
+  "Network-Right-Cerebral-White-Matter": {
+    "ja": "右大脳白質",
+    "ja_short": "大脳白質",
+    "en": "Right Cerebral White Matter",
+    "en_short": "Cerebral White Matter",
+    "base": "Cerebral-White-Matter",
+    "side": "R",
+    "group": "白質",
+    "color": [
+      245,
+      245,
+      245
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 27.11,
+      "y": -18.95,
+      "z": 19.31
+    }
+  },
+  "Network-Right-Lateral-Ventricle": {
+    "ja": "右側脳室",
+    "ja_short": "側脳室",
+    "en": "Right Lateral Ventricle",
+    "en_short": "Lateral Ventricle",
+    "base": "Lateral-Ventricle",
+    "side": "R",
+    "group": "脳室系",
+    "color": [
+      120,
+      18,
+      134
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 12.36,
+      "y": -13.79,
+      "z": 14.89
+    }
+  },
+  "Network-Right-Inf-Lat-Vent": {
+    "ja": "右側脳室下角",
+    "ja_short": "側脳室下角",
+    "en": "Right Inferior Lateral Ventricle",
+    "en_short": "Inferior Lateral Ventricle",
+    "base": "Inf-Lat-Vent",
+    "side": "R",
+    "group": "脳室系",
+    "color": [
+      196,
+      58,
+      250
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 31.54,
+      "y": -11.95,
+      "z": -17.2
+    }
+  },
+  "Network-Right-Cerebellum-White-Matter": {
+    "ja": "右小脳白質",
+    "ja_short": "小脳白質",
+    "en": "Right Cerebellum White Matter",
+    "en_short": "Cerebellum White Matter",
+    "base": "Cerebellum-White-Matter",
+    "side": "R",
+    "group": "小脳",
+    "color": [
+      220,
+      248,
+      164
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 16.79,
+      "y": -55.09,
+      "z": -34.89
+    }
+  },
+  "Network-Right-Cerebellum-Cortex": {
+    "ja": "右小脳皮質",
+    "ja_short": "小脳皮質",
+    "en": "Right Cerebellum Cortex",
+    "en_short": "Cerebellum Cortex",
+    "base": "Cerebellum-Cortex",
+    "side": "R",
+    "group": "小脳",
+    "color": [
+      230,
+      148,
+      34
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 23.43,
+      "y": -62.46,
+      "z": -37.11
+    }
+  },
+  "Network-Right-Thalamus": {
+    "ja": "右視床",
+    "ja_short": "視床",
+    "en": "Right Thalamus",
+    "en_short": "Thalamus",
+    "base": "Thalamus",
+    "side": "R",
+    "group": "視床・間脳",
+    "color": [
+      0,
+      118,
+      14
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 10.89,
+      "y": -18.21,
+      "z": 6.04
+    }
+  },
+  "Network-Right-Caudate": {
+    "ja": "右尾状核",
+    "ja_short": "尾状核",
+    "en": "Right Caudate",
+    "en_short": "Caudate",
+    "base": "Caudate",
+    "side": "R",
+    "group": "大脳基底核",
+    "color": [
+      122,
+      186,
+      220
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 13.1,
+      "y": 12.39,
+      "z": 9.73
+    }
+  },
+  "Network-Right-Putamen": {
+    "ja": "右被殻",
+    "ja_short": "被殻",
+    "en": "Right Putamen",
+    "en_short": "Putamen",
+    "base": "Putamen",
+    "side": "R",
+    "group": "大脳基底核",
+    "color": [
+      236,
+      13,
+      176
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 26.38,
+      "y": 2.81,
+      "z": -0.6
+    }
+  },
+  "Network-Right-Pallidum": {
+    "ja": "右淡蒼球",
+    "ja_short": "淡蒼球",
+    "en": "Right Pallidum",
+    "en_short": "Pallidum",
+    "base": "Pallidum",
+    "side": "R",
+    "group": "大脳基底核",
+    "color": [
+      13,
+      48,
+      255
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 20.48,
+      "y": -3.46,
+      "z": -2.07
+    }
+  },
+  "Network-Right-Hippocampus": {
+    "ja": "右海馬",
+    "ja_short": "海馬",
+    "en": "Right Hippocampus",
+    "en_short": "Hippocampus",
+    "base": "Hippocampus",
+    "side": "R",
+    "group": "大脳辺縁系",
+    "color": [
+      220,
+      216,
+      20
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 26.38,
+      "y": -20.05,
+      "z": -15.35
+    }
+  },
+  "Network-Right-Amygdala": {
+    "ja": "右扁桃体",
+    "ja_short": "扁桃体",
+    "en": "Right Amygdala",
+    "en_short": "Amygdala",
+    "base": "Amygdala",
+    "side": "R",
+    "group": "大脳辺縁系",
+    "color": [
+      103,
+      255,
+      255
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 22.69,
+      "y": -3.83,
+      "z": -20.14
+    }
+  },
+  "Network-Right-Accumbens-area": {
+    "ja": "右側坐核",
+    "ja_short": "側坐核",
+    "en": "Right Accumbens Area",
+    "en_short": "Accumbens Area",
+    "base": "Accumbens-area",
+    "side": "R",
+    "group": "大脳基底核",
+    "color": [
+      255,
+      165,
+      0
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 7.94,
+      "y": 10.55,
+      "z": -8.34
+    }
+  },
+  "Network-Right-VentralDC": {
+    "ja": "右腹側間脳",
+    "ja_short": "腹側間脳",
+    "en": "Right Ventral Diencephalon",
+    "en_short": "Ventral Diencephalon",
+    "base": "VentralDC",
+    "side": "R",
+    "group": "視床・間脳",
+    "color": [
+      165,
+      42,
+      42
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 8.68,
+      "y": -16.0,
+      "z": -10.19
+    }
+  },
+  "Network-Right-choroid-plexus": {
+    "ja": "右脈絡叢",
+    "ja_short": "脈絡叢",
+    "en": "Right Choroid Plexus",
+    "en_short": "Choroid Plexus",
+    "base": "choroid-plexus",
+    "side": "R",
+    "group": "脳室系",
+    "color": [
+      0,
+      200,
+      221
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": 21.95,
+      "y": -34.8,
+      "z": 11.2
+    }
+  },
+  "Network-WM-hypointensities": {
+    "ja": "白質低信号域",
+    "ja_short": "白質低信号域",
+    "en": "White Matter Hypointensities",
+    "en_short": "White Matter Hypointensities",
+    "base": "WM-hypointensities",
+    "group": "白質",
+    "color": [
+      200,
+      70,
+      255
+    ],
+    "atlas": "network",
+    "slice": {
+      "x": -13.45,
+      "y": 5.76,
+      "z": 20.05
+    }
+  },
   "Glasser-Left-V1": {
     "ja": "左V1",
     "ja_short": "V1",

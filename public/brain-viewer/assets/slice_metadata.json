@@ -311,7 +311,8 @@
           "dkt": "sagittal/label_atlas.webp?v=3d7c44f9",
           "arterial": "sagittal/label_atlas_arterial.webp?v=fbad119c",
           "macro": "sagittal/label_atlas_macro.webp?v=e0cefe52",
-          "glasser": "sagittal/label_atlas_glasser.webp?v=5780b81c"
+          "glasser": "sagittal/label_atlas_glasser.webp?v=5780b81c",
+          "network": "sagittal/label_atlas_network.webp?v=0b448f23"
         },
         "cols": 16,
         "rows": 16,
@@ -601,7 +602,8 @@
           "dkt": "coronal/label_atlas.webp?v=c733ac47",
           "arterial": "coronal/label_atlas_arterial.webp?v=1c03a2d1",
           "macro": "coronal/label_atlas_macro.webp?v=9b815ddd",
-          "glasser": "coronal/label_atlas_glasser.webp?v=cb8891f7"
+          "glasser": "coronal/label_atlas_glasser.webp?v=cb8891f7",
+          "network": "coronal/label_atlas_network.webp?v=fbcb20c1"
         },
         "cols": 16,
         "rows": 16,
@@ -891,7 +893,8 @@
           "dkt": "axial/label_atlas.webp?v=05d8420f",
           "arterial": "axial/label_atlas_arterial.webp?v=5960657f",
           "macro": "axial/label_atlas_macro.webp?v=e223a443",
-          "glasser": "axial/label_atlas_glasser.webp?v=2f90e8a5"
+          "glasser": "axial/label_atlas_glasser.webp?v=2f90e8a5",
+          "network": "axial/label_atlas_network.webp?v=d55c3373"
         },
         "cols": 16,
         "rows": 16,
