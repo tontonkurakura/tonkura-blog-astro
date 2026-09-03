@@ -230,29 +230,15 @@
   <div class="row"><span id="lwhat">準備中…</span><span id="lpct">0%</span></div>
 </div></div>
 
+<!-- 右のパネルは「どう見るか」だけを持つ。「何を見るか」（アトラス・左右・
+     大分類の系統・一覧）は左の #list にまとめてある。アトラスは一覧の中身を
+     決めるものなので、一覧と同じ列に置く。 -->
 <div id="panel">
   <!-- 断面モード / 立体モード。断面に関わる操作はまとめて #sliceCtl に入れてあり、
        立体モードでは丸ごと隠す（無効な操作を並べておくより、消したほうが早い） -->
   <div class="seg" id="mode">
     <button data-m="slice" class="on">断面<small>Slice</small></button>
     <button data-m="solid">立体<small>3D</small></button>
-  </div>
-
-  <div class="lbl" style="margin-top:11px">アトラス</div>
-  <div class="seg" id="atlas">
-    <button data-a="macro" class="on">マクロ</button>
-    <button data-a="dkt">ミクロ</button>
-    <button data-a="arterial">血管支配</button>
-    <button data-a="glasser">機能</button>
-    <button data-a="tract">トラクト</button>
-  </div>
-  <div id="atlasMsg"></div>
-
-  <!-- 選択していない領域の濃さ。**どのモード・どのアトラスでも出す。**
-       効くのは立体モードで何かを選んでいるときと、トラクトグラフィーの背景。 -->
-  <div id="ghostBlock">
-    <div class="lbl row"><span>選択外の濃さ</span><span class="val" id="gv">20%</span></div>
-    <input type="range" id="ghost" min="0" max="100" step="1" value="20">
   </div>
 
   <div id="sliceCtl">
@@ -269,7 +255,7 @@
       ><input type="range" id="pos"><span class="pend" id="endHi"></span></div>
   </div>
 
-  <div class="lbl">重ね方</div>
+  <div class="lbl">断面と切り方</div>
   <div class="seg"><button id="cLabel" class="on">領域色を重ねる</button></div>
   <!-- 反転は「切る」にぶら下がる操作なので、同じ行に置いて、切らないときは押せなくする -->
   <div class="seg">
@@ -286,11 +272,23 @@
     <button data-h="L">左<small>Left</small></button>
     <button data-h="R">右<small>Right</small></button>
   </div>
-  <div class="seg" id="cCortexRow"><button id="cCortex" class="on">皮質を表示</button></div>
-  <!-- 皮質のみ。白質・深部・脳室・脳幹・小脳を隠す。機能的領域でだけ出る -->
-  <div class="seg" id="cOnlyRow" style="display:none">
-    <button id="cOnly">皮質のみ</button>
+  <!-- 表示範囲。**「皮質を表示」と「皮質のみ」を 1 つにまとめたもの。**
+       前者を切ると皮質下だけ、後者を入れると皮質だけになる——同じものの裏表を
+       別名で別のアトラスに置いていたので、3 状態の 1 つにした。 -->
+  <div class="lbl" id="scopeLbl">表示範囲</div>
+  <div class="seg" id="scope">
+    <button data-s="all" class="on">全部</button>
+    <button data-s="cortex">皮質</button>
+    <button data-s="sub">皮質下</button>
   </div>
+
+  <!-- 選択していない領域の濃さ。**立体モードで選択中にだけ効く**ので、ここに置く。
+       アトラスの下に置いていたときは、断面モードでも出て何も起きなかった。 -->
+  <div id="ghostBlock">
+    <div class="lbl row"><span>選択外の濃さ</span><span class="val" id="gv">20%</span></div>
+    <input type="range" id="ghost" min="0" max="100" step="1" value="20">
+  </div>
+
   <!-- 繋ぐ皮質領域の名前。トラクトグラフィーでだけ出る -->
   <div class="seg" id="cConnRow" style="display:none">
     <button id="cConn" class="on">繋ぐ領域の名前</button>
@@ -299,7 +297,18 @@
 </div>
 
 <div id="list">
-  <div class="lbl" style="margin:0 0 4px;display:flex;align-items:center">領域<button
+  <!-- 「何を見るか」。アトラスが一覧の中身を決めるので、同じ列の先頭に置く -->
+  <div class="lbl" style="margin:0 0 5px">アトラス</div>
+  <div class="seg" id="atlas">
+    <button data-a="macro" class="on">マクロ</button>
+    <button data-a="dkt">ミクロ</button>
+    <button data-a="arterial">血管支配</button>
+    <button data-a="glasser">機能</button>
+    <button data-a="tract">トラクト</button>
+  </div>
+  <div id="atlasMsg"></div>
+
+  <div class="lbl" style="margin:11px 0 4px;display:flex;align-items:center">領域<button
     id="clearSel" type="button">選択を解除</button></div>
   <!-- 左右はここで切り替える。一覧の中では「左」「右」を頭に付けない -->
   <div class="seg" id="side">
@@ -822,8 +831,7 @@ const state = { plane: (Q.get('plane')||'axial'), mode: (Q.get('mode')||'slice')
                 grouping:0,                        // 大分類の系統（Glasser だけ 2 つある）
                 conn:true,                         // 繋ぐ領域の名前をパネルに出すか
                 ghost:GHOST_DEFAULT,               // 選択していない領域の不透明度
-                cortexOnly:false,                  // 皮質だけ出す（白質・深部を隠す）
-                half:'both', cortex:true,          // 立体モードの見せ方
+                half:'both', scope:'all',          // 立体モードの見せ方
                 overlay:true, cut:true,            // 重ね方（操作子の状態）
                 world:{x:0,y:0,z:0}, clip:true };  // clip は cut の実効値
 
@@ -859,7 +867,7 @@ const ATLASES = {
      前頭内側と頭頂と側頭に散る」がそのまま見えるということ。 */
   /* **透かしが効くのはここだけ。**360 区分は細かく、脳溝の内側や内側面の領域が
      手前に隠れて見えない。区分の大きい他のアトラスでは起きないので掛けない。 */
-  glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true, cortexOnly:true,
+  glasser: { name:'機能的領域', model:'brain_glasser.glb', focusGhost:true,
              groupings:[
                {key:'group', label:'解剖', groups:[
                  '一次視覚野','早期視覚野','背側視覚路','腹側視覚路','MT+ 複合体',
@@ -1213,11 +1221,30 @@ cClipBtn.onclick = ()=>{ state.cut = !state.cut; applyMode(); };
 
 /* 皮質とみなすもの。大脳白質も一緒に隠す。皮質だけ消すと白い殻が残り、
    結局その中の皮質下構造が見えない。 */
-const CORTICAL = {
-  dkt: /^ctx-|Cerebral-White-Matter$/,
-  // マクロでは大分類がそのまま皮質。limbic_deep（海馬・扁桃体）は残す
-  macro: /^Macro-\w+-(frontal|parietal|temporal|occipital|insula|limbic|wm)$/,
+/* 表示範囲の分類。メッシュを「皮質 / 白質 / 皮質下」に分ける。
+   **白質はどちらでもない。**大きくて中を覆うので、「全部」のときだけ出す。
+
+   ここに載っていないアトラス（血管支配・トラクトグラフィー）は皮質と皮質下を
+   分けられないので、操作子ごと出さない。 */
+const SCOPE = {
+  dkt:   { cortex: /^ctx-/,                                   wm: /Cerebral-White-Matter$/ },
+  macro: { cortex: /^Macro-\w+-(frontal|parietal|temporal|occipital|insula|limbic)$/,
+           wm: /^Macro-\w+-wm$/ },
+  /* Glasser は大分類で機械的に分かれる。22 cortices が皮質で、それ以外は
+     DKT から借りた皮質下。名前ではなく `group` で見る。 */
+  glasser: { cortex: (n, v) => v && !GLASSER_NONCTX.has(v.group),
+             wm: (n, v) => v && v.group === '白質' },
 };
+
+/* メッシュ 1 つの区分。null は分類できないもの（常に出す） */
+function scopeOf(name, v){
+  const t = SCOPE[state.atlas];
+  if (!t) return null;
+  const hit = (r) => typeof r === 'function' ? r(name, v) : r.test(name);
+  if (hit(t.wm)) return 'wm';
+  if (hit(t.cortex)) return 'cortex';
+  return 'sub';
+}
 
 /* 立体モードの見せ方（半割・皮質の有無）をメッシュに反映する。
 
@@ -1234,13 +1261,13 @@ function applyVisibility(){
     let vis = true;
     if (solid) {
       if (state.half !== 'both' && v && v.side && v.side !== state.half) vis = false;
-      const ctx = CORTICAL[state.atlas];
-      if (!state.cortex && ctx && ctx.test(name)) vis = false;
-      /* 皮質のみ。**遮っているのは隣の皮質ではなく白質と深部だった**（実測）。
-         左半球だけにしたうえで白質・深部を消すと、内側面は 5%→81%、島は
-         0%→71% まで見えるようになる。透明度を使わずに済む。 */
-      if (state.cortexOnly && ATLASES[state.atlas] && ATLASES[state.atlas].cortexOnly
-          && v && GLASSER_NONCTX.has(v.group)) vis = false;
+      /* 表示範囲。**遮っているのは隣の皮質ではなく白質と深部だった**（実測）。
+         片側にしたうえで「皮質」にすると、内側面は 5%→81%、島は 0%→71% まで
+         見えるようになる。透明度を使わずに済む。 */
+      if (state.scope !== 'all') {
+        const k = scopeOf(name, v);
+        if (k && k !== (state.scope === 'cortex' ? 'cortex' : 'sub')) vis = false;
+      }
       /* 濃さ 0% は「消す」。opacity を 0 にしただけでは `Raycaster` が拾い、
          見えない領域の名前がホバーで出る（隠したら pick 側でも除外する規則）。 */
       if (ghostAtlas() && sel.size && !sel.has(name) && state.ghost <= GHOST_HIDE) vis = false;
@@ -1267,12 +1294,17 @@ document.querySelectorAll('#half button').forEach(b=>{
     applyVisibility(); layoutCallouts();
   };
 });
-const cCortexBtn = document.getElementById('cCortex');
-cCortexBtn.onclick = ()=>{
-  state.cortex = !state.cortex;
-  cCortexBtn.classList.toggle('on', state.cortex);
-  applyVisibility(); layoutCallouts();
-};
+/* 表示範囲。全部 / 皮質 / 皮質下。**白質は「全部」のときだけ出す**——大きくて
+   中を覆うので、皮質を見たいときも皮質下を見たいときも邪魔になる。 */
+document.querySelectorAll('#scope button').forEach(b => {
+  b.onclick = () => {
+    if (b.dataset.s === state.scope) return;
+    state.scope = b.dataset.s;
+    document.querySelectorAll('#scope button').forEach(
+      x => x.classList.toggle('on', x.dataset.s === state.scope));
+    applyVisibility(); layoutCallouts();
+  };
+});
 
 /* ───────────── 表示モード ─────────────
    断面モード … 断面の板を出し、モデルをその面で切る（これまでの表示）
@@ -1296,16 +1328,16 @@ function applyMode(){
   document.getElementById('sliceCtl').style.display = solid ? 'none' : '';
   document.getElementById('barPos').style.display = solid ? 'none' : '';
   document.getElementById('solidCtl').style.display = solid ? '' : 'none';
-  /* 血管支配アトラスに「皮質」という区分は無いので、その切り替えは出さない */
-  document.getElementById('cCortexRow').style.display =
-    (solid && !!CORTICAL[state.atlas]) ? '' : 'none';
+  /* 皮質と皮質下を分けられるアトラスでだけ出す（血管支配とトラクトには無い） */
+  const hasScope = solid && !!SCOPE[state.atlas];
+  document.getElementById('scopeLbl').style.display = hasScope ? '' : 'none';
+  document.getElementById('scope').style.display = hasScope ? '' : 'none';
+  document.querySelectorAll('#scope button').forEach(
+    b => b.classList.toggle('on', b.dataset.s === state.scope));
   /* 繋ぐ領域を持つのはトラクトグラフィーだけ */
   const isTract = !!(ATLASES[state.atlas] && ATLASES[state.atlas].tracts);
   document.getElementById('cConnRow').style.display = isTract ? '' : 'none';
-  /* 皮質のみ。大分類で皮質と皮質下を機械的に分けられるアトラスでだけ出す */
-  document.getElementById('cOnlyRow').style.display =
-    (solid && ATLASES[state.atlas] && ATLASES[state.atlas].cortexOnly) ? '' : 'none';
-  document.getElementById('cOnly').classList.toggle('on', state.cortexOnly);
+
   syncGhostUI();
   sliceMesh.visible = !solid && uiReady && !!lblData;
 
@@ -1328,15 +1360,6 @@ document.querySelectorAll('#mode button').forEach(b=>{
                     state.mode = b.dataset.m; applyMode(); };
 });
 document.getElementById('flip').onclick = ()=>{ clipSide = -clipSide; applyClip(); };
-
-/* 皮質のみ。白質と深部を消すと、内側面や島の領域が不透明のまま見えるようになる
-   （遮っているのは隣の皮質ではなくそちらだった）。 */
-document.getElementById('cOnly').onclick = () => {
-  state.cortexOnly = !state.cortexOnly;
-  document.getElementById('cOnly').classList.toggle('on', state.cortexOnly);
-  applyVisibility();
-  layoutCallouts();
-};
 
 /* 選択中、選んでいない領域の濃さ。**固定の正解が無い**ので動かせるようにした。
    薄くすれば脳溝の内側や内側面の領域が見え、濃くすれば周りの区切りが読める。
@@ -2476,14 +2499,13 @@ window.__occluders = (name, samples = 60) => {
 
 window.__state = () => ({
   atlas: state.atlas, plane: state.plane, side: state.side, mode: state.mode,
-  half: state.half, cortex: state.cortex, overlay: state.overlay, cut: state.cut,
+  half: state.half, scope: state.scope, overlay: state.overlay, cut: state.cut,
   touch: TOUCH.matches, narrow: NARROW.matches,
   selected, selection: [...sel],
   // 選択中のアンカー（world RAS mm）。正中かどうかを画面ではなく座標で確かめる口
   anchorWorld: selected && anchorPoint(selected)
     ? anchorPoint(selected).toArray().map(v => +v.toFixed(2)) : null,
   ghost: state.ghost,
-  cortexOnly: state.cortexOnly,
   /* 選んでいない領域のうち、透かしているものの数。立体モードで選択中だけ立つ。
      断面モードでは切り口に色が出るので掛けない。 */
   focusGhost: meshByName
